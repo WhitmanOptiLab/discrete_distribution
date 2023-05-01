@@ -39,7 +39,7 @@ int main() {
   gettimeofday(&start, NULL);
   for (int i = 0; i < 100000; i++) {
     int index = selector(generator); // Need to look into what selector returns and how to change item weights
-    std::cout<<index<<std::endl;
+    selector.update_weight(index, 1);
   }
   
   // get end time and print
