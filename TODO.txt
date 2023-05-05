@@ -1,0 +1,17 @@
+TODO List:
+
+Make two versions of WRS applications which:
+	1. Create 10k elements with random weights between 0-10
+	2. Create WRS data structure
+	3. Randomly choose elements 10k times
+
+	Make two or more versions, one with our WRS and some other libraries
+
+Make another set of similar tests where we:
+	1. Create 10k elements with random weights between 0-10
+	2. Create WRS data structure
+	3. Randomly choose elemtes 10k times and adjust the weight by between +5 -5 randomly
+		(For other libraries this may require repeating a whole new WRS data structure)
+
+	Test same libraries
+
