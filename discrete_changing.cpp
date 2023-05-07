@@ -11,19 +11,20 @@ int random(int low, int high)
 
 int main() {
   std::vector<float> weights = {}; // each weight is an item in data structure
+  std::default_random_engine generator;
   
-  for(int i = 0; i < 10000; i++){
+  for(int i = 0; i < 100; i++){
     weights.push_back(random(1,10));
   }	      
 
   //start time
   struct timeval start, end;
   gettimeofday(&start, NULL);
-  std::default_random_engine generator;
   std::discrete_distribution<> selector(weights.begin(), weights.end());
-
-  for (int i = 0; i < 20; i++){
-    std::cout<<selector(generator)<<std::endl;
+  for (int i = 0; i < 100000; i++){
+    int index = selector(generator);
+    weights[index] = random(1,10);
+    selector = std::discrete_distribution<>(weights.begin(), weights.end());
   }
 
   //end time
