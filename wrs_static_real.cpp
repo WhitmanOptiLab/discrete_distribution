@@ -3,21 +3,16 @@
 #include <iostream>
 #include <random>
 #include <vector>
-
 using namespace dense::stochastic;
 
-int random(int low, int high)
-{
-    return low + rand() % (high - low + 1);
-}
-
 int main() {
+  std::uniform_real_distribution<float> d(1,10); 
   std::default_random_engine generator;
   std::vector<float> weights = {};
   int sum = 0;
   
-  for(int i = 0; i < 10000000; i++){
-    weights.push_back(random(1,10));
+  for(int i = 0; i < 100; i++){
+    weights.push_back(d(generator));
   }	      
 
   //start time

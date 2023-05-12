@@ -9,9 +9,8 @@ int main() {
   std::normal_distribution<float> d(5,2); 
   std::default_random_engine generator;
   std::vector<float> weights = {};
-  int sum = 0;
   
-  for(int i = 0; i < 100000000; i++){
+  for(int i = 0; i < 100; i++){
     weights.push_back(d(generator));
   }	      
 
@@ -23,7 +22,6 @@ int main() {
     int index = selector(generator);
     selector.update_weight(index, d(generator));
   }
-  std::cout<<sum<<std::endl;
   
   // end time
   gettimeofday(&end, NULL);
