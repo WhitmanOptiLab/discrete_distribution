@@ -10,7 +10,7 @@ int main() {
   std::default_random_engine generator;
   std::vector<float> weights = {};
   
-  for(int i = 0; i < 100; i++){
+  for(int i = 0; i < 10000000; i++){
     weights.push_back(d(generator));
   }	      
 

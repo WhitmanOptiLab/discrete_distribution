@@ -14,7 +14,7 @@ int main() {
   std::default_random_engine generator;
   int sum = 0;
   
-  for(int i = 0; i < 1000000; i++){
+  for(int i = 0; i < 10000000; i++){
     weights.push_back(random(1,10));
   }	      
 
