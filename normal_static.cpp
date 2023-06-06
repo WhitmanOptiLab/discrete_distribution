@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <algorithm>
 using namespace dense::stochastic;
 
 int main() {
@@ -13,6 +14,12 @@ int main() {
   
   for(int i = 0; i < 10000000; i++){
     weights.push_back(d(generator));
+  }	      
+
+  float minweight = *std::min_element(weights.begin(), weights.end());
+
+  for(int i = 0; i < 10000000; i++){
+    weights[i] -= minweight;
   }	      
 
   //start time

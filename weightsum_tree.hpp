@@ -58,7 +58,7 @@ class weightsum_tree {
       if (checked_weightsum(Tree::left_of(node)) > target) {
         node = Tree::left_of(node);
       } else {
-        target -= _tree().weight_of(node) + _tree().weightsum_of(Tree::left_of(node));
+        target -= _tree().weight_of(node) + checked_weightsum(Tree::left_of(node));
         node = Tree::right_of(node);
       }
       //Should this ever happen?  No, but floating-point rounding means it's 
@@ -68,7 +68,7 @@ class weightsum_tree {
         target = std::generate_canonical<Real, precision, URNG>(g)*_total_weight;
       }
     }
-    return node; //Should never happen?
+    return node;
   }
 
  private:
