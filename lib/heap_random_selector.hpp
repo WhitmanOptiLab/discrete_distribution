@@ -32,13 +32,14 @@ class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType
 
   bool empty() { return BaseTree::empty(); }
 
-  template<typename T>
-  heap_random_selector(std::vector<T>& weights) :
-    BaseTree(weights.size()),
+  template< class InputIt >
+  heap_random_selector(InputIt first, InputIt last) :
+    BaseTree(),
     Heap()
   {
-    for (int i = 0; i < weights.size(); i++) {
-      auto w = weights[i];
+    InputIt it = first;
+    for (IntType i = 0; it != last; ++it, ++i) {
+      double w = *it;
       BaseTree::add_entry(std::tuple<IntType, Real, Real>(i, w, 0.0));
       Heap::update_position(BaseTree::last());
     }

@@ -43,12 +43,9 @@ namespace stochastic {
       using const_iterator = entry_type const*;
       using reference = entry_type&;
       using const_reference = entry_type const&;
-   
-      complete_tree() = delete;
 
-      complete_tree(position_type max_size) :
-        _max_size{max_size},
-        _tree(_max_size) {}
+      complete_tree(position_type reserve = 0) :
+        _tree(reserve) {}
 
       complete_tree(complete_tree const&) = default;
 
@@ -61,24 +58,20 @@ namespace stochastic {
       ~complete_tree() = default;
 
       //Tree property methods
-      size_type max_size() const {
-        return static_cast<position_type>(_max_size);
-      }
 
       size_type size() const {
-        return _size;
+        return _tree.size();
       }
 
       bool empty() const {
-        return _size == 0;
+        return _tree.empty();
       }
 
       //Tree modification methods
       //
     protected:
-      void add_entry(entry_type entry) {
-        _tree.at(last()+1) = entry;
-        _size++;
+      void add_entry(entry_type&& entry) {
+        _tree.push_back(entry);
       }
 
       template <typename... Args>
@@ -88,7 +81,7 @@ namespace stochastic {
 
       void remove_last_entry() {
         if (empty()) return;
-        _size--;
+        _tree.pop_back();
       }
 
       //Iterator methods
@@ -121,10 +114,7 @@ namespace stochastic {
     public:
       //Position methods
       static constexpr position_type root() { return 0; }
-      position_type last() const { return _size - 1; }
-      position_type null_node() const {
-        return _max_size;
-      }
+      position_type last() const { return size() - 1; }
 
       static position_type parent_of(position_type node) {
         return ((node + 1) >> 1) - 1;
@@ -148,7 +138,7 @@ namespace stochastic {
       }
 
       const_reference at(position_type i) const {
-        if (i >= _size) {
+        if (i >= size()) {
           throw std::out_of_range("Index out of range");
         }
         return _tree[i];
@@ -173,17 +163,14 @@ namespace stochastic {
       }
 
       reference at(position_type i) {
-        if (i >= _size) {
+        if (i >= size()) {
           throw std::out_of_range("Index out of range");
         }
         return _tree[i];
       }
       
     private:
-      position_type _max_size;
       std::vector<entry_type> _tree;
-      position_type _size = 0;
-
   };
 
 }

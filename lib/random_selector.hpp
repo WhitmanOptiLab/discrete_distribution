@@ -29,13 +29,14 @@ class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<R
   nonuniform_int_distribution() = delete;
   nonuniform_int_distribution(PosType p) : BaseTree(p), WeightSum(*this) {};
 
-  template<typename T>
-  nonuniform_int_distribution(std::vector<T>& weights) :
-    BaseTree(weights.size()),
+  template< class InputIt >
+  nonuniform_int_distribution(InputIt first, InputIt last) :
+    BaseTree(),
     WeightSum(*this)
   {
-    for (auto w : weights) {
-      BaseTree::emplace_entry(w, 0.0);
+    InputIt it = first;
+    for (IntType i = 0; it != last; ++it, ++i) {
+      BaseTree::emplace_entry(*it, 0.0);
     }
     WeightSum::compute_weights();
   }

@@ -9,7 +9,7 @@ int main() {
   std::default_random_engine generator;
   std::vector<float> weights = {1, 2, 3, 4};
 
-  heap_random_selector<int> selector(weights);
+  heap_random_selector<int> selector(weights.begin(), weights.end());
   std::cout << "Constructed" << std::endl;
   std::vector<unsigned int> counts(weights.size());
 
