@@ -2,7 +2,6 @@
 #define RANDOM_SELECTOR
 #include "completetree.hpp"
 #include "weightsum_tree.hpp"
-#include "utility/numerics.hpp"
 #include <limits>
 #include <utility>
 #include <random>

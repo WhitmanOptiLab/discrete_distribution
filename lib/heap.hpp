@@ -1,7 +1,6 @@
 #ifndef DENSE_SIM_HEAP
 #define DENSE_SIM_HEAP
 #include "completetree.hpp"
-#include "utility/numerics.hpp"
 #include <limits>
 #include <utility>
 #include <random>

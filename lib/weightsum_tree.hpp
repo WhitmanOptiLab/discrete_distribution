@@ -1,14 +1,12 @@
 #ifndef WEIGHTSUM_TREE
 #define WEIGHTSUM_TREE
 #include "completetree.hpp"
-#include "utility/numerics.hpp"
 #include <limits>
 #include <utility>
 #include <random>
 
 namespace dense {
 namespace stochastic {
-
 
 //Class to randomly select an index where each index's probability of being 
 //  selected is weighted by a given vector.  

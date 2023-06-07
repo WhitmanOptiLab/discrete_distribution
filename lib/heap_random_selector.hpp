@@ -3,7 +3,6 @@
 #include "completetree.hpp"
 #include "weightsum_tree.hpp"
 #include "heap.hpp"
-#include "utility/numerics.hpp"
 #include <functional>
 #include <limits>
 #include <random>
@@ -14,7 +13,6 @@
 namespace dense {
 namespace stochastic {
 
-
 //Class to randomly select an index where each index's probability of being 
 //  selected is weighted by a given vector.  
 template <class IntType = int, size_t precision = std::numeric_limits<Real>::digits>
@@ -24,7 +22,7 @@ class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType
  public:
   using BaseTree = complete_tree<IntType, std::tuple<IntType, Real, Real> >;
   using Heap = heap<heap_random_selector<IntType, precision>, IntType>;
-  using WeightSum = weightsum_tree<heap_random_selector<IntType, precision>, IntType, IntType, precision>;
+  using WeightSum = weightsum_tree<heap_random_selector<IntType, precision>, IntType, precision>;
   friend Heap;
   friend WeightSum;
   using PosType = typename BaseTree::position_type;
@@ -70,6 +68,13 @@ class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType
     return std::get<1>(BaseTree::value_of(p));
   }
   Real& weightsum_of(PosType p) {
+    return std::get<2>(BaseTree::value_of(p));
+  }
+
+  const Real& weight_of(PosType p) const {
+    return std::get<1>(BaseTree::value_of(p));
+  }
+  const Real& weightsum_of(PosType p) const {
     return std::get<2>(BaseTree::value_of(p));
   }
 
