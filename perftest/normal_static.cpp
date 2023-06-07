@@ -26,6 +26,11 @@ int main() {
   //start time
   struct timeval start, end;
   gettimeofday(&start, NULL);
+  //WRSLIB is intentionally undeclared. It is intended to be specified at compilation as shown below
+  //
+  //g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" -o test0 normal_static.cpp
+  //g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" -o test1 normal_static.cpp
+
   WRSLIB selector(weights.begin(), weights.end()); 
   for (int i = 0; i < 100000; i++) {
     sum += selector(generator);
