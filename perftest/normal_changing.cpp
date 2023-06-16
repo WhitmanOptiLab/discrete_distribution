@@ -23,7 +23,7 @@ int main() {
   //start time
   struct timeval start, end;
   gettimeofday(&start, NULL);
-  nonuniform_int_distribution<int> selector(weights.begin(), weights.end()); 
+  WRSLIB selector(weights.begin(), weights.end()); 
   for (int i = 0; i < 100000; i++) {
     int index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));

@@ -20,7 +20,7 @@ int main() {
   //start time
   struct timeval start, end;
   gettimeofday(&start, NULL);
-  std::discrete_distribution<> selector(weights.begin(), weights.end());
+  WRSLIB selector(weights.begin(), weights.end());
   for (int i = 0; i < 100000; i++){
     int index = selector(generator);
     weights[index] = random(1,10);

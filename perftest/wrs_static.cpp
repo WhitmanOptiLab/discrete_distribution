@@ -23,7 +23,7 @@ int main() {
   //start time
   struct timeval start, end;
   gettimeofday(&start, NULL);
-  nonuniform_int_distribution<int> selector(weights); 
+  WRSLIB selector(weights); 
   for (int i = 0; i < 100000; i++) {
     sum += selector(generator);
   }

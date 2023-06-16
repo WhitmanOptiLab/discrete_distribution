@@ -10,8 +10,8 @@ int random(int low, int high)
 }
 
 int main() {
-  std::vector<float> weights = {};
   std::default_random_engine generator;
+  std::vector<float> weights = {};
   int sum = 0;
   
   for(int i = 0; i < 10000000; i++){
@@ -21,7 +21,7 @@ int main() {
   //start time
   struct timeval start, end;
   gettimeofday(&start, NULL);
-  std::discrete_distribution<> selector(weights.begin(), weights.end());
+  WRSLIB selector(weights.begin(), weights.end());
   for (int i = 0; i < 100000; i++){
     sum += selector(generator);
   }
