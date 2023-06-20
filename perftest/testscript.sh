@@ -1,11 +1,12 @@
 #!/bin/bash
 
 # Script to test variations of the weighted random selections
-numtests=100
+numtests=1
+weightnum=100
 
-g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" -o test0 normal_static.cpp
-g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" -o test1 normal_static.cpp
-g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" -o test2 normal_static.cpp
+g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$weightnum" -o test0 normal_static.cpp
+g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=$weightnum" -o test1 normal_static.cpp
+g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=$weightnum" -o test2 normal_static.cpp
 
 sum0=0
 sum1=0
