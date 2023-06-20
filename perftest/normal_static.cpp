@@ -36,12 +36,11 @@ int main() {
   for (int i = 0; i < 100000; i++) {
     sum += selector(generator);
   }
-  std::cout<<sum<<std::endl;
   
   // end time
   gettimeofday(&end, NULL);
   double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
     double(end.tv_usec - start.tv_usec)/1000000.0;
-  std::cout << "Time: " << elapsedtime_sec << std::endl;
-  
+  std::cout << elapsedtime_sec << std::endl;
+  if(sum == 0 ) {std::cout << "hit"; } // Added conditional so compiler must compute sum
 }
