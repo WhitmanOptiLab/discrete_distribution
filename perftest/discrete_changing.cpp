@@ -2,9 +2,7 @@
 //Enter the library you want to test after 'DWRSLIB=' and the number of weights after 'DWEIGHTNUM='.
 
 //Ex:
-//g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 normal_static.cpp
-//g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_static.cpp
-//g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test2 normal_static.cpp
+//g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test0 discrete_changing.cpp
 
 #include <iostream>
 #include <sys/time.h>
@@ -39,6 +37,6 @@ int main() {
   gettimeofday(&end, NULL);
   double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
     double(end.tv_usec - start.tv_usec)/1000000.0;
-  std::cout << "Time: " << elapsedtime_sec << std::endl;
+  std::cout << elapsedtime_sec << std::endl;
 }
  
