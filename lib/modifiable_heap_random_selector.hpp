@@ -19,7 +19,7 @@ namespace {
 }
 
   template <
-    typename I, size_t precision = std::numeric_limits<Real>::digits
+    typename I = int, size_t precision = std::numeric_limits<Real>::digits
   >
   class fast_random_selector : 
     //Extends a complete tree...
@@ -88,22 +88,16 @@ namespace {
    
       fast_random_selector() = delete;
 
-      fast_random_selector(I max_size) :
-        BaseTree(max_size),
-        Heap(),
-        WeightSum(),
-        Index(max_size)
-      {}
-
-      template<typename T>
-      fast_random_selector(std::vector<T>& weights) :
-          BaseTree(weights.size()),
+      template<typename InputIt>
+      fast_random_selector(InputIt first, InputIt last) :
+          BaseTree(),
           Heap(),
           WeightSum(),
-          Index(weights.size())
+          Index(static_cast<index_type>(last-first))
       {
-        for (unsigned int i = 0; i < weights.size(); i++) {
-          auto w = weights[i];
+        InputIt it = first;
+        for (index_type i = 0; it != last; ++it, ++i) {
+          double w = *it;
           //Heap::push will add entries through the add_entry method, which 
           //  will create index associations
           Heap::push(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
@@ -138,7 +132,13 @@ namespace {
 
     private:
       //Must call WeightSum::compute_weights() after this, before using random selection
-      void add_entry(value_type v) {
+      void add_entry(value_type&& v) {
+        BaseTree::add_entry(v);
+        auto newp = BaseTree::last();
+        Index::associate(id_of(newp), newp);
+      }
+
+      void add_entry(const value_type& v) {
         BaseTree::add_entry(v);
         auto newp = BaseTree::last();
         Index::associate(id_of(newp), newp);
