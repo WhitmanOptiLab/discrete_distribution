@@ -17,7 +17,7 @@ using namespace dense::stochastic;
 
 int main() {
   std::normal_distribution<float> d(5,2); 
-  std::default_random_engine generator(42);
+  std::default_random_engine generator;
   std::vector<float> weights = {};
   
   for(int i = 0; i < WEIGHTNUM; i++){
@@ -32,6 +32,7 @@ int main() {
   //start time
   struct timeval start, end;
   gettimeofday(&start, NULL);
+  
   WRSLIB selector(weights.begin(), weights.end());
   for (int i = 0; i < 100000; i++) {
     int index = selector(generator);

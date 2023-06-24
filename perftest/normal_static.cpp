@@ -21,12 +21,11 @@ int main() {
   std::vector<float> weights = {};
   int sum = 0;
   
-  for(int i = 0; i < 10000000; i++){
+  for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
   }	      
 
   float minweight = *std::min_element(weights.begin(), weights.end());
-
   for(int i = 0; i < WEIGHTNUM; i++){
     weights[i] -= minweight;
   }	      
