@@ -55,7 +55,7 @@ for ((i=1; i<=$1; i++)); do
     result9=$(./test9)
 
     # append test to results.csv
-    echo "$result0, $result1, $result2, $result3, $result4" >> results.csv
+    echo "$result0, $result1, $result2, $result3, $result4, $result5, $result6, $result7, $result8, $result9" >> results.csv
 
     # Add the result to the sum
     sum0=$(awk "BEGIN { printf \"%.6f\", $sum0 + $result0 }")

@@ -19,7 +19,7 @@ int main() {
   std::uniform_real_distribution<float> d(1,10); 
   std::default_random_engine generator;
   std::vector<float> weights = {};
-  int sum = 0;
+  int sum = 1;
   
   for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
@@ -36,7 +36,7 @@ int main() {
 
   WRSLIB selector(weights.begin(), weights.end()); 
   for (int i = 0; i < 100000; i++) {
-    sum += selector(generator);
+    sum = sum + selector(generator);
   }
   
   // end time
