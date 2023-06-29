@@ -10,7 +10,7 @@
 
 echo "Number of tests: $1" # first argument is num of tests
 echo "Weightnum: $2" # second argument is number of weights in data structure
-echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_changing_wrs, normal_changing_heap, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_changing_wrs, uniform_changing_heap" > results.csv
+echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_changing_wrs, normal_changing_heap, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_changing_wrs, uniform_changing_heap" > results_$2.csv
 
 # Normal distribution static weight tests
 g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
@@ -55,7 +55,7 @@ for ((i=1; i<=$1; i++)); do
     result9=$(./test9)
 
     # append test to results.csv
-    echo "$result0, $result1, $result2, $result3, $result4, $result5, $result6, $result7, $result8, $result9" >> results.csv
+    echo "$result0, $result1, $result2, $result3, $result4, $result5, $result6, $result7, $result8, $result9" >> results_$2.csv
 
     # Add the result to the sum
     sum0=$(awk "BEGIN { printf \"%.6f\", $sum0 + $result0 }")
@@ -84,7 +84,7 @@ average9=$(awk "BEGIN { printf \"%.6f\", $sum9 / $1 }")
 
 # Add averages to the csv
 echo " " >> results.csv
-echo "$average0, $average1, $average2, $average3, $average4, $average5, $average6, $average7, $average8, $average9" >> results.csv
+echo "$average0, $average1, $average2, $average3, $average4, $average5, $average6, $average7, $average8, $average9" >> results_$2.csv
 
 # Print the average
 echo "normal_static_wrs: $average0"
