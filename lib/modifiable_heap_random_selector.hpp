@@ -124,8 +124,16 @@ namespace {
 
       void update_weight(index_type i, Real new_weight) {
         auto node = Index::node_for_index(i);
+        Real old_weight = weight_of(node);
         WeightSum::update_weight(Index::node_for_index(i), new_weight);
-        Heap::update_position(node);
+        if (old_weight > new_weight)
+          Heap::sift_up(node);
+        else
+          Heap::sift_down(node);
+      }
+
+      Real get_weight(index_type i) {
+        return weight_of(Index::node_for_index(i));
       }
 
       Real total_weight() const { return WeightSum::total_weight(); }

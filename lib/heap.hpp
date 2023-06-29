@@ -10,8 +10,6 @@ namespace dense {
 namespace stochastic {
 
 
-//Class to randomly select an index where each index's probability of being 
-//  selected is weighted by a given vector.  
 template <class Tree, class PosType = int>
 class heap {
  public:
@@ -40,10 +38,12 @@ class heap {
 
  protected:
   void update_position(PosType i) {
-    sift_up(i) || sift_down(i);
+    if (i == _tree().root() || !_tree().less(i, _tree().parent_of(i))) {
+      sift_down(i);
+    } else {
+      sift_up(i);
+    }
   }
-
- private:
 
   bool sift_up(PosType node) {
     PosType start = node, parent;
@@ -63,6 +63,7 @@ class heap {
     return node != start;
   }
 
+ private:
   PosType min_child_of(PosType node) const {
     auto left = _tree().left_of(node);
     auto right = _tree().right_of(node);

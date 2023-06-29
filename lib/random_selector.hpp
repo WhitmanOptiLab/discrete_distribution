@@ -44,6 +44,11 @@ class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<R
   Real& weight_of(PosType p) {
     return BaseTree::value_of(p).first;
   }
+
+  Real get_weight(PosType p) {
+    return weight_of(p);
+  }
+
   Real& weightsum_of(PosType p) {
     return BaseTree::value_of(p).second;
   }
