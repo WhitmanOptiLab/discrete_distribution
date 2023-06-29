@@ -50,20 +50,19 @@ class weightsum_tree {
 
     Real target = std::generate_canonical<Real, precision, URNG>(g)*_total_weight;
     PosType node = _tree().root();
-    //Loop until target random value is in between weight(left) and weight(left) + value(node)
-    while(checked_weightsum(Tree::left_of(node)) > target ||
-             _tree().weight_of(node) + checked_weightsum(Tree::left_of(node)) < target) {
+    //Loop until target random value is less than the current node's weight
+    while(_tree().weightsum_of(node) < target) {
+      target -= _tree().weightsum_of(node);
       if (checked_weightsum(Tree::left_of(node)) > target) {
         node = Tree::left_of(node);
       } else {
-        target -= _tree().weight_of(node) + checked_weightsum(Tree::left_of(node));
+        target -= checked_weightsum(Tree::left_of(node));
         node = Tree::right_of(node);
       }
       //Should this ever happen?  No, but floating-point rounding means it's 
-      //  theoretically possible, and it's better to reboot than crash at this point
+      //  theoretically possible, and we need a failsafe.
       if (node > _tree().last()) {
-        node = _tree().root();
-        target = std::generate_canonical<Real, precision, URNG>(g)*_total_weight;
+        return _tree().last();
       }
     }
     return node;

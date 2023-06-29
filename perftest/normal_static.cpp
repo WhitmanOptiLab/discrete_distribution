@@ -7,7 +7,7 @@
 //g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test2 normal_static.cpp
 
 #include "random_selector.hpp"
-#include "heap_random_selector.hpp"
+#include "modifiable_heap_random_selector.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
@@ -21,12 +21,11 @@ int main() {
   std::vector<float> weights = {};
   int sum = 0;
   
-  for(int i = 0; i < 10000000; i++){
+  for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
   }	      
 
   float minweight = *std::min_element(weights.begin(), weights.end());
-
   for(int i = 0; i < WEIGHTNUM; i++){
     weights[i] -= minweight;
   }	      

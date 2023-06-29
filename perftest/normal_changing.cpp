@@ -7,6 +7,7 @@
 //g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test2 normal_static.cpp
 
 #include "random_selector.hpp"
+#include "modifiable_heap_random_selector.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
@@ -16,7 +17,7 @@ using namespace dense::stochastic;
 
 int main() {
   std::normal_distribution<float> d(5,2); 
-  std::default_random_engine generator(42);
+  std::default_random_engine generator;
   std::vector<float> weights = {};
   
   for(int i = 0; i < WEIGHTNUM; i++){
@@ -31,6 +32,7 @@ int main() {
   //start time
   struct timeval start, end;
   gettimeofday(&start, NULL);
+  
   WRSLIB selector(weights.begin(), weights.end());
   for (int i = 0; i < 100000; i++) {
     int index = selector(generator);
@@ -41,6 +43,6 @@ int main() {
   gettimeofday(&end, NULL);
   double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
     double(end.tv_usec - start.tv_usec)/1000000.0;
-  std::cout << "Time: " << elapsedtime_sec << std::endl;
+  std::cout << elapsedtime_sec << std::endl;
   
 }

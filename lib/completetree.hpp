@@ -75,6 +75,10 @@ namespace stochastic {
         _tree.push_back(entry);
       }
 
+      void add_entry(const entry_type& entry) {
+        _tree.push_back(entry);
+      }
+
       template <typename... Args>
       void emplace_entry(Args&&... args) {
         add_entry(entry_type(std::forward<Args>(args)...));
