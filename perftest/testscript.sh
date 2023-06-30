@@ -10,7 +10,7 @@
 
 echo "Number of tests: $1" # first argument is num of tests
 echo "Weightnum: $2" # second argument is number of weights in data structure
-echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_changing_wrs, normal_changing_heap, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_changing_wrs, uniform_changing_heap" > results_$2.csv
+echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_changing_wrs, normal_changing_heap, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_changing_wrs, uniform_changing_heap, weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_changing_wrs, weibull_changing_heap" > results_$2.csv
 
 # Normal distribution static weight tests
 g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
@@ -30,6 +30,15 @@ g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=$2" -o 
 g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test8 uniform_changing.cpp
 g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test9 uniform_changing.cpp
 
+# Weibull distribution static weight tests
+g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test10 weibull_static.cpp
+g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test11 weibull_static.cpp
+g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=$2" -o test12 weibull_static.cpp
+
+# Weibull distribution changing weight tests
+g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test13 weibull_changing.cpp
+g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test14 weibull_changing.cpp
+
 sum0=0
 sum1=0
 sum2=0
@@ -40,6 +49,11 @@ sum6=0
 sum7=0
 sum8=0
 sum9=0
+sum10=0
+sum11=0
+sum12=0
+sum13=0
+sum14=0
 
 for ((i=1; i<=$1; i++)); do
     # Run your program and capture the output in a variable
@@ -53,9 +67,14 @@ for ((i=1; i<=$1; i++)); do
     result7=$(./test7)
     result8=$(./test8)
     result9=$(./test9)
+    result10=$(./test10)
+    result11=$(./test11)
+    result12=$(./test12)
+    result13=$(./test13)
+    result14=$(./test14)
 
     # append test to results.csv
-    echo "$result0, $result1, $result2, $result3, $result4, $result5, $result6, $result7, $result8, $result9" >> results_$2.csv
+    echo "$result0, $result1, $result2, $result3, $result4, $result5, $result6, $result7, $result8, $result9, $result10, $result11, $result12, $result13, $result14" >> results_$2.csv
 
     # Add the result to the sum
     sum0=$(awk "BEGIN { printf \"%.6f\", $sum0 + $result0 }")
@@ -68,6 +87,11 @@ for ((i=1; i<=$1; i++)); do
     sum7=$(awk "BEGIN { printf \"%.6f\", $sum7 + $result7 }")
     sum8=$(awk "BEGIN { printf \"%.6f\", $sum8 + $result8 }")
     sum9=$(awk "BEGIN { printf \"%.6f\", $sum9 + $result9 }")
+    sum10=$(awk "BEGIN { printf \"%.6f\", $sum10 + $result10 }")
+    sum11=$(awk "BEGIN { printf \"%.6f\", $sum11 + $result11 }")
+    sum12=$(awk "BEGIN { printf \"%.6f\", $sum12 + $result12 }")
+    sum13=$(awk "BEGIN { printf \"%.6f\", $sum13 + $result13 }")
+    sum14=$(awk "BEGIN { printf \"%.6f\", $sum14 + $result14 }")
 done
 
 # Calculate the average
@@ -81,10 +105,15 @@ average6=$(awk "BEGIN { printf \"%.6f\", $sum6 / $1 }")
 average7=$(awk "BEGIN { printf \"%.6f\", $sum7 / $1 }")
 average8=$(awk "BEGIN { printf \"%.6f\", $sum8 / $1 }")
 average9=$(awk "BEGIN { printf \"%.6f\", $sum9 / $1 }")
+average10=$(awk "BEGIN { printf \"%.6f\", $sum10 / $1 }")
+average11=$(awk "BEGIN { printf \"%.6f\", $sum11 / $1 }")
+average12=$(awk "BEGIN { printf \"%.6f\", $sum12 / $1 }")
+average13=$(awk "BEGIN { printf \"%.6f\", $sum13 / $1 }")
+average14=$(awk "BEGIN { printf \"%.6f\", $sum14 / $1 }")
 
 # Add averages to the csv
 echo " " >> results.csv
-echo "$average0, $average1, $average2, $average3, $average4, $average5, $average6, $average7, $average8, $average9" >> results_$2.csv
+echo "$average0, $average1, $average2, $average3, $average4, $average5, $average6, $average7, $average8, $average9, $average10, $average11, $average12, $average13 ,$average14" >> results_$2.csv
 
 # Print the average
 echo "normal_static_wrs: $average0"
@@ -97,3 +126,8 @@ echo "uniform_static_heap: $average6"
 echo "uniform_static_discrete: $average7"
 echo "uniform_changing_wrs: $average8"
 echo "uniform_changing_heap: $average9"
+echo "weibull_static_wrs: $average10"
+echo "weibull_static_heap: $average11"
+echo "weibull_static_discrete: $average12"
+echo "weibull_changing_wrs: $average13"
+echo "weibull_changing_heap: $average14" 
