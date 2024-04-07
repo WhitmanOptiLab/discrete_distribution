@@ -6,6 +6,17 @@
 //g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_static.cpp
 //g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test2 normal_static.cpp
 
+// g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=10000000" -o test0 normal_static.cp
+// ~/WSL2-Linux-Kernel/tools/perf/perf
+// sudo ~/WSL2-Linux-Kernel/tools/perf/perf record ./test0
+// sudo ~/WSL2-Linux-Kernel/tools/perf/perf report
+
+// Use compiler directives on the methods for find and update in discrete distri to prevent inlining
+// void __attribute__ ((noinline)) my_function() {
+//     // function body
+// }
+
+
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
 #include <sys/time.h>

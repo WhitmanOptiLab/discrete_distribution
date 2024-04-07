@@ -118,11 +118,11 @@ namespace {
       
       //Methods of WeightSum we want to make available
       template<class URNG>
-      index_type operator()(URNG& g) { 
+      index_type __attribute__ ((noinline)) operator()(URNG& g) { 
         return id_of(WeightSum::operator()(g));
       }
 
-      void update_weight(index_type i, Real new_weight) {
+      void __attribute__ ((noinline)) update_weight(index_type i, Real new_weight) {
         auto node = Index::node_for_index(i);
         Real old_weight = weight_of(node);
         WeightSum::update_weight(Index::node_for_index(i), new_weight);
