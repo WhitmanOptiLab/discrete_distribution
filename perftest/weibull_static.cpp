@@ -34,8 +34,8 @@ int main() {
 
   //start time
   struct timeval start, end;
-  WRSLIB selector(weights.begin(), weights.end()); 
   gettimeofday(&start, NULL);
+  WRSLIB selector(weights.begin(), weights.end()); 
 
   for (int i = 0; i < SELECTNUM; i++) {
     sum = sum + selector(generator);
