@@ -101,6 +101,10 @@ namespace {
           //Heap::push will add entries through the add_entry method, which 
           //  will create index associations
           Heap::push(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
+          // TODO: 
+          // Push nodes onto tree directly
+          // call std::sort on weight as key
+          // itterate through nodes an call indexed collection::associate()
         }
         WeightSum::compute_weights();
       }

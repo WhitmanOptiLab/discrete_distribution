@@ -46,7 +46,7 @@ class weightsum_tree {
   Real total_weight() const { return _total_weight; }
 
   template<class URNG>
-  PosType operator()(URNG& g) {
+  PosType __attribute__ ((noinline)) operator()(URNG& g) {
 
     Real target = std::generate_canonical<Real, precision, URNG>(g)*_total_weight;
     PosType node = _tree().root();

@@ -3,7 +3,7 @@
 
 //Ex:
 //g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 normal_changing.cpp
-//g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
+//g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
 
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
@@ -13,6 +13,8 @@
 #include <vector>
 #include <algorithm>
 using namespace dense::stochastic;
+
+#define WEIGHTNUM 100000
 
 int main() {
   std::normal_distribution<float> d(5,2); 
@@ -33,7 +35,7 @@ int main() {
   WRSLIB selector(weights.begin(), weights.end());
   gettimeofday(&start, NULL);
   
-  for (int i = 0; i < 1000000; i++) {
+  for (int i = 0; i < SELECTNUM; i++) {
     int index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
   }

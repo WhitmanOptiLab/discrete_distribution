@@ -11,12 +11,6 @@
 // sudo ~/WSL2-Linux-Kernel/tools/perf/perf record ./test0
 // sudo ~/WSL2-Linux-Kernel/tools/perf/perf report
 
-// Use compiler directives on the methods for find and update in discrete distri to prevent inlining
-// void __attribute__ ((noinline)) my_function() {
-//     // function body
-// }
-
-
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
 #include <sys/time.h>
@@ -25,6 +19,8 @@
 #include <vector>
 #include <algorithm>
 using namespace dense::stochastic;
+
+#define WEIGHTNUM 100000
 
 int main() {
   std::normal_distribution<float> d(5,2); 
@@ -46,7 +42,7 @@ int main() {
   WRSLIB selector(weights.begin(), weights.end()); 
   gettimeofday(&start, NULL);
 
-  for (int i = 0; i < 1000000; i++) {
+  for (int i = 0; i < SELECTNUM; i++) {
     sum = sum + selector(generator);
   }
   
