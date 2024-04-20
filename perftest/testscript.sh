@@ -110,8 +110,8 @@ average7=$(awk "BEGIN { printf \"%.6f\", $sum7 / $1 }")
 # average14=$(awk "BEGIN { printf \"%.6f\", $sum14 / $1 }")
 
 # echo "$average0, $average1, $average2, $average3, $average4, $average5, $average6, $average7, $average8, $average9, $average10, $average11, $average12, $average13 ,$average14" >> results_$2.csv
-echo "normal_static_wrs, normal_static_heap, normal_changing_wrs, normal_changing_heap, weibull_static_wrs, weibull_static_heap, weibull_changing_wrs, weibull_changing_heap" > results.csv
-printf "%.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f\n" $average0 $average1 $average2 $average3 $average4 $average5 $average6 $average7 >> results.csv
+# echo "normal_static_wrs, normal_static_heap, normal_changing_wrs, normal_changing_heap, weibull_static_wrs, weibull_static_heap, weibull_changing_wrs, weibull_changing_heap" > results.csv
+printf "%d, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f\n" $2 $average0 $average1 $average2 $average3 $average4 $average5 $average6 $average7 >> results.csv
 
 # Print the average
 echo "normal_static_wrs: $average0"
