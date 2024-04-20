@@ -2,5 +2,5 @@
 echo "SELECTNUM, normal_static_wrs, normal_static_heap, normal_changing_wrs, normal_changing_heap, weibull_static_wrs, weibull_static_heap, weibull_changing_wrs, weibull_changing_heap" > results.csv
 for i in 10 100 1000 10000 100000 1000000 10000000
 do
-  ./testscript.sh 100 $i
+  ./testscript.sh 50 $i
 done
