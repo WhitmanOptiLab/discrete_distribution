@@ -15,7 +15,13 @@
 #include <algorithm>
 using namespace dense::stochastic;
 
-#define WEIGHTNUM 100000
+#ifndef WEIGHTNUM
+#define WEIGHTNUM 1000000
+#endif
+
+#ifndef SELECTNUM
+#define SELECTNUM 1000000
+#endif
 
 int main() {
   std::weibull_distribution<float> d(0.5); 
