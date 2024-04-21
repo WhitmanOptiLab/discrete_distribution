@@ -103,7 +103,7 @@ namespace {
         }
 
         // Sort BaseTree by weight
-        std::sort(BaseTree::begin(), BaseTree::end(), 
+        std::make_heap(BaseTree::begin(), BaseTree::end(), 
           [](const std::tuple<index_type, Real, Real> &a,
           const std::tuple<index_type, Real, Real> &b){
           return std::get<1>(a) < std::get<1>(b);
