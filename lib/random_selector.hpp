@@ -30,7 +30,7 @@ class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<R
   nonuniform_int_distribution(PosType p) : BaseTree(p), WeightSum(*this) {};
 
   template< class InputIt >
-  nonuniform_int_distribution(InputIt first, InputIt last) :
+  __attribute__ ((noinline)) nonuniform_int_distribution(InputIt first, InputIt last) :
     BaseTree(),
     WeightSum(*this)
   {
