@@ -89,7 +89,7 @@ namespace {
       fast_random_selector() = delete;
 
       template<typename InputIt>
-      fast_random_selector(InputIt first, InputIt last) :
+      __attribute__ ((noinline)) fast_random_selector(InputIt first, InputIt last) :
           BaseTree(),
           Heap(),
           WeightSum(),
