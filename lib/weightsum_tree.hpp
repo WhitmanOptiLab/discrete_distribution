@@ -47,11 +47,13 @@ class weightsum_tree {
 
   template<class URNG>
   PosType __attribute__ ((noinline)) operator()(URNG& g) {
-
+    
     Real target = std::generate_canonical<Real, precision, URNG>(g)*_total_weight;
     PosType node = _tree().root();
+    int depth = 0;
     //Loop until target random value is less than the current node's weight
     while(_tree().weight_of(node) < target) {
+      depth++;
       target -= _tree().weight_of(node);
       if (checked_weightsum(Tree::left_of(node)) > target) {
         node = Tree::left_of(node);
@@ -62,10 +64,10 @@ class weightsum_tree {
       //Should this ever happen?  No, but floating-point rounding means it's 
       //  theoretically possible, and we need a failsafe.
       if (node > _tree().last()) {
-        return _tree().last();
+        return 0;
       }
     }
-    return node;
+    return depth;
   }
 
  private:

@@ -57,6 +57,6 @@ int main() {
   gettimeofday(&end, NULL);
   double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
     double(end.tv_usec - start.tv_usec)/1000000.0;
-  std::cout << elapsedtime_sec << std::endl;
+  std::cout << sum / SELECTNUM << std::endl;
   if(sum == 0 ) {std::cout << "hit"; } // Added conditional so compiler must compute sum
 }
