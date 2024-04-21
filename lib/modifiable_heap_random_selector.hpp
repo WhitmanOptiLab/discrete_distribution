@@ -95,18 +95,28 @@ namespace {
           WeightSum(),
           Index(static_cast<index_type>(last-first))
       {
+        // add weights to BaseTree
         InputIt it = first;
         for (index_type i = 0; it != last; ++it, ++i) {
           double w = *it;
-          //Heap::push will add entries through the add_entry method, which 
-          //  will create index associations
-          Heap::push(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
-          // TODO: 
-          // Push nodes onto tree directly
-          // call std::sort on weight as key
-          // itterate through nodes an call indexed collection::associate()
+          BaseTree::add_entry(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
         }
+
+        // Sort BaseTree by weight
+        std::sort(BaseTree::begin(), BaseTree::end(), 
+          [](const std::tuple<index_type, Real, Real> &a,
+          const std::tuple<index_type, Real, Real> &b){
+          return std::get<1>(a) < std::get<1>(b);
+        });
+
+        // Compute WeightSum weights
         WeightSum::compute_weights();
+
+        // Create index associations
+        for (auto i = BaseTree::begin(); i != BaseTree::end(); ++i) {
+          index_type node = std::get<0>(*i);
+          Index::associate(id_of(node), node);
+        }
       }
 
       fast_random_selector(fast_random_selector const&) = default;
