@@ -58,6 +58,10 @@ class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<R
 
   PosType id_of(PosType p) { return p; }
 
+  // Ignore
+  void special(PosType i){
+    return;
+  }
 };
 
 }

@@ -75,6 +75,7 @@ class weightsum_tree {
   Real checked_weight(PosType node) const { return node > _tree().last() ? 0 : _tree().weight_of(node); }
   Real sum_weights(PosType i) {
     if (i > _tree().last()) return 0.0f;
+    _tree().special(i);  // Allows implimenting classes to insert special behavior 
     _tree().weightsum_of(i) =
       sum_weights(Tree::left_of(i)) + sum_weights(Tree::right_of(i)) 
       + _tree().weight_of(i);

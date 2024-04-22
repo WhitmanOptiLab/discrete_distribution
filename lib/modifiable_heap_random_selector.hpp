@@ -99,24 +99,17 @@ namespace {
         InputIt it = first;
         for (index_type i = 0; it != last; ++it, ++i) {
           double w = *it;
+          //Heap::push(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
           BaseTree::add_entry(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
+          node_type node = BaseTree::last();
+          node_type parent;
+          while (node != BaseTree::root() && less(node, parent = BaseTree::parent_of(node))) {
+            WeightSum::swap_with_child(parent, node);
+            node = parent;
+          }
         }
-
-        // Sort BaseTree by weight
-        std::make_heap(BaseTree::begin(), BaseTree::end(), 
-          [](const std::tuple<index_type, Real, Real> &a,
-          const std::tuple<index_type, Real, Real> &b){
-          return std::get<1>(a) < std::get<1>(b);
-        });
-
         // Compute WeightSum weights
         WeightSum::compute_weights();
-
-        // Create index associations
-        for (auto i = BaseTree::begin(); i != BaseTree::end(); ++i) {
-          index_type node = std::get<0>(*i);
-          Index::associate(id_of(node), node);
-        }
       }
 
       fast_random_selector(fast_random_selector const&) = default;
@@ -156,14 +149,10 @@ namespace {
       //Must call WeightSum::compute_weights() after this, before using random selection
       void add_entry(value_type&& v) {
         BaseTree::add_entry(v);
-        auto newp = BaseTree::last();
-        Index::associate(id_of(newp), newp);
       }
 
       void add_entry(const value_type& v) {
         BaseTree::add_entry(v);
-        auto newp = BaseTree::last();
-        Index::associate(id_of(newp), newp);
       }
 
       Real& weight_of(node_type n) {
@@ -210,6 +199,9 @@ namespace {
 
       index_type& id_of(node_type p) { return std::get<0>(BaseTree::value_of(p)); }
 
+      void special(node_type i){
+        Index::associate(id_of(i), i);
+      }
   };
 }
 }
