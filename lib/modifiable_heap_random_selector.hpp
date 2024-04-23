@@ -111,7 +111,7 @@ namespace {
           });
         //Compute WeightSum weights and map indexes
         WeightSum::compute_weights();
-        create_heap();
+        create_heap(first, last);
       }
 
       fast_random_selector(fast_random_selector const&) = default;
@@ -147,17 +147,21 @@ namespace {
 
       Real total_weight() const { return WeightSum::total_weight(); }
 
-      void create_heap() {
-        // InputIt it = first;
-        // for (index_type i = 0; it != last; ++it, ++i) {
-        //   double w = *it;
-        //   BaseTree::add_entry(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
-        // }
-        BaseTree::resize(100); // this method allows user to set size of BaseTree
-      }
-
     private:
       //Must call WeightSum::compute_weights() after this, before using random selection
+      template<typename InputIt>
+      void create_heap(InputIt first, InputIt last) {
+        int size = last-first;
+        BaseTree::resize(size)
+
+        // for each weight in input
+        InputIt it = first;
+        for (index_type i = 0; it != last; ++it, ++i) {
+          double w = *it;
+          // add to base tree starting at end and sift down
+        }
+      }
+
       void add_entry(value_type&& v) {
         BaseTree::add_entry(v);
       }
