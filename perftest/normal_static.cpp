@@ -7,6 +7,7 @@
 //g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test2 normal_static.cpp
 
 // For testing old vs new constructor
+// g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" normal_static.cpp
 // g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DSELECTNUM=1000000" normal_static.cpp
 // g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DSELECTNUM=1000000" normal_static.cpp
 // sudo ~/WSL2-Linux-Kernel/tools/perf/perf record ./a.out

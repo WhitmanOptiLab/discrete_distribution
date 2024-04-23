@@ -99,16 +99,16 @@ namespace {
         InputIt it = first;
         for (index_type i = 0; it != last; ++it, ++i) {
           double w = *it;
-          //Heap::push(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
           BaseTree::add_entry(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
-          node_type node = BaseTree::last();
-          node_type parent;
-          while (node != BaseTree::root() && less(node, parent = BaseTree::parent_of(node))) {
-            WeightSum::swap_with_child(parent, node);
-            node = parent;
-          }
         }
-        // Compute WeightSum weights
+
+        // Heap BaseTree by weight
+        std::make_heap(BaseTree::begin(), BaseTree::end(), 
+            [](const std::tuple<index_type, Real, Real> &a,
+            const std::tuple<index_type, Real, Real> &b){
+            return std::get<1>(a) < std::get<1>(b);
+          });
+        //Compute WeightSum weights and map indexes
         WeightSum::compute_weights();
       }
 
