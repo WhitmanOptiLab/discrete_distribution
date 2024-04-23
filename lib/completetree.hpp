@@ -89,6 +89,10 @@ namespace stochastic {
         _tree.pop_back();
       }
 
+      void resize(int size) {
+        _tree.resize(size);
+      }
+
       //Iterator methods
     public:
       const_iterator begin() const {
