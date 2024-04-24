@@ -71,6 +71,14 @@ namespace stochastic {
       //Tree modification methods
       //
     protected:
+      void swap_entry(int a, int b){
+        std::swap(_tree[a],_tree[b]);
+      }
+
+      void insert_entry(int i, entry_type&& entry){
+        _tree[i] = entry;
+      }
+
       void add_entry(entry_type&& entry) {
         _tree.push_back(entry);
       }

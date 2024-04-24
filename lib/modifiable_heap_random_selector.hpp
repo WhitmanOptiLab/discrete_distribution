@@ -5,7 +5,7 @@
 #include <vector>
 #include <functional>
 #include <type_traits>
-#include <iostream>
+#include <iostream> // TODO: remove
 
 #include "completetree.hpp"
 #include "heap.hpp"
@@ -96,22 +96,8 @@ namespace {
           WeightSum(),
           Index(static_cast<index_type>(last-first))
       {
-        // add weights to BaseTree
-        InputIt it = first;
-        for (index_type i = 0; it != last; ++it, ++i) {
-          double w = *it;
-          BaseTree::add_entry(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
-        }
-
-        // Heap BaseTree by weight
-        std::make_heap(BaseTree::begin(), BaseTree::end(), 
-            [](const std::tuple<index_type, Real, Real> &a,
-            const std::tuple<index_type, Real, Real> &b){
-            return std::get<1>(a) < std::get<1>(b);
-          });
-        //Compute WeightSum weights and map indexes
-        WeightSum::compute_weights();
         create_heap(first, last);
+        WeightSum::compute_weights();
       }
 
       fast_random_selector(fast_random_selector const&) = default;
@@ -152,13 +138,20 @@ namespace {
       template<typename InputIt>
       void create_heap(InputIt first, InputIt last) {
         int size = last-first;
-        BaseTree::resize(size)
-
+        BaseTree::resize(size);
         // for each weight in input
         InputIt it = first;
-        for (index_type i = 0; it != last; ++it, ++i) {
+        for (index_type i = size-1; it != last; ++it, --i) { // TODO: cose but leaves smallest weight at the top... just kidding its just broken I think
           double w = *it;
           // add to base tree starting at end and sift down
+          BaseTree::insert_entry(i, std::tuple<index_type, Real, Real>(i, Real(w), 0.0)); // this works
+          int start = i, min_child;
+          while (BaseTree::left_of(i) < BaseTree::size() && less(min_child = Heap::min_child_of(i), i)) {
+            BaseTree::swap_entry(i, min_child);
+            i = min_child;
+          }
+          i = start;
+          std::cout<<
         }
       }
 

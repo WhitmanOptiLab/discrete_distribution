@@ -63,13 +63,13 @@ class heap {
     return node != start;
   }
 
- private:
   PosType min_child_of(PosType node) const {
     auto left = _tree().left_of(node);
     auto right = _tree().right_of(node);
     return (right < _tree().size() && _tree().less(right, left)) ? right : left;
   }
 
+ private:
   Tree& _tree() { return *static_cast<Tree*>(this); }
   const Tree& _tree() const { return *static_cast<const Tree*>(this); }
 };
