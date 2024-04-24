@@ -5,7 +5,6 @@
 #include <vector>
 #include <functional>
 #include <type_traits>
-#include <iostream> // TODO: remove
 
 #include "completetree.hpp"
 #include "heap.hpp"
@@ -141,17 +140,17 @@ namespace {
         BaseTree::resize(size);
         // for each weight in input
         InputIt it = first;
-        for (index_type i = size-1; it != last; ++it, --i) { // TODO: cose but leaves smallest weight at the top... just kidding its just broken I think
+        for (index_type i = size-1; it != last; ++it, --i) {
           double w = *it;
           // add to base tree starting at end and sift down
-          BaseTree::insert_entry(i, std::tuple<index_type, Real, Real>(i, Real(w), 0.0)); // this works
+          index_type ID = size - i -1;
+          BaseTree::insert_entry(i, std::tuple<index_type, Real, Real>(ID, Real(w), 0.0));
           int start = i, min_child;
           while (BaseTree::left_of(i) < BaseTree::size() && less(min_child = Heap::min_child_of(i), i)) {
             BaseTree::swap_entry(i, min_child);
             i = min_child;
           }
           i = start;
-          std::cout<<
         }
       }
 
