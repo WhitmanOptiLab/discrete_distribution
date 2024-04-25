@@ -24,7 +24,7 @@ class heap_tree : public complete_tree<int, T>,
   static PosType right_of(PosType i) { return BaseTree::right_of(i);}
   static PosType parent_of(PosType i) { return BaseTree::parent_of(i);}
 
-  //Weights can be of any type, but most be convertable to Real values
+  //Weights can be of any type, but most be convertable to W values
   heap_tree() = delete;
   heap_tree(PosType p, Compare compare = Compare{}) : BaseTree(p), Heap(), _compare{compare} {};
 

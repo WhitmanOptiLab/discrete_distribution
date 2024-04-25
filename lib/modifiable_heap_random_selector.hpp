@@ -18,8 +18,11 @@ namespace {
   enum class ignore_me{};
 }
 
+  // template <
+  //   typename I = int, size_t precision = std::numeric_limits<W>::digits
+  // >
   template <
-    typename I = int, size_t precision = std::numeric_limits<Real>::digits
+    typename I = int, typename W = double, size_t precision = std::numeric_limits<W>::digits 
   >
   class fast_random_selector : 
     //Extends a complete tree...
@@ -28,31 +31,32 @@ namespace {
         typename std::underlying_type< 
           typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
         I>::type,
-      std::tuple<I, Real, Real> >,
+      std::tuple<I, W, W> >,
 
     //... using the heap mix-in
-    protected heap< fast_random_selector<I, precision>, 
+    protected heap< fast_random_selector<I, W, precision>, 
       typename std::conditional< std::is_enum<I>::value, 
         typename std::underlying_type< 
           typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
         I>::type >,
 
     //... and the weightsum tree mix-in
-    protected weightsum_tree< fast_random_selector<I, precision>,
+    protected weightsum_tree< fast_random_selector<I, W, precision>,
       typename std::conditional< std::is_enum<I>::value, 
         typename std::underlying_type< 
           typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
         I>::type,
+      W,
       precision>,
 
     //... AND the indexed collection mix-in
-    protected indexed_collection<  fast_random_selector<I, precision>, 
+    protected indexed_collection<  fast_random_selector<I, W, precision>, 
       I, 
       typename std::conditional< std::is_enum<I>::value, 
         typename std::underlying_type< 
           typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
         I>::type,
-      std::tuple<I, Real, Real>>
+      std::tuple<I, W, W>>
   {
 
     private:
@@ -70,16 +74,16 @@ namespace {
 
       using size_type = std::ptrdiff_t;
       using index_type = I;
-      using This = fast_random_selector<index_type, precision>;
+      using This = fast_random_selector<index_type, W, precision>;
       using node_type = underlying_if_enum<index_type>;
-      using value_type = std::tuple<index_type, Real, Real>;
+      using value_type = std::tuple<index_type, W, W>;
       using iterator = value_type*;
       using const_iterator = value_type const*;
       using reference = value_type&;
       using const_reference = value_type const&;
       using BaseTree = complete_tree<node_type, value_type>;
       using Heap = heap<This, node_type>;
-      using WeightSum = weightsum_tree<This, node_type, precision>;
+      using WeightSum = weightsum_tree<This, node_type, W, precision>;
       using Index = indexed_collection<This, index_type, node_type, value_type>;
 
       friend Heap;
@@ -116,9 +120,9 @@ namespace {
         return id_of(WeightSum::operator()(g));
       }
 
-      void __attribute__ ((noinline)) update_weight(index_type i, Real new_weight) {
+      void __attribute__ ((noinline)) update_weight(index_type i, W new_weight) {
         auto node = Index::node_for_index(i);
-        Real old_weight = weight_of(node);
+        W old_weight = weight_of(node);
         WeightSum::update_weight(Index::node_for_index(i), new_weight);
         if (old_weight > new_weight)
           Heap::sift_up(node);
@@ -126,11 +130,11 @@ namespace {
           Heap::sift_down(node);
       }
 
-      Real get_weight(index_type i) {
+      W get_weight(index_type i) {
         return weight_of(Index::node_for_index(i));
       }
 
-      Real total_weight() const { return WeightSum::total_weight(); }
+      W total_weight() const { return WeightSum::total_weight(); }
 
     private:
       //Must call WeightSum::compute_weights() after this, before using random selection
@@ -144,7 +148,7 @@ namespace {
           double w = *it;
           // add to base tree starting at end and sift down
           index_type ID = size - i -1;
-          BaseTree::insert_entry(i, std::tuple<index_type, Real, Real>(ID, Real(w), 0.0));
+          BaseTree::insert_entry(i, std::tuple<index_type, W, W>(ID, W(w), 0.0));
           int start = i, min_child;
           while (BaseTree::left_of(i) < BaseTree::size() && less(min_child = Heap::min_child_of(i), i)) {
             BaseTree::swap_entry(i, min_child);
@@ -162,19 +166,19 @@ namespace {
         BaseTree::add_entry(v);
       }
 
-      Real& weight_of(node_type n) {
+      W& weight_of(node_type n) {
         return std::get<1>(BaseTree::value_of(n));
       }
       
-      const Real& weight_of(node_type n) const {
+      const W& weight_of(node_type n) const {
         return const_cast<This*>(this)->weight_of(n);
       }
 
-      Real& weightsum_of(node_type n) {
+      W& weightsum_of(node_type n) {
         return std::get<2>(BaseTree::value_of(n));
       }
 
-      const Real& weightsum_of(node_type n) const {
+      const W& weightsum_of(node_type n) const {
         return const_cast<This*>(this)->weightsum_of(n);
       }
 

@@ -10,10 +10,10 @@ namespace stochastic {
 
 //Class to randomly select an index where each index's probability of being 
 //  selected is weighted by a given vector.  
-template <class Tree, class PosType, size_t precision = std::numeric_limits<Real>::digits>
+template <class Tree, class PosType, typename W, size_t precision = std::numeric_limits<W>::digits>
 class weightsum_tree {
  public:
-  //Weights can be of any type, but most be convertable to Real values
+  //Weights can be of any type, but most be convertable to W values
   weightsum_tree() = default;
 
   void compute_weights() {
@@ -21,19 +21,19 @@ class weightsum_tree {
   }
 
   void swap_with_child(PosType parent, PosType child) {
-    Real weight_diff = _tree().weight_of(parent) - _tree().weight_of(child);
+    W weight_diff = _tree().weight_of(parent) - _tree().weight_of(child);
     _tree().weightsum_of(child) += weight_diff;
     std::swap(_tree().weight_of(parent), _tree().weight_of(child));
   }
 
   void swap(PosType i, PosType j) {
-    Real old_i_weight = _tree().weight_of(i);
+    W old_i_weight = _tree().weight_of(i);
     update_weight(i, _tree().weight_of(j));
     update_weight(j, old_i_weight);
   }
 
-  void update_weight(PosType i, Real new_weight) {
-    Real weight_diff = new_weight - _tree().weight_of(i);
+  void update_weight(PosType i, W new_weight) {
+    W weight_diff = new_weight - _tree().weight_of(i);
     _tree().weight_of(i) = new_weight;
     while (i != _tree().root()) {
       _tree().weightsum_of(i) += weight_diff;
@@ -43,12 +43,12 @@ class weightsum_tree {
     _total_weight += weight_diff;
   }
 
-  Real total_weight() const { return _total_weight; }
+  W total_weight() const { return _total_weight; }
 
   template<class URNG>
   PosType __attribute__ ((noinline)) operator()(URNG& g) {
 
-    Real target = std::generate_canonical<Real, precision, URNG>(g)*_total_weight;
+    W target = std::generate_canonical<W, precision, URNG>(g)*_total_weight;
     PosType node = _tree().root();
     //Loop until target random value is less than the current node's weight
     while(_tree().weight_of(node) < target) {
@@ -71,9 +71,9 @@ class weightsum_tree {
  private:
   Tree& _tree() { return *static_cast<Tree*>(this); }
   const Tree& _tree() const { return *static_cast<const Tree*>(this); }
-  Real checked_weightsum(PosType node) const { return node > _tree().last() ? 0 : _tree().weightsum_of(node); }
-  Real checked_weight(PosType node) const { return node > _tree().last() ? 0 : _tree().weight_of(node); }
-  Real sum_weights(PosType i) {
+  W checked_weightsum(PosType node) const { return node > _tree().last() ? 0 : _tree().weightsum_of(node); }
+  W checked_weight(PosType node) const { return node > _tree().last() ? 0 : _tree().weight_of(node); }
+  W sum_weights(PosType i) {
     if (i > _tree().last()) return 0.0f;
     _tree().special(i);  // Allows implimenting classes to insert special behavior 
     _tree().weightsum_of(i) =
@@ -90,7 +90,7 @@ class weightsum_tree {
     return false;
   }
 
-  Real _total_weight;
+  W _total_weight;
 };
 
 }

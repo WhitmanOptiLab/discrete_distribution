@@ -15,12 +15,12 @@ namespace stochastic {
 
 //Class to randomly select an index where each index's probability of being 
 //  selected is weighted by a given vector.  
-template <class IntType = int, size_t precision = std::numeric_limits<Real>::digits>
-class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType, Real, Real> >,  
+template <class IntType = int, size_t precision = std::numeric_limits<W>::digits>
+class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType, W, W> >,  
                              public heap<heap_random_selector<IntType, precision>, IntType>,
                              protected weightsum_tree<heap_random_selector<IntType, precision>, IntType, precision> {
  public:
-  using BaseTree = complete_tree<IntType, std::tuple<IntType, Real, Real> >;
+  using BaseTree = complete_tree<IntType, std::tuple<IntType, W, W> >;
   using Heap = heap<heap_random_selector<IntType, precision>, IntType>;
   using WeightSum = weightsum_tree<heap_random_selector<IntType, precision>, IntType, precision>;
   friend Heap;
@@ -40,14 +40,14 @@ class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType
     InputIt it = first;
     for (IntType i = 0; it != last; ++it, ++i) {
       double w = *it;
-      BaseTree::add_entry(std::tuple<IntType, Real, Real>(i, w, 0.0));
+      BaseTree::add_entry(std::tuple<IntType, W, W>(i, w, 0.0));
       Heap::update_position(BaseTree::last());
     }
     WeightSum::compute_weights();
   }
 
   //Methods of BaseTree we want to make available
-  std::tuple<IntType, Real, Real> top() {
+  std::tuple<IntType, W, W> top() {
     return BaseTree::top();
   }
 
@@ -65,17 +65,17 @@ class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType
   }
 
 
-  Real& weight_of(PosType p) {
+  W& weight_of(PosType p) {
     return std::get<1>(BaseTree::value_of(p));
   }
-  Real& weightsum_of(PosType p) {
+  W& weightsum_of(PosType p) {
     return std::get<2>(BaseTree::value_of(p));
   }
 
-  const Real& weight_of(PosType p) const {
+  const W& weight_of(PosType p) const {
     return std::get<1>(BaseTree::value_of(p));
   }
-  const Real& weightsum_of(PosType p) const {
+  const W& weightsum_of(PosType p) const {
     return std::get<2>(BaseTree::value_of(p));
   }
 
@@ -92,7 +92,7 @@ class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType
   }
 
   bool less(PosType a, PosType b) const {
-    return std::greater<Real>()(std::get<1>(BaseTree::value_of(a)), std::get<1>(BaseTree::value_of(b)));
+    return std::greater<W>()(std::get<1>(BaseTree::value_of(a)), std::get<1>(BaseTree::value_of(b)));
   }
 
 

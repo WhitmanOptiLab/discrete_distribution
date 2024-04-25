@@ -9,7 +9,6 @@
 namespace dense {
 namespace stochastic {
 
-  typedef double Real;
   /* This complete tree class is meant to be subclassed to build various 
    * data structures.  Because most of those data structures require 
    * updates when values are modified, only const access to elements is 
