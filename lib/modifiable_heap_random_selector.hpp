@@ -17,10 +17,6 @@ namespace stochastic {
 namespace {
   enum class ignore_me{};
 }
-
-  // template <
-  //   typename I = int, size_t precision = std::numeric_limits<W>::digits
-  // >
   template <
     typename I = int, typename W = double, size_t precision = std::numeric_limits<W>::digits 
   >
@@ -140,7 +136,7 @@ namespace {
       //Must call WeightSum::compute_weights() after this, before using random selection
       template<typename InputIt>
       void create_heap(InputIt first, InputIt last) {
-        int size = last-first;
+        index_type size = last-first;
         BaseTree::resize(size);
         // for each weight in input
         InputIt it = first;
@@ -149,7 +145,7 @@ namespace {
           // add to base tree starting at end and sift down
           index_type ID = size - i -1;
           BaseTree::insert_entry(i, std::tuple<index_type, W, W>(ID, W(w), 0.0));
-          int start = i, min_child;
+          index_type start = i, min_child;
           while (BaseTree::left_of(i) < BaseTree::size() && less(min_child = Heap::min_child_of(i), i)) {
             BaseTree::swap_entry(i, min_child);
             i = min_child;
