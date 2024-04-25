@@ -27,7 +27,7 @@ namespace {
         typename std::underlying_type< 
           typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
         I>::type,
-      std::tuple<I, W, W> >,
+      std::tuple<W, W> >,
 
     //... using the heap mix-in
     protected heap< fast_random_selector<I, W, precision>, 
@@ -52,7 +52,7 @@ namespace {
         typename std::underlying_type< 
           typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
         I>::type,
-      std::tuple<I, W, W>>
+      std::tuple<W, W>>
   {
 
     private:
@@ -72,7 +72,7 @@ namespace {
       using index_type = I;
       using This = fast_random_selector<index_type, W, precision>;
       using node_type = underlying_if_enum<index_type>;
-      using value_type = std::tuple<index_type, W, W>;
+      using value_type = std::tuple<W, W>;
       using iterator = value_type*;
       using const_iterator = value_type const*;
       using reference = value_type&;
@@ -133,6 +133,8 @@ namespace {
       W total_weight() const { return WeightSum::total_weight(); }
 
     private:
+      complete_tree<index_type, index_type> index_tree;
+
       //Must call WeightSum::compute_weights() after this, before using random selection
       template<typename InputIt>
       void create_heap(InputIt first, InputIt last) {
@@ -144,7 +146,7 @@ namespace {
           double w = *it;
           // add to base tree starting at end and sift down
           index_type ID = size - i -1;
-          BaseTree::insert_entry(i, std::tuple<index_type, W, W>(ID, W(w), 0.0));
+          BaseTree::insert_entry(i, std::tuple<W, W>(ID, W(w), 0.0));
           index_type start = i, min_child;
           while (BaseTree::left_of(i) < BaseTree::size() && less(min_child = Heap::min_child_of(i), i)) {
             BaseTree::swap_entry(i, min_child);
