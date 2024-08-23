@@ -28,20 +28,20 @@ echo "normal_static_wrs, normal_static_heap, normal_changing_wrs, normal_changin
 
 # Normal distribution static weight tests
 g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
-g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
+g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
 
 # Normal distribution changing weight tests
-g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test2 normal_changing.cpp
-g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test3 normal_changing.cpp
+#g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test2 normal_changing.cpp
+#g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test3 normal_changing.cpp
 
 # # Weibull distribution static weight tests
 g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test4 weibull_static.cpp
-g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test5 weibull_static.cpp
+g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=$2" -o test5 weibull_static.cpp
 # g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DSELECTNUM=$2" -o test12 weibull_static.cpp
 
 # # Weibull distribution changing weight tests
-g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test6 weibull_changing.cpp
-g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test7 weibull_changing.cpp
+#g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test6 weibull_changing.cpp
+#g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test7 weibull_changing.cpp
 
 sum0=0
 sum1=0
