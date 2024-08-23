@@ -95,6 +95,8 @@ class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType
     return std::greater<Real>()(std::get<1>(BaseTree::value_of(a)), std::get<1>(BaseTree::value_of(b)));
   }
 
+  void special(PosType i) { return; }
+
 
 };
 
