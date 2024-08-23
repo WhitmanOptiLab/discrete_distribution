@@ -31,11 +31,7 @@ namespace {
       std::tuple<I, Real, Real> >,
 
     //... using the heap mix-in
-    protected heap< fast_random_selector<I, precision>, 
-      typename std::conditional< std::is_enum<I>::value, 
-        typename std::underlying_type< 
-          typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
-        I>::type >,
+    protected heap<I>,
 
     //... and the weightsum tree mix-in
     protected weightsum_tree< fast_random_selector<I, precision>,
@@ -54,9 +50,8 @@ namespace {
         I>::type,
       std::tuple<I, Real, Real>>
   {
-
+        
     private:
-
       template <typename E>
       using underlying_if_enum = typename std::conditional<
         std::is_enum<E>::value,
@@ -87,6 +82,15 @@ namespace {
       friend WeightSum;
    
       fast_random_selector() = delete;
+
+      virtual void remove_last_entry() { BaseTree::remove_last_entry(); }
+      virtual std::ptrdiff_t size() const { return BaseTree::size(); }
+      virtual bool empty() { return BaseTree::empty(); }
+      virtual PosType root() const { return BaseTree::root(); }
+      virtual PosType last() const { return BaseTree::last(); }
+      virtual PosType parent_of(PosType n) const { return BaseTree::parent_of(n); } 
+      virtual PosType left_of(PosType n) const { return BaseTree::left_of(n); } ;
+      virtual PosType right_of(PosType n) const { return BaseTree::right_of(n); } ;
 
       template<typename InputIt>
       __attribute__ ((noinline)) fast_random_selector(InputIt first, InputIt last) :

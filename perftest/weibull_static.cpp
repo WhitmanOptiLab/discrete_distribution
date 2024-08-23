@@ -7,7 +7,7 @@
 //g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test2 weibull_static.cpp
 
 #include "random_selector.hpp"
-#include "modifiable_heap_random_selector.hpp"
+#include "heap_random_selector.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>

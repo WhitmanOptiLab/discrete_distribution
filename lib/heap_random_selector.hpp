@@ -17,12 +17,12 @@ namespace stochastic {
 //  selected is weighted by a given vector.  
 template <class IntType = int, size_t precision = std::numeric_limits<Real>::digits>
 class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType, Real, Real> >,  
-                             public heap<heap_random_selector<IntType, precision>, IntType>,
-                             protected weightsum_tree<heap_random_selector<IntType, precision>, IntType, precision> {
+                             public heap<IntType>,
+                             protected weightsum_tree<IntType, precision> {
  public:
   using BaseTree = complete_tree<IntType, std::tuple<IntType, Real, Real> >;
-  using Heap = heap<heap_random_selector<IntType, precision>, IntType>;
-  using WeightSum = weightsum_tree<heap_random_selector<IntType, precision>, IntType, precision>;
+  using Heap = heap<IntType>;
+  using WeightSum = weightsum_tree<IntType, precision>;
   friend Heap;
   friend WeightSum;
   using PosType = typename BaseTree::position_type;
@@ -56,6 +56,12 @@ class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType
   IntType operator()(URNG& g) { 
     return id_of(WeightSum::operator()(g));
   }
+  virtual std::ptrdiff_t size() const { return BaseTree::size(); }
+  virtual PosType root() const { return BaseTree::root(); }
+  virtual PosType last() const { return BaseTree::last(); }
+  virtual PosType parent_of(PosType n) const { return BaseTree::parent_of(n); } 
+  virtual PosType left_of(PosType n) const { return BaseTree::left_of(n); } ;
+  virtual PosType right_of(PosType n) const { return BaseTree::right_of(n); } ;
 
  private:
   void remove_last_entry() {

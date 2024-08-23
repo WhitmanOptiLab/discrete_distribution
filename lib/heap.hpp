@@ -10,7 +10,7 @@ namespace dense {
 namespace stochastic {
 
 
-template <class Tree, class PosType = int>
+template <class PosType = int>
 class heap {
  public:
   heap() = default;
@@ -37,6 +37,19 @@ class heap {
   }
 
  protected:
+  //Required interface functions for tree
+  virtual void swap_with_child(PosType parent, PosType child) = 0;
+  virtual void swap(PosType first, PosType second) = 0;
+  virtual void remove_last_entry() = 0;
+  virtual std::ptrdiff_t size() const = 0;
+  virtual bool empty() = 0;
+  virtual PosType root() const = 0;
+  virtual PosType last() const = 0;
+  virtual PosType parent_of(PosType n) const = 0;
+  virtual PosType left_of(PosType n) const = 0;
+  virtual PosType right_of(PosType n) const = 0;
+  virtual bool less(PosType first, PosType second) const = 0;
+
   void update_position(PosType i) {
     if (i == _tree().root() || !_tree().less(i, _tree().parent_of(i))) {
       sift_down(i);
@@ -70,8 +83,8 @@ class heap {
   }
 
  private:
-  Tree& _tree() { return *static_cast<Tree*>(this); }
-  const Tree& _tree() const { return *static_cast<const Tree*>(this); }
+  heap<PosType>& _tree() { return *this; }
+  const heap<PosType>& _tree() const { return *this; }
 };
 
 }

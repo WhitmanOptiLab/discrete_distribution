@@ -6,7 +6,7 @@
 //g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
 
 #include "random_selector.hpp"
-#include "modifiable_heap_random_selector.hpp"
+#include "heap_random_selector.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>

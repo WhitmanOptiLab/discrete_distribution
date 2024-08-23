@@ -14,15 +14,15 @@ namespace stochastic {
 //  selected is weighted by a given vector.  
 template <typename T, typename Compare = std::less<T>>
 class heap_tree : public complete_tree<int, T>,  
-                  public heap<heap_tree<T, Compare>, int> {
+                  public heap<int> {
  public:
   using BaseTree = complete_tree<int, T>;
-  using Heap = heap<heap_tree<T, Compare>, int>;
+  using Heap = heap<int>;
   friend Heap;
   using PosType = typename BaseTree::position_type;
-  static PosType left_of(PosType i) { return BaseTree::left_of(i);}
-  static PosType right_of(PosType i) { return BaseTree::right_of(i);}
-  static PosType parent_of(PosType i) { return BaseTree::parent_of(i);}
+  PosType left_of(PosType i) { return BaseTree::left_of(i);}
+  PosType right_of(PosType i) { return BaseTree::right_of(i);}
+  PosType parent_of(PosType i) { return BaseTree::parent_of(i);}
 
   //Weights can be of any type, but most be convertable to Real values
   heap_tree() = delete;
@@ -37,13 +37,23 @@ class heap_tree : public complete_tree<int, T>,
       Heap::update_position(BaseTree::last());
     }
   }
+ protected:
+  virtual void remove_last_entry() { BaseTree::remove_last_entry(); }
+  virtual std::ptrdiff_t size() const { return BaseTree::size(); }
+  virtual bool empty() { return BaseTree::empty(); }
+  virtual PosType root() const { return BaseTree::root(); }
+  virtual PosType last() const { return BaseTree::last(); }
+  virtual PosType parent_of(PosType n) const { return BaseTree::parent_of(n); } 
+  virtual PosType left_of(PosType n) const { return BaseTree::left_of(n); } ;
+  virtual PosType right_of(PosType n) const { return BaseTree::right_of(n); } ;
+
  private:
 
-  void swapWithChild(PosType parent, PosType child) {
+  virtual void swap_with_child(PosType parent, PosType child) {
     std::swap(BaseTree::value_of(parent), BaseTree::value_of(child));
   }
 
-  void swap(PosType i, PosType j) {
+  virtual void swap(PosType i, PosType j) {
     std::swap(BaseTree::value_of(i), BaseTree::value_of(j));
   }
 

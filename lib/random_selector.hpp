@@ -13,17 +13,24 @@ namespace stochastic {
 //Class to randomly select an index where each index's probability of being 
 //  selected is weighted by a given vector.  
 template <class IntType = int, size_t precision = std::numeric_limits<Real>::digits>
-class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<Real, Real> >,  
-                                    public weightsum_tree<nonuniform_int_distribution<IntType, precision>, IntType, precision> {
+class nonuniform_int_distribution : public complete_tree<IntType, std::pair<Real, Real> >,  
+                                    public weightsum_tree<IntType, precision> {
  public:
   using This = nonuniform_int_distribution<IntType, precision>;
   using BaseTree = complete_tree<IntType, std::pair<Real, Real> >;
-  using WeightSum = weightsum_tree<This, IntType, precision>;
+  using WeightSum = weightsum_tree<IntType, precision>;
   friend WeightSum;
   using PosType = typename BaseTree::position_type;
-  static PosType left_of(PosType i) { return BaseTree::left_of(i);}
-  static PosType right_of(PosType i) { return BaseTree::right_of(i);}
-  static PosType parent_of(PosType i) { return BaseTree::parent_of(i);}
+  virtual PosType left_of(PosType i) const { return BaseTree::left_of(i);}
+  virtual PosType right_of(PosType i) const { return BaseTree::right_of(i);}
+  virtual PosType parent_of(PosType i) const { return BaseTree::parent_of(i);}
+
+  virtual void remove_last_entry() { BaseTree::remove_last_entry(); }
+  virtual std::ptrdiff_t size() const { return BaseTree::size(); }
+  virtual bool empty() { return BaseTree::empty(); }
+  virtual PosType root() const { return BaseTree::root(); }
+  virtual PosType last() const { return BaseTree::last(); }
+
 
   //Weights can be of any type, but most be convertable to Real values
   nonuniform_int_distribution() = delete;
@@ -42,6 +49,10 @@ class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<R
   }
 
   Real& weight_of(PosType p) {
+    return BaseTree::value_of(p).first;
+  }
+
+  const Real& weight_of(PosType p) const {
     return BaseTree::value_of(p).first;
   }
 
