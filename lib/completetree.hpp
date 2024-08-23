@@ -70,7 +70,7 @@ namespace stochastic {
 
       //Tree modification methods
       //
-    protected:
+    public:
       void swap_entry(int a, int b){
         std::swap(_tree[a],_tree[b]);
       }
@@ -115,7 +115,7 @@ namespace stochastic {
         return _tree.data() + node;
       }
 
-    protected:
+    public:
       iterator iterator_for(position_type node) {
         return const_cast<iterator>(const_this().iterator_for(node));
       }
@@ -170,7 +170,7 @@ namespace stochastic {
         return *iterator_for(node);
       }
 
-    protected:
+    public:
       reference value_of(position_type node) {
         return const_cast<reference>(const_this().value_of(node));
       }

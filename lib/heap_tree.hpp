@@ -37,9 +37,9 @@ class heap_tree : public complete_tree<int, T>,
       Heap::update_position(BaseTree::last());
     }
   }
- private:
+ public:
 
-  void swapWithChild(PosType parent, PosType child) {
+  void swap_with_child(PosType parent, PosType child) {
     std::swap(BaseTree::value_of(parent), BaseTree::value_of(child));
   }
 

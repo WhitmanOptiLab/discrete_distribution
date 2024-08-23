@@ -16,9 +16,9 @@ namespace stochastic {
 //Class to randomly select an index where each index's probability of being 
 //  selected is weighted by a given vector.  
 template <class IntType = int, size_t precision = std::numeric_limits<Real>::digits>
-class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType, Real, Real> >,  
+class heap_random_selector : public complete_tree<IntType, std::tuple<IntType, Real, Real> >,  
                              public heap<heap_random_selector<IntType, precision>, IntType>,
-                             protected weightsum_tree<heap_random_selector<IntType, precision>, IntType, precision> {
+                             public weightsum_tree<heap_random_selector<IntType, precision>, IntType, precision> {
  public:
   using BaseTree = complete_tree<IntType, std::tuple<IntType, Real, Real> >;
   using Heap = heap<heap_random_selector<IntType, precision>, IntType>;
@@ -57,7 +57,7 @@ class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType
     return id_of(WeightSum::operator()(g));
   }
 
- private:
+ public:
   void remove_last_entry() {
     auto last = BaseTree::value_of(BaseTree::last());
     WeightSum::update_weight(BaseTree::last(), 0);

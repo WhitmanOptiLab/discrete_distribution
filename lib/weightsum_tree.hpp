@@ -8,9 +8,27 @@
 namespace dense {
 namespace stochastic {
 
+template<typename T, typename P>
+concept WSTImpl = requires(T a, P p)
+{
+  { a.remove_last_entry() } -> std::same_as<void>;
+  { a.size() } -> std::convertible_to<std::ptrdiff_t>;
+  { a.empty() } -> std::same_as<bool>;
+  { a.root() } -> std::convertible_to<P>;
+  { a.last() } -> std::convertible_to<P>;
+  { a.parent_of(p) } -> std::convertible_to<P>;
+  { a.left_of(p) } -> std::convertible_to<P>;
+  { a.right_of(p) } -> std::convertible_to<P>;
+  { a.weight_of(p); }
+  { a.weightsum_of(p) } -> std::same_as<Real&>;
+  { a.less(p, p) } -> std::same_as<bool>;
+  { a.special(p) } -> std::same_as<void>;
+};
+
 //Class to randomly select an index where each index's probability of being 
 //  selected is weighted by a given vector.  
 template <class Tree, class PosType, size_t precision = std::numeric_limits<Real>::digits>
+requires WSTImpl<Tree, PosType>
 class weightsum_tree {
  public:
   //Weights can be of any type, but most be convertable to Real values
@@ -91,7 +109,7 @@ class weightsum_tree {
   }
 
   Real _total_weight;
-};
+} ;
 
 }
 }
