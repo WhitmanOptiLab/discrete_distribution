@@ -13,10 +13,6 @@
 namespace dense {
 namespace stochastic {
 
-namespace {
-  enum class ignore{};
-}
-
   template <
     typename I,
     typename T,
@@ -24,46 +20,21 @@ namespace {
   >
   class indexed_priority_queue : 
     //Indexed priority queue extends a complete tree...
-    public complete_tree<
-      typename std::conditional< std::is_enum<I>::value, 
-        typename std::underlying_type< 
-          typename std::conditional<std::is_enum<I>::value, I, ignore>::type>::type,
-        I>::type,
-      std::pair<I, T> >,
+    public complete_tree<I, std::pair<I, T> >,
 
     //... using the heap mix-in
-    protected heap< indexed_priority_queue<I, T, Compare>, 
-      typename std::conditional< std::is_enum<I>::value, 
-        typename std::underlying_type< 
-          typename std::conditional<std::is_enum<I>::value, I, ignore>::type>::type,
-        I>::type >,
+    protected heap< indexed_priority_queue<I, T, Compare>, I>,
 
     //... and the indexed collection mix-in
-    public indexed_collection<  indexed_priority_queue<I, T, Compare>, 
-      I, 
-      typename std::conditional< std::is_enum<I>::value, 
-        typename std::underlying_type< 
-          typename std::conditional<std::is_enum<I>::value, I, ignore>::type>::type,
-        I>::type,
-      T>
+    public indexed_collection<  indexed_priority_queue<I, T, Compare>, I, I, T>
   {
 
-    private:
-
-      template <typename E>
-      using underlying_if_enum = typename std::conditional<
-        std::is_enum<E>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<E>::value, E, ignore>::type
-        >::type,
-        E
-      >::type;
 
     public:
 
       using size_type = std::ptrdiff_t;
       using index_type = I;
-      using node_type = underlying_if_enum<index_type>;
+      using node_type = E;
       using mapped_type = T;
       using value_type = std::pair<index_type, mapped_type>;
       using mapped_compare = Compare;
