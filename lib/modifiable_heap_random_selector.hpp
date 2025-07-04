@@ -78,6 +78,7 @@ namespace {
       using reference = value_type&;
       using const_reference = value_type const&;
       using BaseTree = complete_tree<node_type, value_type>;
+
       using Heap = heap<This, node_type>;
       using WeightSum = weightsum_tree<This, node_type, precision>;
       using Index = indexed_collection<This, index_type, node_type, value_type>;
@@ -94,6 +95,7 @@ namespace {
           Heap(),
           WeightSum(),
           Index(static_cast<index_type>(last-first))
+          
       {
         InputIt it = first;
         for (index_type i = 0; it != last; ++it, ++i) {
@@ -139,15 +141,20 @@ namespace {
       Real total_weight() const { return WeightSum::total_weight(); }
 
     private:
+      
+      std::vector<index_type> indexList;
+
       //Must call WeightSum::compute_weights() after this, before using random selection
       void add_entry(value_type&& v) {
         BaseTree::add_entry(v);
+        indexList.push_back(indexList.size());
         auto newp = BaseTree::last();
         Index::associate(id_of(newp), newp);
       }
 
       void add_entry(const value_type& v) {
         BaseTree::add_entry(v);
+        indexList.push_back(indexList.size());
         auto newp = BaseTree::last();
         Index::associate(id_of(newp), newp);
       }
@@ -172,6 +179,7 @@ namespace {
         auto last = BaseTree::value_of(BaseTree::last());
         WeightSum::update_weight(BaseTree::last(), 0);
         BaseTree::remove_last_entry();
+        indexList.pop_back();
       }
 
       fast_random_selector const& const_this() const {
@@ -185,6 +193,7 @@ namespace {
 
       void swap(node_type a, node_type b) {
         std::swap(BaseTree::value_of(a).second, BaseTree::value_of(b).second);
+        std::swap(indexList[a],indexList[b]);
         WeightSum::swap(a, b);
         Index::swap(a, b);
       }
@@ -192,9 +201,12 @@ namespace {
       void swap_with_child(node_type a, node_type b) {
         Index::swap(a, b);
         WeightSum::swap_with_child(a, b);
+        std::swap(indexList[a],indexList[b]);
+
+
       }
 
-      index_type& id_of(node_type p) { return std::get<0>(BaseTree::value_of(p)); }
+      index_type& id_of(node_type p) { return indexList[p]; }
 
   };
 }

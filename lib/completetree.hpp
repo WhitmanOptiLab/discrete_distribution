@@ -17,8 +17,8 @@ namespace stochastic {
    * element access.
    */
   template <
-    typename P,
-    typename T
+    typename P, //position type
+    typename T //entry type
   >
   class complete_tree {
 
