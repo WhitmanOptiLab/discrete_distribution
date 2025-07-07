@@ -5,7 +5,6 @@
 #include <vector>
 #include <functional>
 #include <type_traits>
-#include <stdexcept>
 namespace dense {
 namespace stochastic {
 
@@ -32,8 +31,10 @@ namespace stochastic {
       using reference = entry_type&;
       using const_reference = entry_type const&;
 
-      complete_tree(position_type reserve = 0) :
-        _tree(reserve) {}
+      complete_tree(position_type reserve = 0) {
+        _tree.reserve(reserve + 1);
+        _tree.emplace_back();
+      }
 
       complete_tree(complete_tree const&) = default;
 
@@ -72,7 +73,7 @@ namespace stochastic {
       }
 
       void remove_last_entry() {
-        if (empty()) return;
+        if (size() <= 1) return;
         _tree.pop_back();
       }
 
@@ -83,7 +84,7 @@ namespace stochastic {
       }
 
       const_iterator end() const {
-        return iterator_for(last()) + 1;
+        return _tree.end();
       }
 
       const_iterator iterator_for(position_type node) const {
@@ -94,22 +95,22 @@ namespace stochastic {
       iterator iterator_for(position_type node) {
         return const_cast<iterator>(const_this().iterator_for(node));
       }
-      
+
       iterator begin() {
         return iterator_for(root());
       }
 
       iterator end() {
-        return iterator_for(last()) + 1;
+        return _tree.end();
       }
 
     public:
       //Position methods
-      static constexpr position_type root() { return 0; }
-      position_type last() const { return size() - 1; }
+      static constexpr position_type root() { return 1; }
+      position_type last() const { return root() + entry_count() - 1; }
 
       static position_type parent_of(position_type node) {
-        return ((node + 1) >> 1) - 1;
+        return ((node) >> 1);
       }
 
       static position_type left_of(position_type node) {
@@ -117,7 +118,7 @@ namespace stochastic {
       }
 
       static position_type right_of(position_type node) {
-        return (node + 1) << 1;
+        return (node << 1) + 2;
       }
 
       //Element access
@@ -130,9 +131,6 @@ namespace stochastic {
       }
 
       const_reference at(position_type i) const {
-        if (i >= size()) {
-          throw std::out_of_range("Index out of range");
-        }
         return _tree[i];
       }
 
@@ -155,11 +153,10 @@ namespace stochastic {
       }
 
       reference at(position_type i) {
-        if (i >= size()) {
-          throw std::out_of_range("Index out of range");
-        }
         return _tree[i];
       }
+
+      size_type entry_count() const { return size() - 1; }
       
     private:
       std::vector<entry_type> _tree;
