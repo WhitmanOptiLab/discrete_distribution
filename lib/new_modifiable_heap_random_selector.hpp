@@ -28,7 +28,7 @@ namespace {
         typename std::underlying_type< 
           typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
         I>::type,
-      std::tuple<I, Real, Real> >,
+      std::tuple<Real, Real> >,
 
     //... using the heap mix-in
     protected heap< fast_random_selector<I, precision>, 
@@ -52,7 +52,7 @@ namespace {
         typename std::underlying_type< 
           typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
         I>::type,
-      std::tuple<I, Real, Real>>
+      std::tuple<Real, Real>>
   {
 
     private:
@@ -72,12 +72,13 @@ namespace {
       using index_type = I;
       using This = fast_random_selector<index_type, precision>;
       using node_type = underlying_if_enum<index_type>;
-      using value_type = std::tuple<index_type, Real, Real>;
+      using value_type = std::tuple< Real, Real>;
       using iterator = value_type*;
       using const_iterator = value_type const*;
       using reference = value_type&;
       using const_reference = value_type const&;
       using BaseTree = complete_tree<node_type, value_type>;
+
       using Heap = heap<This, node_type>;
       using WeightSum = weightsum_tree<This, node_type, precision>;
       using Index = indexed_collection<This, index_type, node_type, value_type>;
@@ -94,13 +95,14 @@ namespace {
           Heap(),
           WeightSum(),
           Index(static_cast<index_type>(last-first))
+          
       {
         InputIt it = first;
         for (index_type i = 0; it != last; ++it, ++i) {
           double w = *it;
           //Heap::push will add entries through the add_entry method, which 
           //  will create index associations
-          Heap::push(std::tuple<index_type, Real, Real>(i, Real(w), 0.0));
+          Heap::push(std::tuple< Real, Real>( Real(w), 0.0));
         }
         WeightSum::compute_weights();
       }
@@ -139,21 +141,26 @@ namespace {
       Real total_weight() const { return WeightSum::total_weight(); }
 
     private:
+      
+      std::vector<index_type> indexList;
+
       //Must call WeightSum::compute_weights() after this, before using random selection
       void add_entry(value_type&& v) {
         BaseTree::add_entry(v);
+        indexList.push_back(indexList.size());
         auto newp = BaseTree::last();
         Index::associate(id_of(newp), newp);
       }
 
       void add_entry(const value_type& v) {
         BaseTree::add_entry(v);
+        indexList.push_back(indexList.size());
         auto newp = BaseTree::last();
         Index::associate(id_of(newp), newp);
       }
 
       Real& weight_of(node_type n) {
-        return std::get<1>(BaseTree::value_of(n));
+        return std::get<0>(BaseTree::value_of(n));
       }
       
       const Real& weight_of(node_type n) const {
@@ -161,7 +168,7 @@ namespace {
       }
 
       Real& weightsum_of(node_type n) {
-        return std::get<2>(BaseTree::value_of(n));
+        return std::get<1>(BaseTree::value_of(n));
       }
 
       const Real& weightsum_of(node_type n) const {
@@ -172,6 +179,7 @@ namespace {
         auto last = BaseTree::value_of(BaseTree::last());
         WeightSum::update_weight(BaseTree::last(), 0);
         BaseTree::remove_last_entry();
+        indexList.pop_back();
       }
 
       fast_random_selector const& const_this() const {
@@ -184,7 +192,8 @@ namespace {
       }
 
       void swap(node_type a, node_type b) {
-        std::swap(BaseTree::value_of(a).second, BaseTree::value_of(b).second);
+        std::swap(BaseTree::value_of(a).first, BaseTree::value_of(b).first);
+        std::swap(indexList[a],indexList[b]);
         WeightSum::swap(a, b);
         Index::swap(a, b);
       }
@@ -192,9 +201,12 @@ namespace {
       void swap_with_child(node_type a, node_type b) {
         Index::swap(a, b);
         WeightSum::swap_with_child(a, b);
+        std::swap(indexList[a],indexList[b]);
+
+
       }
 
-      index_type& id_of(node_type p) { return std::get<0>(BaseTree::value_of(p)); }
+      index_type& id_of(node_type p) { return indexList[p]; }
 
   };
 }

@@ -11,20 +11,22 @@ int main(){
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
 
-    std::ofstream outputFile("adjustingWeightsHeapOutput.csv");
+    std::ofstream outputFile;
 
 
     //Generating a normally distributed vector of weights
-    std::default_random_engine generator;
+    std::default_random_engine generator(10);
     std::normal_distribution<double> distribution(5.0,2.0);
     std::uniform_real_distribution<double> uniformDistribution(percentWeightMin,percentWeightMax);
-    std::vector<float> weights;
+    std::vector<double> weights;
 
-    outputFile.open();
+    outputFile.open("test/adjustingWeightsHeapOutput.csv");
     outputFile<<"starting distribution, "<<std::endl;
-    for (int i=0;i<numWeights<i++){
-        weights[i] = distribution(generator);
-        outputFile<<weights[i]<<", " //outputing the inditial weights
+    for (int i=0;i<numWeights;i++){
+        //double num = distribution(generator);
+        weights.push_back(distribution(generator));
+
+        outputFile<<weights[i]<<", "; //outputing the inditial weights
     }
     outputFile<<std::endl<<std::endl;
 
@@ -32,19 +34,19 @@ int main(){
     //Constructing the heap random selector
     fast_random_selector<int> selector(weights.begin(), weights.end());
 
-    //selecting weights
-    for (int i=0;i<numOperations;i++){
-        int selectedItemIndex = selector(generator);
-        selector.update_weight(selectedItemIndex,selector.get_weight(selectedItemIndex)*uniformDistribution(generator));  
+    // //selecting weights
+    // for (int i=0;i<numOperations;i++){
+    //     int selectedItemIndex = selector(generator);
+    //     selector.update_weight(selectedItemIndex,selector.get_weight(selectedItemIndex)*uniformDistribution(generator));  
 
-    }
+    // }
     //WOULD STOP TIMING HERE
 
     //outputing the ending distribution
     outputFile<<"ending distribution, "<<std::endl;
     
     for (int i=0;i<numWeights;i++){
-        outputFile << get_weight(i)<<", ";
+        outputFile << selector.get_weight(i)<<", ";
     }  
     outputFile.close();
 
