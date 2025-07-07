@@ -22,19 +22,6 @@ namespace stochastic {
   >
   class complete_tree {
 
-    private:
-
-      enum class ignore {};
-
-      template <typename E>
-      using underlying_if_enum = typename std::conditional<
-        std::is_enum<E>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<E>::value, E, ignore>::type
-        >::type,
-        E
-      >::type;
-
     public:
 
       using size_type = std::ptrdiff_t;
