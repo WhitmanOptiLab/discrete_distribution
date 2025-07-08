@@ -88,6 +88,14 @@ namespace stochastic {
         return id_of(WeightSum::operator()(g));
       }
 
+      I min() {
+        return 0;
+      }
+
+      I max() {
+        return static_cast<I>(BaseTree::last());
+      }
+
       void update_weight(index_type i, Real new_weight) {
         auto node = Index::node_for_index(i);
         Real old_weight = weight_of(node);
