@@ -37,23 +37,27 @@ int main() {
 
         //std::cout << "Constructed" << std::endl;
         std::vector<unsigned int> counts(weights.size());
+        std::vector<unsigned int> countsSTD(weights.size());
 
         
     
         std::cout << " Our library: " << selector.min() << ", " << selector.max() << std::endl;
         std::cout << " STD library: " << selectorSTD.min() << ", " << selectorSTD.max() << std::endl;
-        // for (int i = 0; i < 100000; i++) {
-        //     int index = selector(generator);
-        //     if (index < 0 || index >= weights.size()) {
-        //         break;
-        //     }
-        //     counts[index]++;
-        // }
-        // std::cout << "Counts: ";
-        // for (int i = 0; i < counts.size(); i++) {
-        //     std::cout << counts[i] << " ";
-        // }
-        // std::cout << std::endl;
+        selector.reset();
+        selectorSTD.reset();
+        for (int i = 0; i < 100000; i++) {
+            int index = selector(generator);
+            int indexSTD = selectorSTD(generator);
+            
+            counts[index]++;
+            countsSTD[indexSTD]++;
+        }
+        std::cout << "Counts: ";
+        for (int i = 0; i < counts.size(); i++) {
+            std::cout << counts[i] << " ";
+            std::cout << countsSTD[i] << " ";
+        }
+        std::cout << std::endl;
 
         //std::cout << std::endl;
         // gettimeofday(&end, NULL);

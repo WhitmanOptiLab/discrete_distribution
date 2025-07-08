@@ -25,7 +25,7 @@ namespace stochastic {
     protected heap< fast_random_selector<I, precision>, I>,
 
     //... and the weightsum tree mix-in
-    protected weightsum_tree< fast_random_selector<I, precision>, I, precision>,
+    public weightsum_tree< fast_random_selector<I, precision>, I, precision>,
 
     //... AND the indexed collection mix-in
     protected indexed_collection<  fast_random_selector<I, precision>, I, I, std::tuple<I, Real, Real>>
@@ -88,13 +88,7 @@ namespace stochastic {
         return id_of(WeightSum::operator()(g));
       }
 
-      I min() {
-        return 0;
-      }
-
-      I max() {
-        return static_cast<I>(BaseTree::last());
-      }
+      
 
       void update_weight(index_type i, Real new_weight) {
         auto node = Index::node_for_index(i);

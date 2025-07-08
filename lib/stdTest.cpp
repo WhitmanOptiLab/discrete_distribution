@@ -9,7 +9,8 @@ double testFunct(double x) {
 }
 
 int main() {
-    vector<double> weights = {1.0, 3.0, 100, 2.0, 1.0, 0, 7};
+    vector<double> weights = {};
+    vector<double> weights2 = {1.0, 3.0, 100, 2.0, 1.0, 0, 7};
     timeval time;
     gettimeofday(&time, NULL);
     std::default_random_engine generator(time.tv_usec);
@@ -18,23 +19,36 @@ int main() {
         
         discrete_distribution<>::param_type myParameters = {1.0, 2.0, 3.0};
         
-        discrete_distribution<> selector1;
-        discrete_distribution<> selector({1.0, 3.0, 2.0, 1.0, 0, 3});
-        discrete_distribution<> selector3(5, 5, 10, testFunct);
-        discrete_distribution<> selector4(myParameters);
-        discrete_distribution<> selector2(weights.begin(), weights.end());
+        discrete_distribution<> selector(weights.begin(), weights.end());
+        discrete_distribution<> selector2(weights2.begin(), weights2.end());
+        // discrete_distribution<> selector({1.0, 3.0, 2.0, 1.0, 0, 3});
+        // discrete_distribution<> selector3(5, 5, 10, testFunct);
+        // discrete_distribution<> selector4(myParameters);
+        // discrete_distribution<> selector2(weights.begin(), weights.end());
+        
+        
         
         //vector<double> weights2 = selector.param();
         std::uniform_real_distribution<float> d(.9, 1.1);
         //cout << d(generator) << endl;
-        cout << d(generator) << endl;
+        //cout << d(generator) << endl;
 
-        discrete_distribution<>::param_type parameter = selector.param();
+        vector<double> probabilities = selector2.probabilities();
+        for(auto p : probabilities) {
+            cout << p << " ";
+        }
+        vector<double> probabilities2 = selector2.param().probabilities();
+
+        for(auto p : probabilities2) {
+            cout << p << " ";
+        }
+
         // for(auto p : selector.probabilities()) {
         //     cout << p << endl;
         // }
 
         int index = selector(generator);
+        std::cout << "Index: " << index << std::endl;
         //cout << index << endl;
         
         

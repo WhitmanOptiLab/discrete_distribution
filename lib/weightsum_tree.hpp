@@ -68,6 +68,22 @@ class weightsum_tree {
     return node;
   }
 
+  PosType min() {
+        return 0;
+  }
+
+  PosType max() {
+    if(_tree().empty()) {
+      return 0;
+    } else {
+      return static_cast<PosType>(_tree().last());
+    }
+  }
+
+  void reset() {
+    //nothing to reset :)
+  }
+
  private:
   Tree& _tree() { return *static_cast<Tree*>(this); }
   const Tree& _tree() const { return *static_cast<const Tree*>(this); }
