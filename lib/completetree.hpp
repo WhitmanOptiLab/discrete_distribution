@@ -21,32 +21,16 @@ namespace stochastic {
   >
   class complete_tree {
 
-    private:
-
-      enum class ignore {};
-
-      template <typename E>
-      using underlying_if_enum = typename std::conditional<
-        std::is_enum<E>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<E>::value, E, ignore>::type
-        >::type,
-        E
-      >::type;
-
     public:
 
       using size_type = std::ptrdiff_t;
       using position_type = P;
       using entry_type = T;
-      using iterator = entry_type*;
-      using const_iterator = entry_type const*;
       using reference = entry_type&;
       using const_reference = entry_type const&;
 
       complete_tree(position_type reserve = 0) {
-        _tree.reserve(reserve + 1);
-        _tree.emplace_back();
+        _tree.resize(reserve + 1, 1);
       }
 
       complete_tree(complete_tree const&) = default;
@@ -65,79 +49,39 @@ namespace stochastic {
         return _tree.size();
       }
 
+      size_type entries() const {
+        return _tree.size() - 1;
+      }
+
       bool empty() const {
         return _tree.empty();
       }
 
-      //Tree modification methods
-      //
-    protected:
-      void add_entry(entry_type&& entry) {
-        _tree.push_back(entry);
-      }
-
-      void add_entry(const entry_type& entry) {
-        _tree.push_back(entry);
-      }
-
-      template <typename... Args>
-      void emplace_entry(Args&&... args) {
-        add_entry(entry_type(std::forward<Args>(args)...));
-      }
-
-      void remove_last_entry() {
-        if (size() <= 1) return;
-        _tree.pop_back();
-      }
-
-      //Iterator methods
-    public:
-      const_iterator begin() const {
-        return iterator_for(root());
-      }
-
-      const_iterator end() const {
-        return _tree.end();
-      }
-
-      const_iterator iterator_for(position_type node) const {
-        return _tree.data() + node;
-      }
-
-    protected:
-      iterator iterator_for(position_type node) {
-        return const_cast<iterator>(const_this().iterator_for(node));
-      }
-
-      iterator begin() {
-        return iterator_for(root());
-      }
-
-      iterator end() {
-        return _tree.end();
-      }
-
     public:
       //Position methods
-      static constexpr position_type root() { return 1; }
-      position_type last() const { return root() + entry_count() - 1; }
-
-      static position_type parent_of(position_type node) {
-        return ((node) >> 1);
+      // Add delta to element A[i] and update tree
+      void add(position_type i, entry_type delta) {
+        while (i < size()) {
+          value_of(i) += delta;
+          i += (i & -i);  // Go to next node
+        }
       }
 
-      static position_type left_of(position_type node) {
-        return (node << 1) + 1;
+      // Get prefix sum A[1] + A[2] + ... + A[i]
+      entry_type prefix_sum(position_type i) const {
+        entry_type sum = 0;
+        while (i > 0) {
+          sum += value_of(i);
+          i -= (i & -i);  // Go to previous node
+        }
+        return sum;
       }
 
-      static position_type right_of(position_type node) {
-        return (node << 1) + 2;
+      // Get A[i] = sum(i) - sum(i - 1)
+      entry_type get(position_type i) const {
+        return prefix_sum(i) - prefix_sum(i - 1);
       }
 
-      //Element access
-      const_reference top() const {
-        return value_of(root());
-      }
 
       const_reference operator[](position_type i) const {
         return _tree[i];
@@ -152,14 +96,15 @@ namespace stochastic {
         return static_cast<complete_tree const&>(*this);
       }
 
-      const_reference value_of(position_type node) const {
-        return *iterator_for(node);
-      }
-
     protected:
       reference value_of(position_type node) {
-        return const_cast<reference>(const_this().value_of(node));
+        return _tree[node];
       }
+      const_reference value_of(position_type node) const {
+        return _tree[node];
+      }
+
+
 
       reference operator[](position_type i) {
         return _tree[i];
@@ -169,8 +114,6 @@ namespace stochastic {
         return _tree[i];
       }
 
-      size_type entry_count() const { return size() - 1; }
-      
     private:
       std::vector<entry_type> _tree;
   };

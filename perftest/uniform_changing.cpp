@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <chrono>
 using namespace dense::stochastic;
 
 int main() {
@@ -29,9 +30,8 @@ int main() {
   }	      
 
   //start time
-  struct timeval start, end;
   WRSLIB selector(weights.begin(), weights.end());
-  gettimeofday(&start, NULL);
+  auto start = std::chrono::steady_clock::now();
   
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
@@ -39,10 +39,9 @@ int main() {
   }
   
   // end time
-  gettimeofday(&end, NULL);
-  double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
-    double(end.tv_usec - start.tv_usec)/1000000.0;
-  std::cout << elapsedtime_sec << std::endl;
+  auto end = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = end - start;
+  std::cout << elapsed.count() << std::endl;
   
 }
 
