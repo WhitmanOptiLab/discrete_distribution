@@ -26,7 +26,7 @@ class indexed_collection {
   public:
     indexed_collection() = delete;
     indexed_collection(IndexType max_size) :
-      _node_for_index(max_size, max_size) {}
+      _node_for_index(max_size, max_size) {} //_node_for_index is a vector of positionType (its indexes are the ids (from the user's perspective), and its values are the indeces of the nodes (nodePosition))
 
     //Element access
     const MappedType& operator[](IndexType i) const {
@@ -50,27 +50,31 @@ class indexed_collection {
       return _tree().value_of(_node_for_index[i]);
     }
 
-
+    //makes the id (from the user's perspectice) i map to the nodePosition (index at which the node is stored) p
     void associate(IndexType i, PosType p) {
       _node_for_index[i] = p;
     }
 
+    //BRING UP WITH STRATTON - null_node() doesn't actually do anything
+    //makes the id i map t0 ___?
     void dissociate(IndexType i) {
       _node_for_index[i] = _tree().null_node();
     }
 
+    //swaps nodes a and b in both the _node_for_index (the internal vector keeping track of the node position indexed by id) and in the external datastructure the id_of() uses
     void swap(PosType a, PosType b) {
-      std::swap(_tree().id_of(a), _tree().id_of(b));
-      associate(_tree().id_of(a), a);
+      std::swap(_tree().id_of(a), _tree().id_of(b)); //swaps the ids (stored outside the class in the class Tree (first template argument)) - swaps the things returned by id_of() (used in), which is meant to take a node position and return an id. 
+      associate(_tree().id_of(a), a); //associates the newly swapped ids with node positions
       associate(_tree().id_of(b), b);
     }
 
+    //same as swap
     void swap_with_child(PosType a, PosType b) {
       swap(a, b);
     }
 
   private:
-    std::vector<PosType> _node_for_index;
+    std::vector<PosType> _node_for_index; //vector of node positions indexed by ids.
     Tree& _tree() { return *static_cast<Tree*>(this); }
     const Tree& _tree() const { return *static_cast<const Tree*>(this); }
 };
