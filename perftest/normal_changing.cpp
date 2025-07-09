@@ -3,13 +3,14 @@
 
 //Ex:
 //g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 normal_changing.cpp
-//g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
+//g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 perftest/normal_changing.cpp
 
-#include "random_selector.hpp"
-#include "modifiable_heap_random_selector.hpp"
+#include "../lib/random_selector.hpp"
+#include "../lib/modifiable_heap_random_selector.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
+#include <boost/random/discrete_distribution.hpp>
 #include <vector>
 #include <algorithm>
 using namespace dense::stochastic;

@@ -1,7 +1,6 @@
-#include "heap_tree.hpp"
+#include "../lib/heap_tree.hpp"
 #include <iostream>
 #include <algorithm>
-
 
 using namespace dense::stochastic;
 

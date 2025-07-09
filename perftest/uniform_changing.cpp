@@ -10,6 +10,7 @@
 #include <sys/time.h>
 #include <iostream>
 #include <random>
+#include <boost/random/discrete_distribution.hpp>
 #include <vector>
 #include <algorithm>
 using namespace dense::stochastic;
