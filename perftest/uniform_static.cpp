@@ -16,16 +16,16 @@
 using namespace dense::stochastic;
 
 int main() {
-  std::uniform_real_distribution<float> d(1,10); 
+  std::uniform_real_distribution<double> d(1,10);
   std::default_random_engine generator;
-  std::vector<float> weights = {};
+  std::vector<double> weights = {};
   int sum = 1;
   
   for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
   }	      
 
-  float minweight = *std::min_element(weights.begin(), weights.end());
+  double minweight = *std::min_element(weights.begin(), weights.end());
   for(int i = 0; i < WEIGHTNUM; i++){
     weights[i] -= minweight;
   }	      

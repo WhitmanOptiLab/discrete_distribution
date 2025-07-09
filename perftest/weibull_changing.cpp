@@ -15,15 +15,15 @@
 using namespace dense::stochastic;
 
 int main() {
-  std::weibull_distribution<float> d(0.5); 
+  std::weibull_distribution<double> d(0.5);
   std::default_random_engine generator;
-  std::vector<float> weights = {};
+  std::vector<double> weights = {};
   
   for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
   }	      
 
-  float minweight = *std::min_element(weights.begin(), weights.end());
+  double minweight = *std::min_element(weights.begin(), weights.end());
   for(int i = 0; i < WEIGHTNUM; i++){
     weights[i] -= minweight;
   }	      
@@ -35,7 +35,7 @@ int main() {
   
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
-    selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
+    selector.update_weight(index, std::max<double>(0.0, d(generator)-minweight));
   }
   
   // end time
