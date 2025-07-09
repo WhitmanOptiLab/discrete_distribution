@@ -27,31 +27,33 @@ class weightsum_tree {
 
 
   void update_weight(PosType i, Real new_weight) {
-    Real current = _tree().get(i);
+    Tree& tree = _tree();
+    Real current = tree.get(i);
     Real delta = new_weight - current;
-    _tree().add(i, delta);
+    tree.add(i, delta);
     total_weight += delta;
   }
 
   PosType find_index(Real target) const {
+    const Tree& tree = _tree();  // cache cast
+    PosType tree_size = tree.entries();
+
     PosType pos = 0;
     PosType bit_mask = 1;
-    PosType tree_size = _tree().entries();
     while ((bit_mask << 1) <= tree_size) bit_mask <<= 1;
 
     while (bit_mask > 0) {
       PosType next_pos = pos + bit_mask;
       if (next_pos <= tree_size) {
-        Real val = _tree()[next_pos];
+        Real val = tree[next_pos];
         if (val < target) {
           target -= val;
           pos = next_pos;
         }
       }
-
       bit_mask >>= 1;
     }
-    return pos + 1; //Move up an index to the entry that contains target
+    return pos + 1; // Move up an index to the entry that contains target
   }
 
 
@@ -61,6 +63,9 @@ class weightsum_tree {
     Real target = std::generate_canonical<Real, precision, URNG>(g)*total_weight;
     return find_index(target);
   }
+
+ protected:
+  Real& access_total_weight() { return total_weight; }
 
  private:
   Tree& _tree() { return *static_cast<Tree*>(this); }

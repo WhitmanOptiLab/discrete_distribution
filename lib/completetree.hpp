@@ -30,7 +30,7 @@ namespace stochastic {
       using const_reference = entry_type const&;
 
       complete_tree(position_type reserve = 0) {
-        _tree.resize(reserve + 1, 1);
+        _tree.resize(reserve + 1, 0);
       }
 
       complete_tree(complete_tree const&) = default;
@@ -116,6 +116,7 @@ namespace stochastic {
 
     private:
       std::vector<entry_type> _tree;
+      Real total_weight;
   };
 
 }
