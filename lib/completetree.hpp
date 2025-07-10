@@ -127,11 +127,11 @@ namespace stochastic {
       }
 
       static position_type left_of(position_type node) {
-        return (node << 1) + 1;
+        return (node << 1);
       }
 
       static position_type right_of(position_type node) {
-        return (node << 1) + 2;
+        return (node << 1) + 1;
       }
 
       //Element access
