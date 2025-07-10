@@ -13,57 +13,33 @@
 namespace dense {
 namespace stochastic {
 
-namespace {
-  enum class ignore_me{};
-}
-
   template <
     typename I = int, size_t precision = std::numeric_limits<Real>::digits
   >
   class fast_random_selector :
     //Extends a complete tree...
-    protected complete_tree<
-      typename std::conditional< std::is_enum<I>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
-        I>::type,
-      std::pair<Real, Real> >,
+
+    protected complete_tree<I, std::tuple<I, Real, Real> >,
 
     //... using the heap mix-in
-    protected heap< fast_random_selector<I, precision>,
-      typename std::conditional< std::is_enum<I>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
-        I>::type >,
+    protected heap< fast_random_selector<I, precision>, I>,
 
     //... and the weightsum tree mix-in
-    protected weightsum_tree< fast_random_selector<I, precision>,
-      typename std::conditional< std::is_enum<I>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
-        I>::type,
-      precision>
+    protected weightsum_tree< fast_random_selector<I, precision>, I, precision>,
+
+    //... AND the indexed collection mix-in
+    protected indexed_collection<  fast_random_selector<I, precision>, I, I, std::tuple<I, Real, Real>>
+
   {
 
-    private:
-
-      template <typename E>
-      using underlying_if_enum = typename std::conditional<
-        std::is_enum<E>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<E>::value, E, ignore_me>::type
-        >::type,
-        E
-      >::type;
-
+  
     public:
 
       using size_type = std::ptrdiff_t;
       using index_type = I;
       using This = fast_random_selector<index_type, precision>;
-      using node_type = underlying_if_enum<index_type>;
-      using value_type = std::pair<Real, Real>;
-      using entry_type = std::tuple<index_type, Real, Real>;
+      using node_type = index_type;
+      using value_type = std::tuple<index_type, Real, Real>;
       using iterator = value_type*;
       using const_iterator = value_type const*;
       using reference = value_type&;
