@@ -45,10 +45,16 @@ class weightsum_tree {
 
   Real total_weight() const { return _total_weight; }
 
+  void add_to_total_weight(Real add){
+    _total_weight+=add;
+  }
+
   template<class URNG>
   PosType operator()(URNG& g) {
 
     Real target = std::generate_canonical<Real, precision, URNG>(g)*_total_weight;
+    std::cout<<"total weight "<<_total_weight;
+    std::cout<<"target "<<target<<std::endl;
     PosType node = _tree().root();
     //Loop until target random value is less than the current node's weight
     while(_tree().weight_of(node) < target) {

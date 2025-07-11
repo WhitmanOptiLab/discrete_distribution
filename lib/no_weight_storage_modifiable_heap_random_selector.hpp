@@ -128,6 +128,8 @@ namespace stochastic {
           Heap::sift_up(origNode);
         else
           Heap::sift_down(origNode);
+        this->add_to_total_weight(difference);
+        //std::cout<<"total weight now "<<this->total_weight();
       }
 
       Real get_weight(index_type i) {
@@ -222,10 +224,12 @@ namespace stochastic {
         //std::cout<<std::endl<<std::endl<<"################  adding item  ###################"<<std::endl;
         //std::cout<<std::setprecision(7)<<"the weight being added is"<<std::get<1>(entry)<<std::endl;
         this->add_entry(entry);
+        Real weight = std::get<1>(entry);
+        this->add_to_total_weight(weight);
         node_type node = this->last();
         while(node!=this->root()){
           node = BaseTree::parent_of(node);
-          this->weightsum_of(node)+=std::get<1>(entry);
+          this->weightsum_of(node)+=weight;
         }
         // if(this->last()!=this->root()){
         //   this->weightsum_of(node)+=std::get<1>(entry);

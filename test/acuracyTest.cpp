@@ -7,7 +7,7 @@
 using namespace dense::stochastic;
 
 int main(){
-    int numWeights = 6;
+    int numWeights = 30;
     int numOperations=100;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
@@ -25,7 +25,7 @@ int main(){
     outputFile<<"starting distribution, "<<std::endl;
     for (int i=0;i<numWeights;i++){
         //double num = distribution(generator);
-        weights.push_back(i+1/*distribution(generator*/);
+        weights.push_back(distribution(generator));
 
         outputFile<<weights[i]<<", "; //outputing the inditial weights
     }
@@ -33,9 +33,7 @@ int main(){
 
     //WOULD START TIMING HERE
     //Constructing the heap random selector
-    std::cout<<"about to construct selector";
     low_storage_selector<int> selector(weights.begin(), weights.end());
-    std::cout<<"just constructed selector";
 
     // //selecting weights
     // for (int i=0;i<numOperations;i++){
@@ -47,6 +45,9 @@ int main(){
 
     //outputing the ending distribution
     outputFile<<"ending distribution, "<<std::endl;
+    for (int i=0; i<numWeights;i++){
+        std::cout<<"items selected index "<<selector(generator)<<std::endl;
+    }
     std::cout<<"getting ending distribution";
     for (int i=0;i<numWeights;i++){
         outputFile << selector.get_weight(i)<<", ";
