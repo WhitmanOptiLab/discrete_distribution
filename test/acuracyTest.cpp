@@ -34,7 +34,7 @@ int main(){
     //WOULD START TIMING HERE
     //Constructing the heap random selector
     std::cout<<"about to construct selector";
-    fast_random_selector<int> selector(weights.begin(), weights.end());
+    low_storage_selector<int> selector(weights.begin(), weights.end());
     std::cout<<"just constructed selector";
 
     // //selecting weights

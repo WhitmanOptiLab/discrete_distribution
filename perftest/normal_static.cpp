@@ -8,6 +8,8 @@
 
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
+#include "no_weight_storage_modifiable_heap_random_selector.hpp"
+
 #include <sys/time.h>
 #include <iostream>
 #include <random>

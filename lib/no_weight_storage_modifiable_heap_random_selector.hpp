@@ -1,5 +1,5 @@
-#ifndef MODIFIABLE_HEAP_RANDOM_SELECTOR
-#define MODIFIABLE_HEAP_RANDOM_SELECTOR
+#ifndef LOW_STORAGE_SELECTOR 
+#define LOW_STORAGE_SELECTOR
 
 #include <utility>
 #include <vector>
@@ -13,31 +13,28 @@
 namespace dense {
 namespace stochastic {
 
-namespace {
-  enum class ignore_me{};
-}
+// namespace {
+//    class ignore_me{};enum
+// }
 
   template <
     typename I = int, size_t precision = std::numeric_limits<Real>::digits
   >
-  class fast_random_selector :
+  class low_storage_selector :
     //Extends a complete tree...
-    protected complete_tree<
-      typename std::conditional< std::is_enum<I>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
-        I>::type,
+     protected complete_tree<
+    //   typename std::conditional< std::is_enum<I>::value,
+    //     typename std::underlying_type<
+    //       typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
+        I,
        Real >,
 
     //... using the heap mix-in
-    protected heap< fast_random_selector<I, precision>,
-      typename std::conditional< std::is_enum<I>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
-        I>::type >,
+    protected heap< low_storage_selector<I, precision>,
+      I>,
 
     //... and the weightsum tree mix-in
-    protected weightsum_tree< fast_random_selector<I, precision>,
+    protected weightsum_tree< low_storage_selector<I, precision>,
       typename std::conditional< std::is_enum<I>::value,
         typename std::underlying_type<
           typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
@@ -60,7 +57,7 @@ namespace {
 
       using size_type = std::ptrdiff_t;
       using index_type = I;
-      using This = fast_random_selector<index_type, precision>;
+      using This = low_storage_selector<index_type, precision>;
       using node_type = underlying_if_enum<index_type>;
       using value_type =  Real;
       using entry_type = std::tuple<index_type, Real, Real>;
@@ -75,10 +72,10 @@ namespace {
       friend Heap;
       friend WeightSum;
 
-      fast_random_selector() = delete;
+      low_storage_selector() = delete;
 
       template<typename InputIt>
-      fast_random_selector(InputIt first, InputIt last) :
+      low_storage_selector(InputIt first, InputIt last) :
           BaseTree(),
           Heap(),
           WeightSum(),
@@ -103,15 +100,15 @@ namespace {
 
     
 
-      fast_random_selector(fast_random_selector const&) = default;
+      low_storage_selector(low_storage_selector const&) = default;
 
-      fast_random_selector(fast_random_selector &&) = default;
+      low_storage_selector(low_storage_selector &&) = default;
 
-      fast_random_selector& operator=(fast_random_selector const&) = default;
+      low_storage_selector& operator=(low_storage_selector const&) = default;
 
-      fast_random_selector& operator=(fast_random_selector &&) = default;
+      low_storage_selector& operator=(low_storage_selector &&) = default;
 
-      ~fast_random_selector() = default;
+      ~low_storage_selector() = default;
 
       // Real sum_weights(PosType i) {
       //   if (i > _tree().last()) return 0.0;
@@ -266,7 +263,7 @@ namespace {
         BaseTree::remove_last_entry();
       }
 
-      fast_random_selector const& const_this() const {
+      low_storage_selector const& const_this() const {
         return static_cast<This const&>(*this);
       }
 
