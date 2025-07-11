@@ -4,6 +4,7 @@
 #include <limits>
 #include <utility>
 #include <random>
+#include <iostream>
 
 namespace dense {
 namespace stochastic {
@@ -33,8 +34,9 @@ class weightsum_tree {
   }
 
   void update_weight(PosType i, Real new_weight) {
-    Real weight_diff = new_weight - _tree().weight_of(i);
-    _tree().weight_of(i) = new_weight;
+    //std::cout << "Changing " << _tree().weightsum_of(i) << " to " << new_weight << " at index " << i << std::endl;
+    Real weight_diff = new_weight - _tree().weightsum_of(i);
+    //_tree().weightsum_of(i) = new_weight;
     while (i != _tree().root()) {
       _tree().weightsum_of(i) += weight_diff;
       i = Tree::parent_of(i);
@@ -45,28 +47,33 @@ class weightsum_tree {
 
   Real total_weight() const { return _total_weight; }
 
-  template<class URNG>
-  PosType operator()(URNG& g) {
+template<class URNG>
+PosType operator()(URNG& g) {
+  Real target = std::generate_canonical<Real, precision, URNG>(g) * _tree().total_weight();
 
-    Real target = std::generate_canonical<Real, precision, URNG>(g)*_total_weight;
-    PosType node = _tree().root();
-    //Loop until target random value is less than the current node's weight
-    while(_tree().weight_of(node) < target) {
-      target -= _tree().weight_of(node);
-      if (checked_weightsum(Tree::left_of(node)) > target) {
-        node = Tree::left_of(node);
-      } else {
-        target -= checked_weightsum(Tree::left_of(node));
-        node = Tree::right_of(node);
-      }
-      //Should this ever happen?  No, but floating-point rounding means it's 
-      //  theoretically possible, and we need a failsafe.
-      if (node > _tree().last()) {
-        return _tree().last();
-      }
+  PosType node = Tree::root();
+
+  while (node < _tree().get_leaf_start()) {
+      //std::cout << "Target: " << target << std::endl;
+
+    PosType left = Tree::left_of(node);
+    //std::cout << node << " left weight: " << _tree().weightsum_of(left) << ", right weight: " << _tree().weightsum_of(Tree::right_of(node)) << std::endl;
+    Real left_sum = _tree().weightsum_of(left);
+
+    if (target < left_sum) {
+      //std::cout << "Took left" << std::endl;
+      node = left;
+    } else {
+      //std::cout << "Took right" << std::endl;
+      target -= left_sum;
+      node = Tree::right_of(node);
     }
-    return node;
+    //std::cout << std::endl;
   }
+
+  return node;
+}
+
 
  private:
   Tree& _tree() { return *static_cast<Tree*>(this); }
@@ -74,12 +81,17 @@ class weightsum_tree {
   Real checked_weightsum(PosType node) const { return node > _tree().last() ? 0 : _tree().weightsum_of(node); }
   Real checked_weight(PosType node) const { return node > _tree().last() ? 0 : _tree().weight_of(node); }
   Real sum_weights(PosType i) {
-    if (i > _tree().last()) return 0.0f;
-    _tree().weightsum_of(i) =
-      sum_weights(Tree::left_of(i)) + sum_weights(Tree::right_of(i)) 
-      + _tree().weight_of(i);
-    return _tree().weightsum_of(i);
+  	if (i > _tree().last()) return 0.0;
+    Real& weightsum = _tree().weightsum_of(i);
+  	Real self_weight = weightsum; // <- original weight, not actually a weightsum yet
+  	Real left_sum  = sum_weights(Tree::left_of(i));
+  	Real right_sum = sum_weights(Tree::right_of(i));
+
+  	Real total = self_weight + left_sum + right_sum;
+  	weightsum = total;
+  	return total;
   }
+
   bool isAncestor(PosType i, PosType j) {
     unsigned int ilz = __builtin_clz(i+1);
     unsigned int jlz = __builtin_clz(j+1);
