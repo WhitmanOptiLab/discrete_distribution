@@ -3,7 +3,8 @@
 
 //Ex:
 //g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 normal_changing.cpp
-//g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
+//g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100" -o test1 normal_changing.cpp
+//g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
 
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
@@ -15,15 +16,15 @@
 using namespace dense::stochastic;
 
 int main() {
-  std::normal_distribution<float> d(5,2); 
+  std::normal_distribution<double> d(5,2); 
   std::default_random_engine generator;
-  std::vector<float> weights = {};
+  std::vector<double> weights = {};
   
   for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
   }	      
 
-  float minweight = *std::min_element(weights.begin(), weights.end());
+  double minweight = *std::min_element(weights.begin(), weights.end());
   for(int i = 0; i < WEIGHTNUM; i++){
     weights[i] -= minweight;
   }	      
@@ -33,9 +34,9 @@ int main() {
   WRSLIB selector(weights.begin(), weights.end());
   gettimeofday(&start, NULL);
   
-  for (int i = 0; i < 1000000; i++) {
+  for (int i = 0; i < 10000; i++) {
     int index = selector(generator);
-    selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
+    selector.update_weight(index, std::max<double>(0.0, d(generator)-minweight));
   }
   
   // end time
