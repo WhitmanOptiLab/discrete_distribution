@@ -13,33 +13,30 @@
 namespace dense {
 namespace stochastic {
 
+
   template <
     typename I = int, size_t precision = std::numeric_limits<Real>::digits
   >
   class fast_random_selector :
     //Extends a complete tree...
-
-    protected complete_tree<I, std::tuple<I, Real, Real> >,
+    protected complete_tree<I, std::pair<Real, Real> >,
 
     //... using the heap mix-in
     protected heap< fast_random_selector<I, precision>, I>,
 
     //... and the weightsum tree mix-in
-    protected weightsum_tree< fast_random_selector<I, precision>, I, precision>,
-
-    //... AND the indexed collection mix-in
-    protected indexed_collection<  fast_random_selector<I, precision>, I, I, std::tuple<I, Real, Real>>
-
+    protected weightsum_tree< fast_random_selector<I, precision>, I, precision>
   {
 
-  
+
     public:
 
       using size_type = std::ptrdiff_t;
       using index_type = I;
       using This = fast_random_selector<index_type, precision>;
       using node_type = index_type;
-      using value_type = std::tuple<index_type, Real, Real>;
+      using value_type = std::pair<Real, Real>;
+      using entry_type = std::tuple<index_type, Real, Real>;
       using iterator = value_type*;
       using const_iterator = value_type const*;
       using reference = value_type&;
@@ -95,7 +92,7 @@ namespace stochastic {
         auto node = index_to_node[i];
         Real old_weight = weight_of(node);
         WeightSum::update_weight(index_to_node[i], new_weight);
-        if (old_weight > new_weight)
+        if (old_weight < new_weight)
           Heap::sift_up(node);
         else
           Heap::sift_down(node);
