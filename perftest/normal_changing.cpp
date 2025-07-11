@@ -19,6 +19,8 @@ int main() {
   std::normal_distribution<float> d(5,2); 
   std::default_random_engine generator;
   std::vector<float> weights = {};
+
+  std::cout<<"weight num is "<<WEIGHTNUM;
   
   for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));

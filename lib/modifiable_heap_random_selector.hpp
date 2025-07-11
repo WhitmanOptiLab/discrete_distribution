@@ -44,7 +44,7 @@ namespace stochastic {
   //     precision>
   // {
     //Extends a complete tree...
-    protected complete_tree<I, std::tuple<I, Real, Real> >,
+    protected complete_tree<I, std::pair<Real, Real> >,
 
     //... using the heap mix-in
     protected heap< fast_random_selector<I, precision>, I>,
