@@ -76,9 +76,9 @@ namespace stochastic {
           //Heap::push will add entries through the add_entry method, which
           //  will create index associations
           push(std::tuple<index_type, Real, Real>(i, Real(w), 0.0)); //TODO - change construction
-          std::cout<<"after construction cycle tree is ";
-          this->printTree();
-          std::cout<<std::endl;
+          //std::cout<<"after construction cycle tree is ";
+          //this->printTree();
+          //std::cout<<std::endl;
         }
         //WeightSum::compute_weights();
       }
@@ -139,19 +139,19 @@ namespace stochastic {
     private:
 
      void swap_with_child(node_type parent, node_type child){
-      std::cout<<"___________swap______________"<<std::endl<<"initial counditions "<<std::endl;
-        std::cout<<"tree before swap: ";
-        this->printTree();
-        std::cout<<std::endl;
-        std::cout<<"child in position "<<child<< " now has a weight of "<<this->weight_of(child)<<std::endl;
-        std::cout<<"parent in position "<<parent<<"now has a weight of "<<this->weight_of(parent)<<std::endl;
+      //std::cout<<"___________swap______________"<<std::endl<<"initial counditions "<<std::endl;
+        //std::cout<<"tree before swap: ";
+        //this->printTree();
+        //std::cout<<std::endl;
+        //std::cout<<"child in position "<<child<< " now has a weight of "<<this->weight_of(child)<<std::endl;
+        //std::cout<<"parent in position "<<parent<<"now has a weight of "<<this->weight_of(parent)<<std::endl;
 
         Real weight_diff = this->weight_of(parent) - this->weight_of(child);
         this->weightsum_of(child)+=weight_diff;
         swap_indexes(parent, child);
-        std::cout<<"swap occured";
-        std::cout<<"original parent in position "<<child<< " now has a weight of "<<this->weight_of(child)<<std::endl;
-        std::cout<<"original child in position "<<parent<< " now has a weight of "<<this->weight_of(parent)<<std::endl;
+        //std::cout<<"swap occured";
+        //std::cout<<"original parent in position "<<child<< " now has a weight of "<<this->weight_of(child)<<std::endl;
+        //std::cout<<"original child in position "<<parent<< " now has a weight of "<<this->weight_of(parent)<<std::endl;
 
      }
 
@@ -219,7 +219,7 @@ namespace stochastic {
       }
 
       void push(entry_type entry) {
-        std::cout<<std::endl<<std::endl<<"################  adding item  ###################"<<std::endl;
+        //std::cout<<std::endl<<std::endl<<"################  adding item  ###################"<<std::endl;
         //std::cout<<std::setprecision(7)<<"the weight being added is"<<std::get<1>(entry)<<std::endl;
         this->add_entry(entry);
         node_type node = this->last();
@@ -230,12 +230,12 @@ namespace stochastic {
         // if(this->last()!=this->root()){
         //   this->weightsum_of(node)+=std::get<1>(entry);
         // }
-        std::cout<<"element added to location"<< this->last()<< " is"<<std::to_string(this->at(this->last()))<<std::endl<<std::endl;
-        std::cout<<"after pushing tree is ";
+        //std::cout<<"element added to location"<< this->last()<< " is"<<std::to_string(this->at(this->last()))<<std::endl<<std::endl;
+        //std::cout<<"after pushing tree is ";
 
         this->sift_up(this->last());
-        this->printTree();
-        std::cout<<std::endl;
+        //this->printTree();
+        //std::cout<<std::endl;
       }
       
       const Real& weightsum_of(node_type n) const {

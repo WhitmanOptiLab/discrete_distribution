@@ -10,7 +10,7 @@
 
 echo "Number of tests: $1" # first argument is num of tests
 echo "Weightnum: $2" # second argument is number of weights in data structure
-echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_changing_wrs, normal_changing_heap, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_changing_wrs, uniform_changing_heap, weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_changing_wrs, weibull_changing_heap" > results_$2.csv
+echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_static_weightsum, normal_changing_wrs, normal_changing_heap, normal_changing_weightsum uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_static_weightsum, uniform_changing_wrs, uniform_changing_heap, uniform_changing_weightsum weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_static_weightsum, weibull_changing_wrs, weibull_changing_heap: weibull_changing_weightsum" > results_$2.csv
 
 # Normal distribution static weight tests
 g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
@@ -176,4 +176,6 @@ echo "weibull_static_weightsum: $average17"
 echo "weibull_changing_wrs: $average18"
 echo "weibull_changing_heap: $average19" 
 echo "weibull_changing_weightsum: $average20" 
+
+
 
