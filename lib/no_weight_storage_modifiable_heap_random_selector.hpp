@@ -9,6 +9,7 @@
 #include "completetree.hpp"
 #include "heap.hpp"
 #include "weightsum_tree.hpp"
+//#include "indexed_collection.hpp"
 
 namespace dense {
 namespace stochastic {
@@ -22,43 +23,27 @@ namespace stochastic {
   >
   class low_storage_selector :
     //Extends a complete tree...
-     protected complete_tree<
-    //   typename std::conditional< std::is_enum<I>::value,
-    //     typename std::underlying_type<
-    //       typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
-        I,
-       Real >,
+    protected complete_tree<I, Real>,
 
     //... using the heap mix-in
-    protected heap< low_storage_selector<I, precision>,
-      I>,
+    protected heap< low_storage_selector<I, precision>, I>,
 
     //... and the weightsum tree mix-in
-    protected weightsum_tree< low_storage_selector<I, precision>,
-      typename std::conditional< std::is_enum<I>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<I>::value, I, ignore_me>::type>::type,
-        I>::type,
-      precision>
+    protected weightsum_tree< low_storage_selector<I, precision>, I, precision>
+
+    //... AND the indexed collection mix-in
+    //protected indexed_collection<  low_storage_selector<I, precision>, I, I, std::tuple<I, Real, Real>>
+  
+
   {
-
-    private:
-
-      template <typename E>
-      using underlying_if_enum = typename std::conditional<
-        std::is_enum<E>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<E>::value, E, ignore_me>::type
-        >::type,
-        E
-      >::type;
+      
  
     public:
 
       using size_type = std::ptrdiff_t;
       using index_type = I;
       using This = low_storage_selector<index_type, precision>;
-      using node_type = underlying_if_enum<index_type>;
+      using node_type = index_type;
       using value_type =  Real;
       using entry_type = std::tuple<index_type, Real, Real>;
       using iterator = value_type*;
