@@ -93,7 +93,7 @@ namespace {
           double w = *it;
           //Heap::push will add entries through the add_entry method, which
           //  will create index associations
-          Heap::push(std::tuple<index_type, Real, Real>(i, Real(w), 0.0)); //TODO - change construction
+          push(std::tuple<index_type, Real, Real>(i, Real(w), 0.0)); //TODO - change construction
           std::cout<<"after construction cycle tree is ";
           this->printTree();
           std::cout<<std::endl;
@@ -236,6 +236,26 @@ namespace {
         return this->value_of(n);
       }
 
+      void push(entry_type entry) {
+        std::cout<<std::endl<<std::endl<<"################  adding item  ###################"<<std::endl;
+        //std::cout<<std::setprecision(7)<<"the weight being added is"<<std::get<1>(entry)<<std::endl;
+        this->add_entry(entry);
+        node_type node = this->last();
+        while(node!=this->root()){
+          node = BaseTree::parent_of(node);
+          this->weightsum_of(node)+=std::get<1>(entry);
+        }
+        // if(this->last()!=this->root()){
+        //   this->weightsum_of(node)+=std::get<1>(entry);
+        // }
+        std::cout<<"element added to location"<< this->last()<< " is"<<std::to_string(this->at(this->last()))<<std::endl<<std::endl;
+        std::cout<<"after pushing tree is ";
+
+        this->sift_up(this->last());
+        this->printTree();
+        std::cout<<std::endl;
+      }
+      
       const Real& weightsum_of(node_type n) const {
         return const_cast<This*>(this)->weightsum_of(n);
       }
