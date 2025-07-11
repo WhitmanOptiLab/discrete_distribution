@@ -1,6 +1,8 @@
 #ifndef DENSE_SIM_HEAP
 #define DENSE_SIM_HEAP
 #include "completetree.hpp"
+#include <iostream>
+#include <iomanip>
 #include <limits>
 #include <utility>
 #include <random>
@@ -26,7 +28,10 @@ class heap {
 
   template<typename T>
   void push(T entry) {
+    std::cout<<std::endl<<std::endl<<"################  adding item  ###################"<<std::endl;
+    //std::cout<<std::setprecision(7)<<"the weight being added is"<<std::get<1>(entry)<<std::endl;
     _tree().add_entry(entry);
+    std::cout<<"element added to location"<< _tree().last()<< " is"<<std::to_string(_tree().at(_tree().last()))<<std::endl<<std::endl;
     sift_up(_tree().last());
   }
 

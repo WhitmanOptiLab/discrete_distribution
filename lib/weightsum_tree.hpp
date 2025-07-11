@@ -72,7 +72,9 @@ class weightsum_tree {
   Tree& _tree() { return *static_cast<Tree*>(this); }
   const Tree& _tree() const { return *static_cast<const Tree*>(this); }
   Real checked_weightsum(PosType node) const { return node > _tree().last() ? 0 : _tree().weightsum_of(node); }
+
   Real checked_weight(PosType node) const { return node > _tree().last() ? 0 : _tree().weight_of(node); }
+  
   Real sum_weights(PosType i) {
     if (i > _tree().last()) return 0.0f;
     _tree().weightsum_of(i) =

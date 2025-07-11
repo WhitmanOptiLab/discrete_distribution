@@ -6,6 +6,7 @@
 #include <functional>
 #include <type_traits>
 #include <stdexcept>
+#include <iostream> //TODO here for dubugging - delete later
 namespace dense {
 namespace stochastic {
 
@@ -156,6 +157,13 @@ namespace stochastic {
 
       const_reference value_of(position_type node) const {
         return *iterator_for(node);
+      }
+
+      //TODO here for debugging -  make sure to delete
+      void printTree(){
+        for (int i=0;i<size();i++){
+          std::cout<<_tree[i]<<", ";
+        }
       }
 
     protected:
