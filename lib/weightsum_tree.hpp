@@ -4,6 +4,7 @@
 #include <limits>
 #include <utility>
 #include <random>
+#include <iostream>
 
 namespace dense {
 namespace stochastic {
@@ -65,6 +66,7 @@ class weightsum_tree {
         return _tree().last();
       }
     }
+    //std::cout << "Node Selected: " << node << std::endl;
     return node;
   }
 

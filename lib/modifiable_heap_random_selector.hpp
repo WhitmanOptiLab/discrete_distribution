@@ -5,6 +5,8 @@
 #include <vector>
 #include <functional>
 #include <type_traits>
+#include <iostream>
+#include <fstream>
 
 #include "completetree.hpp"
 #include "heap.hpp"
@@ -15,7 +17,7 @@ namespace stochastic {
 
 
   template <
-    typename I = int, size_t precision = std::numeric_limits<Real>::digits
+    typename I = size_t, size_t precision = std::numeric_limits<Real>::digits
   >
   class fast_random_selector :
     //Extends a complete tree...
@@ -83,6 +85,7 @@ namespace stochastic {
 
 
       //Methods of WeightSum we want to make available
+      
       template<class URNG>
       index_type operator()(URNG& g) {
         return id_of(WeightSum::operator()(g));
