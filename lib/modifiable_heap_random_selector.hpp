@@ -6,6 +6,7 @@
 #include <functional>
 #include <type_traits>
 #include <iostream>
+#include <fstream>
 
 #include "completetree.hpp"
 #include "heap.hpp"
@@ -84,11 +85,10 @@ namespace stochastic {
 
 
       //Methods of WeightSum we want to make available
+      
       template<class URNG>
       index_type operator()(URNG& g) {
-        auto item = WeightSum::operator()(g);
-        //std::cout<< "selected item "<< item<<std::endl;
-        return id_of(item);
+        return id_of(WeightSum::operator()(g));
       }
 
       void update_weight(index_type i, Real new_weight) {

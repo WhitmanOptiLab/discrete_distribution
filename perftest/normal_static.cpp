@@ -2,8 +2,9 @@
 //Enter the library you want to test after 'DWRSLIB=' and the number of weights after 'DWEIGHTNUM='.
 
 //Ex:
-//g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 normal_static.cpp
+//g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=100000" -o test0 normal_static.cpp
 //g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_static.cpp
+//g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=100000" -o testS normal_static.cpp
 //g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test2 normal_static.cpp
 
 #include "random_selector.hpp"
@@ -13,11 +14,13 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 using namespace dense::stochastic;
 
 int main() {
+  
   std::normal_distribution<double> d(5,2); 
-  std::default_random_engine generator;
+  std::default_random_engine generator(20);
   std::vector<double> weights = {};
   int sum = 1;
   
@@ -34,9 +37,10 @@ int main() {
   struct timeval start, end;
   WRSLIB selector(weights.begin(), weights.end()); 
   gettimeofday(&start, NULL);
-
+  
   for (int i = 0; i < 1000000; i++) {
     sum = sum + selector(generator);
+    
   }
   
   // end time
