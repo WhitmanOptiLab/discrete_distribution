@@ -45,22 +45,26 @@ class heap {
     }
   }
 
-  bool sift_up(PosType node) {
+  int sift_up(PosType node) {
     PosType start = node, parent;
+    int swaps = 0;
     while (node != _tree().root() && _tree().less(node, parent = _tree().parent_of(node))) {
       _tree().swap_with_child(parent, node);
       node = parent;
+      swaps++;
     }
-    return node != start;
+    return swaps;
   }
 
-  bool sift_down(PosType node) {
+  int sift_down(PosType node) {
     PosType start = node, min_child;
+    int swaps = 0;
     while (_tree().left_of(node) < _tree().size() && _tree().less(min_child = min_child_of(node), node)) {
       _tree().swap_with_child(node, min_child);
       node = min_child;
+      swaps++;
     }
-    return node != start;
+    return swaps;
   }
 
  private:
