@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 #include <type_traits>
+#include <cmath>
 
 #include "completetree.hpp"
 #include "heap.hpp"
@@ -84,8 +85,12 @@ namespace stochastic {
 
       //Methods of WeightSum we want to make available
       template<class URNG>
-      index_type operator()(URNG& g) {
-        return id_of(WeightSum::operator()(g));
+      int operator()(URNG& g) {  //change return type back to index_type!
+        node_type returnNode = WeightSum::operator()(g);
+        int depth = std::floor(std::log2(returnNode)) + 1;
+        return depth;
+        //std::cout << "Depth: " << depth << std::endl;
+        //return id_of(returnNode);
       }
 
       void update_weight(index_type i, Real new_weight) {
