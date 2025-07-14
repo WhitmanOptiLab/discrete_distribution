@@ -16,10 +16,11 @@ int main() {
     //for(int i = 0; i < 100; i++) {
         
         int num = 1000000;
+        int numWeights = 10000000;
         std::default_random_engine generator(10);
         std::vector<float> weights;
         std::uniform_real_distribution<float> d(1, 10);
-        for(int i = 0; i < num; i++) {
+        for(int i = 0; i < numWeights; i++) {
             weights.push_back(d(generator));
         }
 
@@ -44,8 +45,9 @@ int main() {
         for (int i = 0; i < num; i++) {
             int node = NonHeapSelector(generator);
             sumNonHeap += std::floor(std::log2(node)) + 1;
-            sumHeap += HeapSelector(generator);
-            swapSum+=HeapSelector.update_weight(ind(generator), d(generator));
+            auto heapSelectorOutput = HeapSelector(generator)
+            sumHeap += std::get<0>(heapSelectorOutput);
+            swapSum+=HeapSelector.update_weight(std::get<1>(heapSelectorOutput), /*Add the changed weight here*/);
         }
         double avgDepthNonHeap = sumNonHeap/num;
         double avgDepthHeap = sumHeap/num;
