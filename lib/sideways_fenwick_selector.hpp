@@ -60,13 +60,14 @@ namespace stochastic {
         //go through entire tree and change entries into weightsums of ENTIRE tree
         std::cout<<"tree before summing: ";
         this->PrintTree();
-        node_type lastNonLeaf = (BaseTree::size()-1)/2;
-        std::cout<<"last non leaf is "<<lastNonLeaf<<"    size is "<<BaseTree::size()-1<<std::endl;
-        if (BaseTree::size()%2==0){
+        node_type lastNonLeaf = (BaseTree::entry_count())/2;
+        std::cout<<"last non leaf is "<<lastNonLeaf<<std::endl;
+        if (lastNonLeaf%2==1){
             this->value_of(lastNonLeaf)+=(this->value_of(BaseTree::left_of(lastNonLeaf)));
         }
         else{
             this->value_of(lastNonLeaf)+=(this->value_of(BaseTree::left_of(lastNonLeaf)))+(this->value_of(BaseTree::right_of(lastNonLeaf)));
+            std::cout<<"last non leaf has two children ------- sum is "<<this->value_of(lastNonLeaf)<<std::endl;
         }
         //std::cout<<"lastNonLeaf summed"<<std::endl;
         for (node_type node = lastNonLeaf-1;node>=0;node--){
@@ -81,7 +82,7 @@ namespace stochastic {
             this->value_of(node)-=(this->value_of(BaseTree::right_of(node)));
         }
         //std::cout<<"right subtrees subtracted except in lastNonLeaf"<<std::endl;
-        if (BaseTree::size()%2==0){ //bc size in complete tree returns the size including the 0 index
+        if (BaseTree::entry_count()%2==1){ //bc size in complete tree returns the size including the 0 index
             this->value_of(lastNonLeaf)-=(this->value_of(BaseTree::right_of(lastNonLeaf)));
         }
         //std::cout<<"tree after summing: ";

@@ -8,7 +8,7 @@
 using namespace dense::stochastic;
 
 int main(){
-    int numWeights = 10;
+    int numWeights = 9;
     int numOperations=100;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
