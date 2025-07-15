@@ -182,7 +182,7 @@ namespace stochastic {
       }
 
       index_type& id_of(node_type node) {
-        return node_to_index[node]; //convert to 0-indexed
+        return node_to_index[node];
       }
 
       std::vector<index_type> node_to_index;
