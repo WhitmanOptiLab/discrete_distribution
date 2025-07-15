@@ -51,7 +51,7 @@ class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<R
 
   template<class URNG>
   IntType operator()(URNG& g){
-    return WeightSum::operator()(g) -1; //this accounts for the fact that, from the user's perspective, the tree is 0 indexed
+    return WeightSum::operator()(g) - 1;
   }
 
   Real& weightsum_of(PosType p) {

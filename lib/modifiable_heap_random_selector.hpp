@@ -86,9 +86,9 @@ namespace stochastic {
       //Methods of WeightSum we want to make available
       template<class URNG>
       std::tuple<int,index_type> operator()(URNG& g) {  //change return type back to index_type!
-        node_type returnNode = id_of(WeightSum::operator()(g));
+        node_type returnNode = WeightSum::operator()(g);
         int depth = std::floor(std::log2(returnNode)) + 1;
-        std::tuple<int,index_type>depthAndSelectedIndex(depth,returnNode)
+        std::tuple<int,index_type> depthAndSelectedIndex(depth, id_of(returnNode));
         return depthAndSelectedIndex;
         //std::cout << "Depth: " << depth << std::endl;
         //return returnNode;
@@ -182,7 +182,7 @@ namespace stochastic {
       }
 
       index_type& id_of(node_type node) {
-        return node_to_index[node];
+        return node_to_index[node]; //convert to 0-indexed
       }
 
       std::vector<index_type> node_to_index;

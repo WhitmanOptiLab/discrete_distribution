@@ -4,6 +4,7 @@
 #include <limits>
 #include <utility>
 #include <random>
+#include <iostream>
 
 namespace dense {
 namespace stochastic {
@@ -47,7 +48,7 @@ class weightsum_tree {
 
   template<class URNG>
   PosType operator()(URNG& g) {
-
+    
     Real target = std::generate_canonical<Real, precision, URNG>(g)*_total_weight;
     PosType node = _tree().root();
     //Loop until target random value is less than the current node's weight
@@ -64,7 +65,9 @@ class weightsum_tree {
       if (node > _tree().last()) {
         return _tree().last();
       }
+      
     }
+    
     return node;
   }
 

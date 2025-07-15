@@ -16,10 +16,12 @@ int main() {
     //for(int i = 0; i < 100; i++) {
         
         int num = 1000000;
-        int numWeights = 10000000;
-        std::default_random_engine generator(10);
+        int numWeights = 220;
+        std::default_random_engine generator(1);
         std::vector<float> weights;
         std::uniform_real_distribution<float> d(1, 10);
+        
+
         for(int i = 0; i < numWeights; i++) {
             weights.push_back(d(generator));
         }
@@ -32,7 +34,7 @@ int main() {
 
         //heap_random_selector<int> selector(weights.begin(), weights.end());
         //fast_random_selector<int> selector(weights.begin(), weights.end());
-        std::discrete_distribution<> ind(weights.begin(), weights.end());
+        //std::discrete_distribution<> ind(weights.begin(), weights.end());
 
         //std::cout << "Constructed" << std::endl;
         std::vector<unsigned int> counts(weights.size());
@@ -43,19 +45,28 @@ int main() {
         
       
         for (int i = 0; i < num; i++) {
+            
             int node = NonHeapSelector(generator);
-            sumNonHeap += std::floor(std::log2(node)) + 1;
-            auto heapSelectorOutput = HeapSelector(generator)
+            
+            sumNonHeap += std::floor(std::log2(node + 1)) + 1;
+            
+            auto heapSelectorOutput = HeapSelector(generator);
             sumHeap += std::get<0>(heapSelectorOutput);
-            swapSum+=HeapSelector.update_weight(std::get<1>(heapSelectorOutput), /*Add the changed weight here*/);
+            double weightChange = ((d(generator) - 5.5) / 45.0) + 1; //this generates a random number (0.9, 1.1) to change weight by +/- 10%
+            swapSum += HeapSelector.update_weight(std::get<1>(heapSelectorOutput), HeapSelector.get_weight(std::get<1>(heapSelectorOutput)) * weightChange); //weight changed by +/- 10%
+            //update the weight of the node selected by the non-heap selector
+            
+            
+            NonHeapSelector.update_weight(node + 1, NonHeapSelector.get_weight(node + 1) * weightChange);
+            std::cout << i << " " << node << " " << std::endl;
         }
         double avgDepthNonHeap = sumNonHeap/num;
         double avgDepthHeap = sumHeap/num;
         double avgSwaps = swapSum/num;
 
         std::cout << "Average Depth of Non Heap selections is " << avgDepthNonHeap << std::endl;
-        std::cout<<"Average Depth of Heap is slections is" <<avgDepthHeap<<std::endl;
-        std::cout<< "Average Number of Swaps is"<<avgSwaps<<std::endl;
+        std::cout<<"Average Depth of Heap is slections is " <<avgDepthHeap<<std::endl;
+        std::cout<< "Average Number of Swaps is "<<avgSwaps<<std::endl;
         std::cout<<"the heap component reduces the average depth of selection by "<<avgDepthNonHeap-avgDepthHeap<<" but adds "<<avgSwaps<<" swaps on average"<<std::endl;
         
   //}
