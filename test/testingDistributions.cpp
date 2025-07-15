@@ -1,5 +1,6 @@
 //#include "../lib/new_modifiable_heap_random_selector.hpp"
-#include"../lib/modifiable_heap_random_selector"
+//#include"../lib/modifiable_heap_random_selector"
+#include"../lib/sideways_fenwick_selector.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -7,7 +8,7 @@
 using namespace dense::stochastic;
 
 int main(){
-    int numWeights = 100;
+    int numWeights = 10;
     int numOperations=100;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
@@ -25,7 +26,7 @@ int main(){
     outputFile<<"starting distribution, "<<std::endl;
     for (int i=0;i<numWeights;i++){
         //double num = distribution(generator);
-        weights.push_back(distribution(generator));
+        weights.push_back(/*distribution(generator)*/i+1);
 
         outputFile<<weights[i]<<", "; //outputing the inditial weights
     }
@@ -33,21 +34,29 @@ int main(){
 
     //WOULD START TIMING HERE
     //Constructing the heap random selector
-    fast_random_selector<int> selector(weights.begin(), weights.end());
+    sideways_fenwick_selector<int> selector(weights.begin(), weights.end());
 
-    //selecting weights
-    for (int i=0;i<numOperations;i++){
-        int selectedItemIndex = selector(generator);
-        selector.update_weight(selectedItemIndex,selector.get_weight(selectedItemIndex)*uniformDistribution(generator));  
-
+    std::cout<<std::endl<<"getting weights - should print original tree"<<std::endl;
+    for(int i=0;i<numWeights;i++){
+        std::cout<<selector.get_weight(i)<<", ";
     }
-    //WOULD STOP TIMING HERE
+    std::cout<<std::endl;
 
-    //outputing the ending distribution
-    outputFile<<"ending distribution, "<<std::endl;
     
-    for (int i=0;i<numWeights;i++){
-        outputFile << selector.get_weight(i)<<", ";
-    }  
+
+    // //selecting weights
+    // for (int i=0;i<numOperations;i++){
+    //     int selectedItemIndex = selector(generator);
+    //     selector.update_weight(selectedItemIndex,selector.get_weight(selectedItemIndex)*uniformDistribution(generator));  
+
+    // }
+    // //WOULD STOP TIMING HERE
+
+    // //outputing the ending distribution
+    // outputFile<<"ending distribution, "<<std::endl;
+    
+    // for (int i=0;i<numWeights;i++){
+    //     outputFile << selector.get_weight(i)<<", ";
+    // }  
     outputFile.close();
 }

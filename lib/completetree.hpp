@@ -143,6 +143,15 @@ namespace stochastic {
         return *iterator_for(node);
       }
 
+      void PrintTree(){
+        std::cout<<"current tree";
+        for (int i=1;i<size();i++){
+          std::cout<<value_of(i)<<", ";
+        }
+        std::cout<<std::endl;
+
+      }
+
     protected:
       reference value_of(position_type node) {
         return const_cast<reference>(const_this().value_of(node));
