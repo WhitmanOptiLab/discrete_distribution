@@ -109,23 +109,23 @@ namespace stochastic {
     //   }
 
       void update_weight(index_type i, Real new_weight) {
-        std::cout<<"________________updating weight_____________"<<std::endl;
+        //std::cout<<"________________updating weight_____________"<<std::endl;
         auto node = node_of(i);
         Real weightDifference =  new_weight - this->weight_of(node);
-        std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
         while(node>BaseTree::root()){
             this->value_of(node)+=weightDifference;
-            std::cout<<"about to change node ";
+            //std::cout<<"about to change node ";
             this->PrintTree();
             node = nextNode(node);
-            std::cout<<"just changed node ";
+            //std::cout<<"just changed node ";
             this->PrintTree();
 
-            std::cout<<"new node is "<<node<<std::endl;
+            //std::cout<<"new node is "<<node<<std::endl;
             
         }
         this->value_of(node)+=weightDifference;
-        std::cout<<"ending tree is ";
+        //std::cout<<"ending tree is ";
         this->PrintTree();
       }
 
