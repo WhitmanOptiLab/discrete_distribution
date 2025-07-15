@@ -42,21 +42,26 @@ class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<R
   }
 
   Real& weight_of(PosType p) {
-    return BaseTree::value_of(p).first;
+    return BaseTree::value_of(p+1).first;
   }
 
   Real get_weight(PosType p) {
     return weight_of(p);
   }
 
+  template<class URNG>
+  IntType operator()(URNG& g){
+    return WeightSum::operator()(g) -1; //this accounts for the fact that, from the user's perspective, the tree is 0 indexed
+  }
+
   Real& weightsum_of(PosType p) {
-    return BaseTree::value_of(p).second;
+    return BaseTree::value_of(p+1).second;
   }
   const Real& weightsum_of(PosType p) const {
     return const_cast<This*>(this)->weightsum_of(p);
   }
 
-  PosType id_of(PosType p) { return p; }
+  PosType id_of(PosType p) { return p-1; }
 
 };
 
