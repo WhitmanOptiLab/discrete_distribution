@@ -36,7 +36,12 @@ int main(){
     //Constructing the heap random selector
     sideways_fenwick_selector<int> selector(weights.begin(), weights.end());
 
-    std::cout<<std::endl<<"getting weights - should print original tree"<<std::endl;
+    for(int i=0;i<numWeights;i++){
+        selector.update_weight(i,selector.get_weight(i)*2);
+    }
+    //selector.update_weight(1,10);
+
+    std::cout<<std::endl<<"getting weights all elements should be doubled"<<std::endl;
     for(int i=0;i<numWeights;i++){
         std::cout<<selector.get_weight(i)<<", ";
     }

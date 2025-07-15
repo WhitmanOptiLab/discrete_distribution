@@ -109,13 +109,24 @@ namespace stochastic {
     //   }
 
       void update_weight(index_type i, Real new_weight) {
+        std::cout<<"________________updating weight_____________"<<std::endl;
         auto node = node_of(i);
-        Real weightDifference =  new_weight - weight_of(node);
+        Real weightDifference =  new_weight - this->weight_of(node);
+        std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
         while(node>BaseTree::root()){
             this->value_of(node)+=weightDifference;
+            std::cout<<"about to change node ";
+            this->PrintTree();
             node = nextNode(node);
+            std::cout<<"just changed node ";
+            this->PrintTree();
+
+            std::cout<<"new node is "<<node<<std::endl;
+            
         }
         this->value_of(node)+=weightDifference;
+        std::cout<<"ending tree is ";
+        this->PrintTree();
       }
 
       Real get_weight(index_type i) {
@@ -127,7 +138,7 @@ namespace stochastic {
     private:
       //helper function to return the next node to update
       node_type nextNode(node_type currentNode){
-        return currentNode>((std::countr_zero(~(static_cast<size_t>(currentNode))))+1);
+        return currentNode>>((std::countr_zero(~(static_cast<size_t>(currentNode))))+1);
       }
 
      
@@ -172,17 +183,18 @@ namespace stochastic {
     	
 	    }
 
-    //   const Real& weight_of(node_type n) const {
-    //     return const_cast<This*>(this)->weight_of(n);
-    //   }
+      const Real& weight_of(node_type n) const {
+        return const_cast<This*>(this)->weight_of(n);
+      }
 
-    //   Real& weightsum_of(node_type n) {
-    //     return this->value_of(n).second;
-    //   }
+      //returns the sum of the left subtree and the node itself
+      Real& weightsum_of(node_type n) {
+        return this->value_of(n);
+      }
 
-    //   const Real& weightsum_of(node_type n) const {
-    //     return const_cast<This*>(this)->weightsum_of(n);
-    //   }
+      const Real& weightsum_of(node_type n) const {
+        return const_cast<This*>(this)->weightsum_of(n);
+      }
 
     //   void remove_last_entry() {
     //     auto last = BaseTree::value_of(BaseTree::last());
