@@ -13,10 +13,10 @@ using namespace dense::stochastic;
 int main() {
     double heapTime = 0;
     double nonHeapTime = 0;
-    std::default_random_engine generator(29);
+    std::default_random_engine generator(290);
     int num = 1000000;
-    int numWeights = num;
-    //for(int i = 0; i < 100; i++) {
+    int numWeights = 35;
+    for(int i = 0; i < 100; i++) {
         
          
 
@@ -46,15 +46,28 @@ int main() {
         //std::cout << "Constructed" << std::endl;
         double sumHeap = 0;
         double sumNonHeap = 0;
+        double swapSum=0;
 
+        //int randomIndex = (d(generator) - 1) * ((weights.size() - 1) / 9.0); //this generates a random index in the range [0, weights.size() - 1]
 
         
 
         gettimeofday(&start, NULL);
         //heap loop
         for (int i = 0; i < num; i++) {
+
             auto heapSelectorOutput = HeapSelector(generator);
-            sumHeap += std::get<0>(heapSelectorOutput);           
+            sumHeap += std::get<0>(heapSelectorOutput);
+            //updating selected node
+            //making sure that the weight does not become too large
+            double weightChange = increment(generator);
+            while (HeapSelector.get_weight(std::get<1>(heapSelectorOutput)) * weightChange > 25) {
+                weightChange = increment(generator);
+            }
+            swapSum += HeapSelector.update_weight(std::get<1>(heapSelectorOutput), HeapSelector.get_weight(std::get<1>(heapSelectorOutput)) * weightChange); //weight changed by +/- 10%
+
+            //update the weight of one other random node
+            //swapSum += HeapSelector.update_weight(randomIndex, HeapSelector.get_weight(randomIndex) * (weightChange)); //weight changed by +/- 10%            
         }
 
         gettimeofday(&end, NULL);
@@ -64,12 +77,19 @@ int main() {
         std::cout << "HEAP elapsed time: " << (elapsedTime / 1e6) << std::endl;
 
         
-
+        /*
         gettimeofday(&start, NULL);
         //non-heap loop
         for(int i = 0; i < num; i++) {
             int node = NonHeapSelector(generator);
-            sumNonHeap += std::floor(std::log2(node + 1)) + 1;            
+            sumNonHeap += std::floor(std::log2(node + 1)) + 1;
+            double weightChange = increment(generator);
+            while ((NonHeapSelector.get_weight(node + 1) * weightChange) > 25) {
+                weightChange = increment(generator);
+            }
+            NonHeapSelector.update_weight(node + 1, NonHeapSelector.get_weight(node + 1) * weightChange); //weight changed by +/- 10%
+            //update the weight of one other random node
+            //NonHeapSelector.update_weight(randomIndex + 1, NonHeapSelector.get_weight(randomIndex + 1) * (weightChange));
         }
 
         
@@ -79,17 +99,19 @@ int main() {
         elapsedTime += (end.tv_usec - start.tv_usec);
         nonHeapTime += elapsedTime / 1e6; // convert to seconds   
         std::cout << "NON-HEAP elapsed time: " << (elapsedTime / 1e6) << std::endl;
-
+        */
         
 
-        double avgDepthNonHeap = sumNonHeap/num;
+        //double avgDepthNonHeap = sumNonHeap/num;
         double avgDepthHeap = sumHeap/num;
+        double avgSwaps = swapSum/num;
 
-        std::cout << "Average Depth of Non Heap selections is " << avgDepthNonHeap << std::endl;
+        //std::cout << "Average Depth of Non Heap selections is " << avgDepthNonHeap << std::endl;
         std::cout<<"Average Depth of Heap is slections is " <<avgDepthHeap<<std::endl;
-        std::cout<<"the heap component reduces the average depth of selection by "<<avgDepthNonHeap-avgDepthHeap << std::endl;
+        std::cout<< "Average Number of Swaps is "<<avgSwaps<<std::endl;
+        //std::cout<<"the heap component reduces the average depth of selection by "<<avgDepthNonHeap-avgDepthHeap<<" but adds "<<avgSwaps<<" swaps on average"<<std::endl;
         
-  //}
-  std::cout << "TOTAL AVERAGE NON-HEAP TIME: " << nonHeapTime / 1.0 << std::endl;
-  std::cout << "TOTAL AVERAGE HEAP TIME: " << heapTime / 1.0 << std::endl;
+  }
+  //std::cout << "TOTAL AVERAGE NON-HEAP TIME: " << nonHeapTime / 100.0 << std::endl;
+  std::cout << "TOTAL AVERAGE HEAP TIME: " << heapTime / 100.0 << std::endl;
 }
