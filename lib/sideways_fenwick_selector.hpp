@@ -51,7 +51,7 @@ namespace stochastic {
       sideways_fenwick_selector(InputIt first, InputIt last) :
           BaseTree() 
       {
-        std::cout<<"__________constructor__________"<<std::endl;
+        //std::cout<<"__________constructor__________"<<std::endl;
         size_t n = static_cast<size_t>(last - first);
         InputIt it = first;
         for (index_type i = 0; it != last; ++it, ++i) {
@@ -59,16 +59,16 @@ namespace stochastic {
           BaseTree::add_entry(Real(w));
         }
         //go through entire tree and change entries into weightsums of ENTIRE tree
-        std::cout<<"tree before summing: ";
-        this->PrintTree();
+        //std::cout<<"tree before summing: ";
+        //this->PrintTree();
         node_type lastNonLeaf = (BaseTree::entry_count())/2;
-        std::cout<<"last non leaf is "<<lastNonLeaf<<std::endl;
+        //std::cout<<"last non leaf is "<<lastNonLeaf<<std::endl;
         if (lastNonLeaf%2==1){
             this->value_of(lastNonLeaf)+=(this->value_of(BaseTree::left_of(lastNonLeaf)));
         }
         else{
             this->value_of(lastNonLeaf)+=(this->value_of(BaseTree::left_of(lastNonLeaf)))+(this->value_of(BaseTree::right_of(lastNonLeaf)));
-            std::cout<<"last non leaf has two children ------- sum is "<<this->value_of(lastNonLeaf)<<std::endl;
+            //std::cout<<"last non leaf has two children ------- sum is "<<this->value_of(lastNonLeaf)<<std::endl;
         }
         //std::cout<<"lastNonLeaf summed"<<std::endl;
         for (node_type node = lastNonLeaf-1;node>=0;node--){
@@ -76,10 +76,10 @@ namespace stochastic {
             this->value_of(node)+=((this->value_of(BaseTree::left_of(node))+(this->value_of(BaseTree::right_of(node)))));
             //std::cout<<"node "<<node<<" summed    new value is "<<this->value_of(node)<<"   new value variable hols"<<newVal<<std::endl;
         }
-        std::cout<<"weightsum tree: ";
-        this->PrintTree();
+        //std::cout<<"weightsum tree: ";
+        //this->PrintTree();
         total_weight = this->value_of(this->root());
-        std::cout<<"total weight is "<<total_weight<<std::endl;
+        //std::cout<<"total weight is "<<total_weight<<std::endl;
         //go through entire tree again (this time from the top) and subtract the weight of the right subtree
         for(node_type node = BaseTree::root();node<lastNonLeaf;node++){
             this->value_of(node)-=(this->value_of(BaseTree::right_of(node)));
@@ -89,7 +89,7 @@ namespace stochastic {
             this->value_of(lastNonLeaf)-=(this->value_of(BaseTree::right_of(lastNonLeaf)));
         }
         //std::cout<<"tree after summing: ";
-        this->PrintTree();
+        //this->PrintTree();
 
       }
 
@@ -155,17 +155,17 @@ namespace stochastic {
         while(node>BaseTree::root()){
             this->value_of(node)+=weightDifference;
             //std::cout<<"about to change node ";
-            this->PrintTree();
+            //this->PrintTree();
             node = nextNode(node);
             //std::cout<<"just changed node ";
-            this->PrintTree();
+            //this->PrintTree();
 
             //std::cout<<"new node is "<<node<<std::endl;
             
         }
         this->value_of(node)+=weightDifference;
         //std::cout<<"ending tree is ";
-        this->PrintTree();
+        //this->PrintTree();
       }
 
       Real get_weight(index_type i) {

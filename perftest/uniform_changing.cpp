@@ -7,6 +7,7 @@
 
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
+#include "sideways_fenwick_selector.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
@@ -15,6 +16,8 @@
 using namespace dense::stochastic;
 
 int main() {
+    std::cout<<"running code"<<std::endl;
+
   std::uniform_real_distribution<double> d(1,10); 
   std::default_random_engine generator;
   std::vector<double> weights = {};
