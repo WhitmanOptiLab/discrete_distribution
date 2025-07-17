@@ -1,5 +1,5 @@
 //#include "../lib/new_modifiable_heap_random_selector.hpp"
-#include"../lib/random_selector.hpp"
+#include"../lib/sideways_fenwick.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -8,7 +8,7 @@ using namespace dense::stochastic;
 
 int main(){
     int numWeights = 100;
-    int numOperations=100;
+    int numOperations=10000000;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
 
@@ -21,19 +21,19 @@ int main(){
     std::uniform_real_distribution<double> uniformDistribution(percentWeightMin,percentWeightMax);
     std::vector<double> weights;
 
-    outputFile.open("test/adjustingWeightsHeapOutput.csv");
-    outputFile<<"starting distribution, "<<std::endl;
+    // outputFile.open("test/adjustingWeightsHeapOutput.csv");
+    // outputFile<<"starting distribution, "<<std::endl;
     for (int i=0;i<numWeights;i++){
         //double num = distribution(generator);
         weights.push_back(distribution(generator));
 
-        outputFile<<weights[i]<<", "; //outputing the inditial weights
+        // outputFile<<weights[i]<<", "; //outputing the inditial weights
     }
     outputFile<<std::endl<<std::endl;
 
     //WOULD START TIMING HERE
     //Constructing the heap random selector
-    nonuniform_int_distribution<int> selector(weights.begin(), weights.end());
+    sideways_fenwick_selector<int> selector(weights.begin(), weights.end());
 
     //selecting weights
     for (int i=0;i<numOperations;i++){
@@ -44,11 +44,11 @@ int main(){
     //WOULD STOP TIMING HERE
 
     //outputing the ending distribution
-    outputFile<<"ending distribution, "<<std::endl;
+    //outputFile<<"ending distribution, "<<std::endl;
     
-    for (int i=0;i<selector.get_leaf_start()+weights.size();i++){
-        outputFile << selector.weightsum_of(i)<<", ";
-    }  
+    // for (int i=0;i<selector.get_leaf_start()+weights.size();i++){
+    //     outputFile << selector.weightsum_of(i)<<", ";
+    // }  
     outputFile.close();
 
 

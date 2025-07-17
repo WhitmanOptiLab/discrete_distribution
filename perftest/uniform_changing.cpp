@@ -6,7 +6,8 @@
 //g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 uniform_changing.cpp
 
 #include "random_selector.hpp"
-#include "modifiable_heap_random_selector.hpp"
+#include "sideways_fenwick.hpp"
+
 #include <sys/time.h>
 #include <iostream>
 #include <random>
