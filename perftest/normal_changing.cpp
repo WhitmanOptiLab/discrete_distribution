@@ -3,10 +3,12 @@
 
 //Ex:
 //g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 normal_changing.cpp
-//g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
+//g++ -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
 
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
+#include "leaf_sum_tree_selector.hpp"
+#include "leaf_sum_tree_split.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
@@ -42,8 +44,9 @@ int main() {
   }	      
 
   //start time
-  auto start = std::chrono::steady_clock::now();
   WRSLIB selector(weights.begin(), weights.end());
+    auto start = std::chrono::steady_clock::now();
+
 
 
   

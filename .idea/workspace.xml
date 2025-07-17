@@ -18,39 +18,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a086a427-c953-4f18-9c5b-7075a47a7116" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/leaf_sum_tree_selector.hpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/leaf_sum_tree_split.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/random_selector.hpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/weightsum_tree.hpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/perftest/normal_changing.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/normal_changing.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/normal_static.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/normal_static.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_1024.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_1024.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_1048576.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_1048576.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_128.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_128.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_131072.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_131072.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_16.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_16.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_16384.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_16384.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_2048.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_2048.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_256.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_256.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_262144.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_262144.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_32.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_32.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_32768.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_32768.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_4096.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_4096.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_512.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_512.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_524288.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_524288.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_64.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_64.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_65536.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_65536.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/results_8192.csv" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/results_8192.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/test0" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/test0" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/test10" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/test10" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/test12" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/test12" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/test13" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/test13" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/test2" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/test2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/test3" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/test3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/test5" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/test5" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/test7" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/test7" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/test8" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/test8" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/uniform_changing.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/uniform_changing.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/uniform_static.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/uniform_static.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/weibull_changing.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/weibull_changing.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perftest/weibull_static.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/weibull_static.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perftest/test1" beforeDir="false" afterPath="$PROJECT_DIR$/perftest/test1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test/adjustingWeightsHeapOutput.csv" beforeDir="false" afterPath="$PROJECT_DIR$/test/test/adjustingWeightsHeapOutput.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,24 +47,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.RadMigrateCodeStyle": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "segment-tree-esque",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;segment-tree-esque&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\devme\Documents\GitHub\discrete_distribution\lib" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
