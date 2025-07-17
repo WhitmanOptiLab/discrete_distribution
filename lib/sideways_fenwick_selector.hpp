@@ -125,7 +125,7 @@ namespace stochastic {
           if (target<(this->value_of(node))){
             node = BaseTree::left_of(node);
           }
-          else if(BaseTree::right_of(node)<=BaseTree::entry_count()){
+          else if(BaseTree::right_of(node)<BaseTree::size()){
             target -=this->value_of(node);
             node=BaseTree::right_of(node);
           }
@@ -135,13 +135,7 @@ namespace stochastic {
           }
         else{
           return id_of(nextNode(node));
-          // node = nextNode(node);
-          // if (node<=BaseTree::entry_count()){
-          //   return id_of(node);
-          // }
-          // else{
-          //   return id_of(BaseTree::entry_count());
-          // }
+          
         }
 
 
@@ -183,26 +177,16 @@ namespace stochastic {
         return currentNode>>((std::countr_zero(~(static_cast<size_t>(currentNode))))+1);
       }
 
-     
-
-      
-
-    //   //Must call WeightSum::compute_weights() after this, before using random selection
-    //   void add_entry(entry_type&& e) {
-    //     value_type v = {std::get<1>(e),std::get<2>(e)};
-    //     BaseTree::add_entry(v);
-    //     auto newp = BaseTree::last();
-	// 	    index_type i = std::get<0>(e);
-	// 	    map_node(i, newp);
-    //   }
-
-    //   void add_entry(const entry_type& e) {
-    //     value_type v = {std::get<1>(e),std::get<2>(e)};
-    //     BaseTree::add_entry(v);
-    //     auto newp = BaseTree::last();
-	// 	    index_type i = std::get<0>(e);
-	// 	    map_node(i, newp);
-    //   }
+      void add_entry(const entry_type& e) {
+        value_type v = e;
+        BaseTree::add_entry(0);
+        update_weight(BaseTree::entry_count(),v);
+      }
+      void add_entry(const entry_type&& e) {
+        value_type v = e;
+        BaseTree::add_entry(0);
+        update_weight(BaseTree::entry_count(),v);
+      }
 
         Real weight_of(node_type n) {
             if (n*2<this->size()){
@@ -238,11 +222,10 @@ namespace stochastic {
         return const_cast<This*>(this)->weightsum_of(n);
       }
 
-    //   void remove_last_entry() {
-    //     auto last = BaseTree::value_of(BaseTree::last());
-    //     WeightSum::update_weight(BaseTree::last(), 0);
-    //     BaseTree::remove_last_entry();
-    //   }
+      void remove_last_entry() {
+        update_weight(BaseTree::last(),0);
+        BaseTree::remove_last_entry();
+      }
 
       sideways_fenwick_selector const& const_this() const {
         return static_cast<This const&>(*this);
