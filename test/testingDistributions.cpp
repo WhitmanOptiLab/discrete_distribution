@@ -9,7 +9,7 @@ using namespace dense::stochastic;
 
 int main(){
     int numWeights = 9;
-    int numOperations=10000;
+    int numOperations=100000;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
 
@@ -17,7 +17,7 @@ int main(){
 
 
     //Generating a normally distributed vector of weights
-    std::default_random_engine generator(10);
+    std::default_random_engine generator(7);
     std::normal_distribution<double> distribution(5.0,2.0);
     std::uniform_real_distribution<double> uniformDistribution(percentWeightMin,percentWeightMax);
     std::vector<double> weights;

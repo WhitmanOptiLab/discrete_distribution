@@ -112,7 +112,7 @@ namespace stochastic {
         node_type node = this->root();
         node_type lastNonLeaf = BaseTree::entry_count()/2;
         while(node<lastNonLeaf){
-          if (target<=(this->value_of(node))){
+          if (target<(this->value_of(node))){
             node = BaseTree::left_of(node);
           }
           else{
@@ -122,7 +122,7 @@ namespace stochastic {
         }
         //this is to make sure that there is a right child (if I did this in the loop it would check that there is a right child every time which is unecessary)
         if (node==lastNonLeaf){
-          if (target<=(this->value_of(node))){
+          if (target<(this->value_of(node))){
             node = BaseTree::left_of(node);
           }
           else if(BaseTree::right_of(node)<=BaseTree::entry_count()){
@@ -130,17 +130,18 @@ namespace stochastic {
             node=BaseTree::right_of(node);
           }
         }
-        if (target<=(this->value_of(node))){
+        if (target<(this->value_of(node))){
             return id_of(node);
           }
         else{
-          node = nextNode(node);
-          if (node<=BaseTree::entry_count()){
-            return id_of(node);
-          }
-          else{
-            return id_of(BaseTree::entry_count());
-          }
+          return id_of(nextNode(node));
+          // node = nextNode(node);
+          // if (node<=BaseTree::entry_count()){
+          //   return id_of(node);
+          // }
+          // else{
+          //   return id_of(BaseTree::entry_count());
+          // }
         }
 
 
