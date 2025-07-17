@@ -16,7 +16,6 @@
 using namespace dense::stochastic;
 
 int main() {
-    std::cout<<"running code"<<std::endl;
 
   std::weibull_distribution<double> d(0.5); 
   std::default_random_engine generator;

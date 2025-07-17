@@ -17,7 +17,6 @@
 using namespace dense::stochastic;
 
 int main() {
-    std::cout<<"running code"<<std::endl;
 
   std::uniform_real_distribution<double> d(1,10); 
   std::default_random_engine generator;

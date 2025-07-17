@@ -18,7 +18,6 @@
 using namespace dense::stochastic;
 
 int main() {
-    std::cout<<"running code"<<std::endl;
 
   std::normal_distribution<double> d(5,2); 
   std::default_random_engine generator(20);

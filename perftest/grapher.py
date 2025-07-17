@@ -28,8 +28,11 @@ plt.figure(figsize=(12, 7))
 num_lines = len(data_by_test)
 colors = cm.get_cmap('tab20', num_lines)  # or 'tab10', 'nipy_spectral', etc.
 
+color_index = 0
 for i, (test_name, times) in enumerate(data_by_test.items()):
-    plt.plot(levels, times, marker='o', label=test_name, color=colors(i))
+    if ("changing" not in test_name):
+        plt.plot(levels, times, marker='o', label=test_name, color=colors(color_index))
+        color_index+=1
 
 plt.xlabel("Number of Weights (Level)")
 plt.ylabel("Average Time (seconds)")
