@@ -13,9 +13,9 @@ using namespace dense::stochastic;
 int main() {
     double heapTime = 0;
     double nonHeapTime = 0;
-    std::default_random_engine generator(29);
+    std::default_random_engine generator(5);
     int num = 1000000;
-    int numWeights = 16;
+    int numWeights = 16; 
     //for(int i = 0; i < 100; i++) {
         
          
@@ -28,6 +28,7 @@ int main() {
         std::normal_distribution<float> n(12, 2);
         std::uniform_real_distribution<float> d(1, 10);
         std::uniform_real_distribution<double> increment((10.0 / 11.0), (11.0 / 10.0)); // +/- 10% change in weight
+        std::uniform_int_distribution<int> weightsDist(0, numWeights - 1);
         
 
         for(int i = 0; i < numWeights; i++) {
@@ -48,14 +49,12 @@ int main() {
         double sumNonHeap = 0;
         double swapSum=0;
 
-        //int randomIndex = (d(generator) - 1) * ((weights.size() - 1) / 9.0); //this generates a random index in the range [0, weights.size() - 1]
 
         
-        /*
+        
         gettimeofday(&start, NULL);
         //heap loop
         for (int i = 0; i < num; i++) {
-
             auto heapSelectorOutput = HeapSelector(generator);
             sumHeap += std::get<0>(heapSelectorOutput);
             //updating selected node
@@ -67,7 +66,11 @@ int main() {
             swapSum += HeapSelector.update_weight(std::get<1>(heapSelectorOutput), HeapSelector.get_weight(std::get<1>(heapSelectorOutput)) * weightChange); //weight changed by +/- 10%
 
             //update the weight of one other random node
-            //swapSum += HeapSelector.update_weight(randomIndex, HeapSelector.get_weight(randomIndex) * (weightChange)); //weight changed by +/- 10%            
+            int randomIndex = weightsDist(generator);
+            while(HeapSelector.get_weight(randomIndex) * weightChange > 25) {
+                weightChange = increment(generator);
+            }
+            swapSum += HeapSelector.update_weight(randomIndex, HeapSelector.get_weight(randomIndex) * (weightChange));   
         }
 
         gettimeofday(&end, NULL);
@@ -75,7 +78,7 @@ int main() {
         elapsedTime += (end.tv_usec - start.tv_usec);
         heapTime += elapsedTime / 1e6; // convert to seconds   
         std::cout << "HEAP elapsed time: " << (elapsedTime / 1e6) << std::endl;
-        */
+        
         
 
         gettimeofday(&start, NULL);
@@ -89,13 +92,17 @@ int main() {
             }
             NonHeapSelector.update_weight(node + 1, NonHeapSelector.get_weight(node + 1) * weightChange); //weight changed by +/- 10%
             //update the weight of one other random node
-            //NonHeapSelector.update_weight(randomIndex + 1, NonHeapSelector.get_weight(randomIndex + 1) * (weightChange));
+            int randomIndex = weightsDist(generator);
+            while(NonHeapSelector.get_weight(randomIndex + 1) * weightChange > 25) {
+                weightChange = increment(generator);
+            }
+            NonHeapSelector.update_weight(randomIndex + 1, NonHeapSelector.get_weight(randomIndex + 1) * (weightChange));
         }
 
         
 
         gettimeofday(&end, NULL);
-        double elapsedTime = (end.tv_sec - start.tv_sec) * 1e6; // convert seconds to microseconds
+        elapsedTime = (end.tv_sec - start.tv_sec) * 1e6; // convert seconds to microseconds
         elapsedTime += (end.tv_usec - start.tv_usec);
         nonHeapTime += elapsedTime / 1e6; // convert to seconds   
         std::cout << "NON-HEAP elapsed time: " << (elapsedTime / 1e6) << std::endl;
@@ -107,11 +114,12 @@ int main() {
         double avgSwaps = swapSum/num;
 
         std::cout << "Average Depth of Non Heap selections is " << avgDepthNonHeap << std::endl;
-        //std::cout<<"Average Depth of Heap is slections is " <<avgDepthHeap<<std::endl;
-        //std::cout<< "Average Number of Swaps is "<<avgSwaps<<std::endl;
-        //std::cout<<"the heap component reduces the average depth of selection by "<<avgDepthNonHeap-avgDepthHeap<<" but adds "<<avgSwaps<<" swaps on average"<<std::endl;
+        std::cout<<"Average Depth of Heap is slections is " <<avgDepthHeap<<std::endl;
+        std::cout<< "Average Number of Swaps is "<<avgSwaps<<std::endl;
+        std::cout<<"the heap component reduces the average depth of selection by "<<avgDepthNonHeap-avgDepthHeap<<" but adds "<<avgSwaps<<" swaps on average"<<std::endl;
         
   //}
   std::cout << "TOTAL AVERAGE NON-HEAP TIME: " << nonHeapTime / 100.0 << std::endl;
-  //std::cout << "TOTAL AVERAGE HEAP TIME: " << heapTime / 100.0 << std::endl;
+  std::cout << "TOTAL AVERAGE HEAP TIME: " << heapTime / 100.0 << std::endl;
+  std::cout << (double)num / (double)numWeights << std::endl;
 }

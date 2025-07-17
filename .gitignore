@@ -3,3 +3,5 @@ perf.data
 a.out
 perf.data.old
 a.out
+*.csv
+test[0-9]*

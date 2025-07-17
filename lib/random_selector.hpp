@@ -12,7 +12,7 @@ namespace stochastic {
 
 //Class to randomly select an index where each index's probability of being 
 //  selected is weighted by a given vector.  
-template <class IntType = int, size_t precision = std::numeric_limits<Real>::digits>
+template <class IntType = size_t, size_t precision = std::numeric_limits<Real>::digits>
 class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<Real, Real> >,  
                                     public weightsum_tree<nonuniform_int_distribution<IntType, precision>, IntType, precision> {
  public:

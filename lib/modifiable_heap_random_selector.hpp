@@ -6,6 +6,7 @@
 #include <functional>
 #include <type_traits>
 #include <cmath>
+#include <iostream>
 
 #include "completetree.hpp"
 #include "heap.hpp"
@@ -16,7 +17,7 @@ namespace stochastic {
 
 
   template <
-    typename I = int, size_t precision = std::numeric_limits<Real>::digits
+    typename I = size_t, size_t precision = std::numeric_limits<Real>::digits
   >
   class fast_random_selector :
     //Extends a complete tree...
@@ -93,16 +94,64 @@ namespace stochastic {
         //std::cout << "Depth: " << depth << std::endl;
         //return returnNode;
       }
-
+      
+      /*
+      //old update weight method, which was for a full maintenance heap
       int update_weight(index_type i, Real new_weight) {
         auto node = index_to_node[i];
         Real old_weight = weight_of(node);
         WeightSum::update_weight(index_to_node[i], new_weight);
         if (old_weight < new_weight)
-          return Heap::sift_up(node);
-        else
+          return Heap::sift_up(node); 
+        else 
           return Heap::sift_down(node);
       }
+      */
+
+      /*
+      //new update weight method, which is for a heap with no maintenance (heap at start, nothing after)
+      int update_weight(index_type i, Real new_weight) {
+        auto node = index_to_node[i];
+        Real old_weight = weight_of(node);
+        WeightSum::update_weight(index_to_node[i], new_weight);
+        return 0; //no sift up or down, since we don't maintain the heap property after the initial construction
+      }
+      */
+      
+      
+      //another possible update weight method, which updates when the weight changes by more than x% (9% seems to be best so far)
+      int update_weight(index_type i, Real new_weight) {
+        auto node = index_to_node[i];
+        Real old_weight = weight_of(node);
+        WeightSum::update_weight(index_to_node[i], new_weight);
+        if ((new_weight - old_weight) / old_weight > 0.09) //if the weight has increased by more than 9%
+          return Heap::sift_up(node);
+        else 
+          return 0; 
+      }
+      
+
+      /*
+      //another possible update weight method, which 
+      int update_weight(index_type i, Real new_weight) {
+        counter++;
+        auto node = index_to_node[i];
+        Real old_weight = weight_of(node);
+        WeightSum::update_weight(index_to_node[i], new_weight);
+        
+        if ((new_weight > old_weight)) { 
+          double diff = ((((new_weight - old_weight) / old_weight) + 1 )* 10) + counter % 3;
+          //std::cout << diff << std::endl;
+          if(diff > 11.5) {
+            //std::cout << diff << std::endl;
+            return Heap::sift_up(node);
+          } else {return 0; }
+          
+        } else {return 0;}
+      }
+        */
+      
+      
 
       Real get_weight(index_type i) {
         return weight_of(index_to_node[i]);
@@ -111,6 +160,9 @@ namespace stochastic {
       Real total_weight() const { return WeightSum::total_weight(); }
 
     private:
+
+      //counter for variety/randomness in the update function
+      int counter = 0;
 
       void map_node(index_type i, node_type n) {
     	index_to_node[i] = n;
