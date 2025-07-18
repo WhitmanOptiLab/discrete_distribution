@@ -32,9 +32,8 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
     BaseTree()
   {
     size_t n = std::distance(first, last);
-    leaf_count = next_power_of_two(n);
-    leaf_start = leaf_count;
-    BaseTree::resize(2 * leaf_count, 0.0); //double the size of the weights list (rounded to next power of two)
+    leaf_start = next_power_of_two(n);
+    BaseTree::resize(2 * leaf_start, 0.0); //double the size of the weights list (rounded to next power of two)
     //copy weights to leaves
     InputIt it = first;
     for (size_t i = 0; it != last; ++it, ++i) {
@@ -56,7 +55,7 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
 //  }
 
   void update_weight(PosType i, Real new_weight) {
-    i=node_of(i); //Perrin added - ask devon to make sure I'm understanding code correctly
+    i=node_of(i);
     Real weight_diff = new_weight - weightsum_of(i);
     while (i != BaseTree::root()) {
       weightsum_of(i) += weight_diff;
@@ -88,7 +87,7 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
     }
     //std::cout << "Returning node " << node << ", which has weight: " << weightsum_of(node) << std::endl;
     
-    return id_of(node);//Perrin Added - talk to devon
+    return id_of(node);
   }
 
   Real total_weight() const {
@@ -100,7 +99,7 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
   }
 
   Real get_weight(PosType i) const {
-    assert(i >= 0 && i < static_cast<PosType>(leaf_count));
+    assert(i >= 0 && i < static_cast<PosType>(leaf_start));
     return BaseTree::value_of(leaf_start + i);
   }
 
@@ -115,12 +114,9 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
 
   PosType node_of(IntType i){return leaf_start+i;}
 
-  size_t get_leaf_count() const { return leaf_count; }
-
   size_t get_leaf_start() const { return leaf_start; }
 
 private:
-  size_t leaf_count;
   size_t leaf_start;
 
   static size_t next_power_of_two(size_t n) {
@@ -128,12 +124,6 @@ private:
     while (p < n) p <<= 1;
     return p;
   }
- 
-
-
-
-  //Real _total_weight = 0.0;
-
 };
 
 }
