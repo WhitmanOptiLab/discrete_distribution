@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 #include <type_traits>
+#include <sys/mman.h>
 namespace dense {
 namespace stochastic {
 
@@ -113,6 +114,20 @@ namespace stochastic {
       reference at(position_type i) {
         return _tree[i];
       }
+
+      void setUpHugePages(){
+        void* treeData = static_cast<void*> (_tree.data());
+        const size_t size = (100 * 1024 * 1024);
+        //entry_type memoryTocher;
+        madvise(treeData,size,MADV_HUGEPAGE);
+        // for (int i=0;i<_tree.size();i++){
+        //   memoryToucher = _tree[i];
+        // }
+      }
+
+      
+
+
 
     private:
       std::vector<entry_type> _tree;

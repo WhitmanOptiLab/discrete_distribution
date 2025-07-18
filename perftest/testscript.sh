@@ -10,7 +10,7 @@
 
 echo "Number of tests: $1" # first argument is num of tests
 echo "Weightnum: $2" # second argument is number of weights in data structure
-echo "normal_static_wrs, normal_static_discrete, normal_changing_wrs, uniform_static_wrs, uniform_static_discrete, uniform_changing_wrs, weibull_static_wrs, weibull_static_discrete, weibull_changing_wrs" > results_$2.csv
+echo "normal_static_fenwick, normal_static_discrete, normal_changing_fenwick, uniform_static_fenwick, uniform_static_discrete, uniform_changing_fenwick, weibull_static_fenwick, weibull_static_discrete, weibull_changing_fenwick" > results_$2.csv
 
 # Normal distribution static weight tests
 g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
@@ -103,12 +103,12 @@ echo " " >> results.csv
 echo "$average0, $average2, $average3, $average5, $average7, $average8, $average10, $average12, $average13" >> results_$2.csv
 
 # Print the average
-echo "normal_static_wrs: $average0"
+echo "normal_static_fenwick: $average0"
 echo "normal_static_discrete: $average2"
-echo "normal_changing_wrs: $average3"
-echo "uniform_static_wrs: $average5"
+echo "normal_changing_fenwick: $average3"
+echo "uniform_static_fenwick: $average5"
 echo "uniform_static_discrete: $average7"
-echo "uniform_changing_wrs: $average8"
-echo "weibull_static_wrs: $average10"
+echo "uniform_changing_fenwick: $average8"
+echo "weibull_static_fenwick: $average10"
 echo "weibull_static_discrete: $average12"
-echo "weibull_changing_wrs: $average13"
+echo "weibull_changing_fenwick: $average13"

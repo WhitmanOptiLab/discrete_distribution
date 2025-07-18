@@ -34,6 +34,7 @@ class nonuniform_int_distribution : public complete_tree<IntType, Real>,
     for (PosType i = 1; first != last; ++first, ++i) {
       BaseTree::add(i, *first); // Add to Fenwick tree
     }
+    BaseTree::setUpHugePages();
     WeightSum::access_total_weight() = BaseTree::prefix_sum(BaseTree::entries());
 
   }
