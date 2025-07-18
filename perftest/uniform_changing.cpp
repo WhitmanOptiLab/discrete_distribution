@@ -5,8 +5,11 @@
 //g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 uniform_changing.cpp
 //g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 uniform_changing.cpp
 
-#include "random_selector.hpp"
 #include "sideways_fenwick.hpp"
+
+
+#include "leaf_sum_tree_selector.hpp"
+#include "leaf_sum_tree_split.hpp"
 
 #include <sys/time.h>
 #include <iostream>
@@ -21,6 +24,8 @@ int main() {
   std::default_random_engine generator;
   std::vector<float> weights = {};
   std::uniform_real_distribution<float> d2(0.99, 1.01);
+  std::uniform_int_distribution<int> randomIndex(0,WEIGHTNUM-1);
+
   
   for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
@@ -40,6 +45,9 @@ int main() {
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)));
+    for(int i = 0;i<1;i++){
+      selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
+    }
   }
   
   // end time

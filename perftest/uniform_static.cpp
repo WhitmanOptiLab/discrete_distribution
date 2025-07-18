@@ -6,8 +6,11 @@
 //g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 uniform_static.cpp
 //g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test2 uniform_static.cpp
 
-#include "random_selector.hpp"
 #include "sideways_fenwick.hpp"
+
+
+#include "leaf_sum_tree_selector.hpp"
+#include "leaf_sum_tree_split.hpp"
 
 #include <sys/time.h>
 #include <iostream>

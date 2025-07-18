@@ -56,6 +56,7 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
 //  }
 
   void update_weight(PosType i, Real new_weight) {
+    i=node_of(i); //Perrin added - ask devon to make sure I'm understanding code correctly
     Real weight_diff = new_weight - weightsum_of(i);
     while (i != BaseTree::root()) {
       weightsum_of(i) += weight_diff;
@@ -86,8 +87,8 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
       //std::cout << std::endl;
     }
     //std::cout << "Returning node " << node << ", which has weight: " << weightsum_of(node) << std::endl;
-
-    return node;
+    
+    return id_of(node);//Perrin Added - talk to devon
   }
 
   Real total_weight() const {
@@ -110,7 +111,9 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
     return const_cast<This*>(this)->weightsum_of(p);
   }
 
-  PosType id_of(PosType p) { return leaf_start + p; }
+  PosType id_of(PosType p) { return p-leaf_start; }
+
+  PosType node_of(IntType i){return leaf_start+i;}
 
   size_t get_leaf_count() const { return leaf_count; }
 
@@ -125,6 +128,8 @@ private:
     while (p < n) p <<= 1;
     return p;
   }
+ 
+
 
 
   //Real _total_weight = 0.0;

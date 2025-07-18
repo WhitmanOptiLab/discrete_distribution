@@ -29,7 +29,7 @@ int main(){
 
         // outputFile<<weights[i]<<", "; //outputing the inditial weights
     }
-    outputFile<<std::endl<<std::endl;
+    //outputFile<<std::endl<<std::endl;
 
     //WOULD START TIMING HERE
     //Constructing the heap random selector

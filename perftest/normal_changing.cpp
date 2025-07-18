@@ -31,6 +31,7 @@ double generate_normal_between(double mean, double stddev, double min, double ma
 int main() {
   std::normal_distribution<float> d(5,2);
   std::uniform_real_distribution<float> d2(0.99, 1.01);
+  std::uniform_int_distribution<int> randomIndex(0,WEIGHTNUM-1);
   std::default_random_engine generator;
   std::vector<float> weights = {};
 
@@ -55,6 +56,12 @@ int main() {
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)));
+    for(int j = 0;j<4;j++){
+      int randI = randomIndex(generator);
+      //std::cout<<"about to update weights "<<randI<<std::endl;
+      selector.update_weight(randI,std::max<float>(0.0, d(generator)));
+      //std::cout<<"just updated weights "<<randI<<std::endl;
+    }
   }
   
   // end time
