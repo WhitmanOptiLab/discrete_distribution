@@ -14,11 +14,16 @@
 
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
+#include "leaf_sum_tree_selector.hpp"
+#include "leaf_sum_tree_split.hpp"
+#include "sideways_fenwick_selector.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <chrono>
+//#include "wrslib_selector.hpp"
 using namespace dense::stochastic;
 
 #ifndef WEIGHTNUM
@@ -45,18 +50,26 @@ int main() {
   }	      
 
   //start time
+<<<<<<< Updated upstream
   struct timeval start, end;
   gettimeofday(&start, NULL);
   WRSLIB selector(weights.begin(), weights.end()); 
   
   for (int i = 0; i < SELECTNUM; i++) {
+=======
+  WRSLIB selector(weights.begin(), weights.end());
+  auto start = std::chrono::steady_clock::now();
+
+
+
+  for (int i = 0; i < 1000000; i++) {
+>>>>>>> Stashed changes
     sum = sum + selector(generator);
   }
   
   // end time
-  gettimeofday(&end, NULL);
-  double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
-    double(end.tv_usec - start.tv_usec)/1000000.0;
-  std::cout << elapsedtime_sec << std::endl;
+  auto end = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = end - start;
+  std::cout << elapsed.count() << std::endl;
   if(sum == 0 ) {std::cout << "hit"; } // Added conditional so compiler must compute sum
 }
