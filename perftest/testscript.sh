@@ -10,16 +10,22 @@
 
 echo "Number of tests: $1" # first argument is num of tests
 echo "Weightnum: $2" # second argument is number of weights in data structure
-echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_changing_wrs, normal_changing_heap, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_changing_wrs, uniform_changing_heap, weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_changing_wrs, weibull_changing_heap" > results_$2.csv
+echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_static_fenwick, normal_static_leafsum, normal_changing_wrs, normal_changing_heap, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_changing_wrs, uniform_changing_heap, weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_changing_wrs, weibull_changing_heap" > results_$2.csv
 
 # Normal distribution static weight tests
 g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
 g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
 g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=$2" -o test2 normal_static.cpp
+g++ -I../fenwick -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test3 normal_static.cpp
+g++ -I../leaf-weightsum -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test4 normal_static.cpp
+
+
+
 
 # Normal distribution changing weight tests
 g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test3 normal_changing.cpp
 g++ -I../lib -O3 "-DWRSLIB=fast_random_selector<int>" "-DWEIGHTNUM=$2" -o test4 normal_changing.cpp
+
 
 # Uniform distribution static weight tests
 g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test5 uniform_static.cpp
