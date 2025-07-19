@@ -32,9 +32,14 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
     BaseTree()
   {
     size_t n = std::distance(first, last);
+<<<<<<< Updated upstream
     leaf_count = next_power_of_two(n);
     leaf_start = leaf_count;
     BaseTree::resize(2 * leaf_count, 0.0); //double the size of the weights list (rounded to next power of two)
+=======
+    leaf_start = next_power_of_two(n);
+    BaseTree::resize(2 * leaf_start, 0.0); //double the size of the weights list (rounded to next power of two)
+>>>>>>> Stashed changes
     //copy weights to leaves
     InputIt it = first;
     for (size_t i = 0; it != last; ++it, ++i) {
@@ -56,6 +61,10 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
 //  }
 
   void update_weight(PosType i, Real new_weight) {
+<<<<<<< Updated upstream
+=======
+    i=node_of(i);
+>>>>>>> Stashed changes
     Real weight_diff = new_weight - weightsum_of(i);
     while (i != BaseTree::root()) {
       weightsum_of(i) += weight_diff;
@@ -86,8 +95,13 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
       //std::cout << std::endl;
     }
     //std::cout << "Returning node " << node << ", which has weight: " << weightsum_of(node) << std::endl;
+<<<<<<< Updated upstream
 
     return node;
+=======
+    
+    return id_of(node);
+>>>>>>> Stashed changes
   }
 
   Real total_weight() const {
@@ -99,7 +113,11 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
   }
 
   Real get_weight(PosType i) const {
+<<<<<<< Updated upstream
     assert(i >= 0 && i < static_cast<PosType>(leaf_count));
+=======
+    assert(i >= 0 && i < static_cast<PosType>(leaf_start));
+>>>>>>> Stashed changes
     return BaseTree::value_of(leaf_start + i);
   }
 
@@ -110,14 +128,23 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
     return const_cast<This*>(this)->weightsum_of(p);
   }
 
+<<<<<<< Updated upstream
   PosType id_of(PosType p) { return leaf_start + p; }
 
   size_t get_leaf_count() const { return leaf_count; }
+=======
+  PosType id_of(PosType p) { return p-leaf_start; }
+
+  PosType node_of(IntType i){return leaf_start+i;}
+>>>>>>> Stashed changes
 
   size_t get_leaf_start() const { return leaf_start; }
 
 private:
+<<<<<<< Updated upstream
   size_t leaf_count;
+=======
+>>>>>>> Stashed changes
   size_t leaf_start;
 
   static size_t next_power_of_two(size_t n) {
@@ -125,6 +152,7 @@ private:
     while (p < n) p <<= 1;
     return p;
   }
+<<<<<<< Updated upstream
   Real sum_weights(PosType i) {
     if (i > BaseTree::last()) return 0.0;
     Real& weightsum = weightsum_of(i);
@@ -140,6 +168,8 @@ private:
 
   //Real _total_weight = 0.0;
 
+=======
+>>>>>>> Stashed changes
 };
 
 }

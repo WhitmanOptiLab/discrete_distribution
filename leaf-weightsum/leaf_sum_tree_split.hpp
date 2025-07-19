@@ -32,10 +32,16 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
     BaseTree()
   {
     size_t n = std::distance(first, last);
+<<<<<<< Updated upstream
     leaf_count = next_power_of_two(n);
     leaf_start = leaf_count;
     BaseTree::resize(leaf_count, 0.0); //stores internal tree nodes, at the size of the weights list (rounded to next power of two)
     leaves.resize(leaf_count, 0.0); //stores leaf nodes with actual weights
+=======
+    leaf_start = next_power_of_two(n);
+    BaseTree::resize(leaf_start, 0.0); //stores internal tree nodes, at the size of the weights list (rounded to next power of two)
+    leaves.resize(leaf_start, 0.0); //stores leaf nodes with actual weights
+>>>>>>> Stashed changes
     //copy weights to leaves
     InputIt it = first;
     for (size_t i = 0; it != last; ++it, ++i) {
@@ -46,13 +52,19 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
     for (std::ptrdiff_t i = leaf_start - 1; i >= 1; --i) {
       size_t li = 2 * i;
       size_t ri = 2 * i + 1;
+<<<<<<< Updated upstream
       //std::cout << "trying to build internal tree" << std::endl;
 
+=======
+>>>>>>> Stashed changes
       Real left = (li >= leaf_start) ? leaves[li - leaf_start] : BaseTree::value_of(li);
       Real right = (ri >= leaf_start) ? leaves[ri - leaf_start] : BaseTree::value_of(ri);
 
       BaseTree::value_of(i) = left + right;
+<<<<<<< Updated upstream
       //std::cout << "built one internal tree node at " << i << std::endl;
+=======
+>>>>>>> Stashed changes
     }
   }
 
@@ -62,7 +74,10 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
     i += leaf_start;
     while (i > BaseTree::root()) {
       i = BaseTree::parent_of(i);
+<<<<<<< Updated upstream
       //std::cout << i << std::endl;
+=======
+>>>>>>> Stashed changes
       weightsum_of(i) += weight_diff;
     }
   }
@@ -74,7 +89,10 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
     PosType node = BaseTree::root();
 
     while (node < leaf_start/2) {
+<<<<<<< Updated upstream
       //std::cout << "Leaf start: " << leaf_start << std::endl;
+=======
+>>>>>>> Stashed changes
       //std::cout << "Node target: " << node << std::endl;
       //std::cout << "Target: " << target << std::endl;
 
@@ -89,7 +107,10 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
       //std::cout << std::endl;
     }
 
+<<<<<<< Updated upstream
     //std::cout << "Leaf start: " << leaf_start << std::endl;
+=======
+>>>>>>> Stashed changes
     //std::cout << "Node target: " << node << std::endl;
     //std::cout << "Target: " << target << std::endl;
 
@@ -117,7 +138,11 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
   }
 
   Real get_weight(PosType i) const {
+<<<<<<< Updated upstream
     assert(i >= 0 && i < static_cast<PosType>(leaf_count));
+=======
+    assert(i >= 0 && i < static_cast<PosType>(leaf_start));
+>>>>>>> Stashed changes
     return leaves[i];
   }
 
@@ -130,12 +155,18 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
 
   PosType id_of(PosType p) { return leaf_start + p; }
 
+<<<<<<< Updated upstream
   size_t get_leaf_count() const { return leaf_count; }
 
   size_t get_leaf_start() const { return leaf_start; }
 
 private:
   size_t leaf_count;
+=======
+  size_t get_leaf_start() const { return leaf_start; }
+
+private:
+>>>>>>> Stashed changes
   size_t leaf_start;
 
   static size_t next_power_of_two(size_t n) {
@@ -143,11 +174,15 @@ private:
     while (p < n) p <<= 1;
     return p;
   }
+<<<<<<< Updated upstream
 
 
   //Real _total_weight = 0.0;
   std::vector<Real> leaves;
 
+=======
+  std::vector<Real> leaves;
+>>>>>>> Stashed changes
 };
 
 }

@@ -51,12 +51,15 @@ int main() {
 
   //start time
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   struct timeval start, end;
   gettimeofday(&start, NULL);
   WRSLIB selector(weights.begin(), weights.end()); 
   
   for (int i = 0; i < SELECTNUM; i++) {
 =======
+=======
+>>>>>>> Stashed changes
   WRSLIB selector(weights.begin(), weights.end());
   auto start = std::chrono::steady_clock::now();
 

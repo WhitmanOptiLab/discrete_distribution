@@ -19,6 +19,7 @@
 using namespace dense::stochastic;
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 #ifndef WEIGHTNUM
 #define WEIGHTNUM 1000000
 #endif
@@ -27,6 +28,8 @@ using namespace dense::stochastic;
 #define SELECTNUM 1000000
 #endif
 =======
+=======
+>>>>>>> Stashed changes
 double generate_weibull_between(double shape, double scale, double min, double max, std::default_random_engine& gen) {
   std::weibull_distribution<double> dist(shape, scale);
   double x;
@@ -35,6 +38,9 @@ double generate_weibull_between(double shape, double scale, double min, double m
   } while (x < min || x > max);
   return x;
 }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 int main() {
@@ -56,9 +62,15 @@ int main() {
 
   //start time
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   struct timeval start, end;
   gettimeofday(&start, NULL);
   WRSLIB selector(weights.begin(), weights.end());
+=======
+  WRSLIB selector(weights.begin(), weights.end());
+  auto start = std::chrono::steady_clock::now();
+
+>>>>>>> Stashed changes
 =======
   WRSLIB selector(weights.begin(), weights.end());
   auto start = std::chrono::steady_clock::now();
