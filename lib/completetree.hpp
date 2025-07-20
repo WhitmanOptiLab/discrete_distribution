@@ -158,6 +158,7 @@ namespace stochastic {
         return *iterator_for(node);
       }
 
+
     protected:
       reference value_of(position_type node) {
         return const_cast<reference>(const_this().value_of(node));
