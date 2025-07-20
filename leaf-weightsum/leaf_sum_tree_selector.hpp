@@ -32,14 +32,8 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
     BaseTree()
   {
     size_t n = std::distance(first, last);
-<<<<<<< Updated upstream
-    leaf_count = next_power_of_two(n);
-    leaf_start = leaf_count;
-    BaseTree::resize(2 * leaf_count, 0.0); //double the size of the weights list (rounded to next power of two)
-=======
     leaf_start = next_power_of_two(n);
     BaseTree::resize(2 * leaf_start, 0.0); //double the size of the weights list (rounded to next power of two)
->>>>>>> Stashed changes
     //copy weights to leaves
     InputIt it = first;
     for (size_t i = 0; it != last; ++it, ++i) {

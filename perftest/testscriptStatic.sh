@@ -7,9 +7,7 @@
 echo "Number of tests: $1"
 echo "Weightnum: $2"
 
-echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_static_fenwick, normal_static_leafsum, normal_static_leaf_sum_split, normal_static_sideways_fenwick, normal_static_weightsum,
-uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_static_fenwick, uniform_static_leafsum, uniform_static_leaf_sum_split, uniform_static_sideways_fenwick, uniform_static_weightsum,
-weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_static_fenwick, weibull_static_leafsum, weibull_static_leaf_sum_split, weibull_static_sideways_fenwick, weibull_static_weightsum" > results_$2.csv
+echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_static_fenwick, normal_static_leafsum, normal_static_leaf_sum_split, normal_static_sideways_fenwick, normal_static_weightsum, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_static_fenwick, uniform_static_leafsum, uniform_static_leaf_sum_split, uniform_static_sideways_fenwick, uniform_static_weightsum, weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_static_fenwick, weibull_static_leafsum, weibull_static_leaf_sum_split, weibull_static_sideways_fenwick, weibull_static_weightsum" > results_$2.csv
 
 # Normal distribution static weight tests
 g++ -std=c++20 -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>"       "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
