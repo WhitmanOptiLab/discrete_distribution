@@ -1,15 +1,15 @@
 #!/bin/bash
-
 # HOW TO USE:
 # Ex:
 # bash testscript.sh [num tests] [wightnum]
 
 # Script to test variations of the weighted random selections
-
 echo "Number of tests: $1"
 echo "Weightnum: $2"
 
-echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_static_fenwick, normal_static_leafsum, normal_static_leaf_sum_split, normal_static_sideways_fenwick, normal_changing_wrs, normal_changing_heap, normal_changing_fenwick, normal_changing_leafsum, normal_changing_leaf_sum_split, normal_changing_sideways_fenwick, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_static_fenwick, uniform_static_leafsum, uniform_static_leaf_sum_split, uniform_static_sideways_fenwick, uniform_changing_wrs, uniform_changing_heap, uniform_changing_fenwick, uniform_changing_leafsum, uniform_changing_leaf_sum_split, uniform_changing_sideways_fenwick, weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_static_fenwick, weibull_static_leafsum, weibull_static_leaf_sum_split, weibull_static_sideways_fenwick, weibull_changing_wrs, weibull_changing_heap, weibull_changing_fenwick, weibull_changing_leafsum, weibull_changing_leaf_sum_split, weibull_changing_sideways_fenwick" > results_$2.csv
+echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_static_fenwick, normal_static_leafsum, normal_static_leaf_sum_split, normal_static_sideways_fenwick, normal_static_weightsum,
+uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_static_fenwick, uniform_static_leafsum, uniform_static_leaf_sum_split, uniform_static_sideways_fenwick, uniform_static_weightsum,
+weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_static_fenwick, weibull_static_leafsum, weibull_static_leaf_sum_split, weibull_static_sideways_fenwick, weibull_static_weightsum" > results_$2.csv
 
 # Normal distribution static weight tests
 g++ -std=c++20 -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>"       "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
@@ -19,7 +19,9 @@ g++ -std=c++20 -I../fenwick -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DW
 g++ -std=c++20 -I../leaf-weightsum -O3 "-DWRSLIB=leaf_sum_tree<int>"          "-DWEIGHTNUM=$2" -o test4 normal_static.cpp
 g++ -std=c++20 -I../leaf-weightsum -O3 "-DWRSLIB=leaf_sum_tree_split<int>"    "-DWEIGHTNUM=$2" -o test5 normal_static.cpp
 g++ -std=c++20 -I../sideways-fenwick -O3 "-DWRSLIB=sideways_fenwick_selector<int>" "-DWEIGHTNUM=$2" -o test6 normal_static.cpp
-g++ -std=c++20 -I/home/nfs/burnsa/Documents/GitHub/discrete_distribution/lib -O3 "-DWRSLIB=low_storage_selector<int>"                "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=low_storage_selector<int>" "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
+#g++ -std=c++20 -I../lib -O3 "-DWRSLIB=low_storage_selector<int>" "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
+
 #g++ -std=c++20 -I/home/nfs/burnsa/Documents/GitHub/discrete_distribution/lib -O3 ... 
 
 # Uniform distribution static weight tests

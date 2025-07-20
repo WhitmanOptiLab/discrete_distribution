@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # HOW TO USE:
 # Ex:
 # bash testscript.sh [num tests] [wightnum]
