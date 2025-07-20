@@ -8,24 +8,13 @@
 
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
-#include "leaf_sum_tree_selector.hpp"
-#include "leaf_sum_tree_split.hpp"
-#include "sideways_fenwick_selector.hpp"
+#include "no_weight_storage_modifiable_heap_random_selector.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
 #include <vector>
 #include <algorithm>
-#include <chrono>
 using namespace dense::stochastic;
-
-#ifndef WEIGHTNUM
-#define WEIGHTNUM 1000000
-#endif
-
-#ifndef SELECTNUM
-#define SELECTNUM 1000000
-#endif
 
 int main() {
   std::weibull_distribution<float> d(0.5); 
@@ -43,29 +32,18 @@ int main() {
   }	      
 
   //start time
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
   struct timeval start, end;
-  gettimeofday(&start, NULL);
   WRSLIB selector(weights.begin(), weights.end()); 
-=======
-  WRSLIB selector(weights.begin(), weights.end());
-  auto start = std::chrono::steady_clock::now();
-=======
-  WRSLIB selector(weights.begin(), weights.end());
-  auto start = std::chrono::steady_clock::now();
+  gettimeofday(&start, NULL);
 
->>>>>>> Stashed changes
-
->>>>>>> Stashed changes
-
-  for (int i = 0; i < SELECTNUM; i++) {
+  for (int i = 0; i < 1000000; i++) {
     sum = sum + selector(generator);
   }
   
   // end time
-  auto end = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = end - start;
-  std::cout << elapsed.count() << std::endl;
+  gettimeofday(&end, NULL);
+  double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
+    double(end.tv_usec - start.tv_usec)/1000000.0;
+  std::cout << elapsedtime_sec << std::endl;
   if(sum == 0 ) {std::cout << "hit"; } // Added conditional so compiler must compute sum
 }

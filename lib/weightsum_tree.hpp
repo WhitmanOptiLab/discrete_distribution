@@ -45,6 +45,10 @@ class weightsum_tree {
 
   Real total_weight() const { return _total_weight; }
 
+   void add_to_total_weight(Real add){
+    _total_weight+=add;
+  }
+
   template<class URNG>
   PosType __attribute__ ((noinline)) operator()(URNG& g) {
 
