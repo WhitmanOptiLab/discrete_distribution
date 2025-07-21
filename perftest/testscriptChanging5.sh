@@ -62,7 +62,7 @@ sum17=0
 for ((i=1; i<=$1; i++)); do
     result0=$(./test0)
     result1=$(./test1)
-    result2=$(./test1)
+    result2=$(./test2)
     result3=$(./test3)
     result4=$(./test4)
     result5=$(./test5)

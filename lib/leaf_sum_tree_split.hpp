@@ -52,6 +52,9 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
     }
   }
 
+
+  
+
   void update_weight(PosType i, Real new_weight) {
     Real weight_diff = new_weight - leaves[i];
     leaves[i] = new_weight;

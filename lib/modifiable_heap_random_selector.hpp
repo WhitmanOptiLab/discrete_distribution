@@ -107,6 +107,32 @@ namespace stochastic {
 
       Real total_weight() const { return WeightSum::total_weight(); }
 
+      void remove_last_entry() {
+        WeightSum::update_weight(BaseTree::last(), 0);
+        BaseTree::remove_last_entry();
+      }
+
+      void push_entry(Real&& newEntry) {
+        value_type v = {0,0};
+        BaseTree::add_entry(v);
+        auto newp = BaseTree::last();
+		    index_type i = BaseTree::entry_count();
+		    map_node(i, newp);
+        update_weight(newp,newEntry);
+      }
+
+      void push_entry(Real& newEntry) {
+        value_type v = {0,0};
+        BaseTree::add_entry(v);
+        auto newp = BaseTree::last();
+		    index_type i = BaseTree::entry_count();
+		    map_node(i, newp);
+        update_weight(newp,newEntry);
+       
+      }
+
+
+
     private:
 
       void map_node(index_type i, node_type n) {
@@ -153,11 +179,7 @@ namespace stochastic {
         return const_cast<This*>(this)->weightsum_of(n);
       }
 
-      void remove_last_entry() {
-        auto last = BaseTree::value_of(BaseTree::last());
-        WeightSum::update_weight(BaseTree::last(), 0);
-        BaseTree::remove_last_entry();
-      }
+      
 
       fast_random_selector const& const_this() const {
         return static_cast<This const&>(*this);
