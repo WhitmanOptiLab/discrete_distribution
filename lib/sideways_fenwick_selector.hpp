@@ -142,25 +142,26 @@ namespace stochastic {
       }
 
       void update_weight(index_type i, Real new_weight) {
-        //std::cout<<"________________updating weight_____________"<<std::endl;
-        auto node = node_of(i);
-        Real weightDifference =  new_weight - this->weight_of(node);
-        total_weight+=weightDifference;
-        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
-        while(node>BaseTree::root()){
-            this->value_of(node)+=weightDifference;
-            //std::cout<<"about to change node ";
-            //this->PrintTree();
-            node = nextNode(node);
-            //std::cout<<"just changed node ";
-            //this->PrintTree();
+        update_weight_of_node(node_of(i),new_weight);
+        // std::cout<<"________________updating weight_____________"<<std::endl;
+        // auto node = node_of(i);
+        // Real weightDifference =  new_weight - this->weight_of(node);
+        // total_weight+=weightDifference;
+        // std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+        // while(node>BaseTree::root()){
+        //     this->value_of(node)+=weightDifference;
+        //     //std::cout<<"about to change node ";
+        //     //this->PrintTree();
+        //     node = nextNode(node);
+        //     //std::cout<<"just changed node ";
+        //     //this->PrintTree();
 
-            //std::cout<<"new node is "<<node<<std::endl;
+        //     //std::cout<<"new node is "<<node<<std::endl;
             
-        }
-        this->value_of(node)+=weightDifference;
-        //std::cout<<"ending tree is ";
-        //this->PrintTree();
+        // }
+        // this->value_of(node)+=weightDifference;
+        // //std::cout<<"ending tree is ";
+        // //this->PrintTree();
       }
 
       Real get_weight(index_type i) {
@@ -168,6 +169,21 @@ namespace stochastic {
       }
 
     //   Real total_weight() const { return WeightSum::total_weight(); }
+
+      void push_entry(const entry_type& e) {
+        value_type v = e;
+        BaseTree::add_entry(0);
+        update_weight_of_node(BaseTree::last(),v);
+      }
+      void push_entry(const entry_type&& e) {
+        value_type v = e;
+        BaseTree::add_entry(0);
+        update_weight_of_node(BaseTree::last(),v);
+      }
+      void remove_last_entry() {
+        update_weight_of_node(BaseTree::last(),0);
+        BaseTree::remove_last_entry();
+      }
 
     private:
 
@@ -177,16 +193,7 @@ namespace stochastic {
         return currentNode>>((std::countr_zero(~(static_cast<size_t>(currentNode))))+1);
       }
 
-      void add_entry(const entry_type& e) {
-        value_type v = e;
-        BaseTree::add_entry(0);
-        update_weight(BaseTree::entry_count(),v);
-      }
-      void add_entry(const entry_type&& e) {
-        value_type v = e;
-        BaseTree::add_entry(0);
-        update_weight(BaseTree::entry_count(),v);
-      }
+      
 
         Real weight_of(node_type n) {
             if (n*2<this->size()){
@@ -222,13 +229,30 @@ namespace stochastic {
         return const_cast<This*>(this)->weightsum_of(n);
       }
 
-      void remove_last_entry() {
-        update_weight(BaseTree::last(),0);
-        BaseTree::remove_last_entry();
-      }
-
       sideways_fenwick_selector const& const_this() const {
         return static_cast<This const&>(*this);
+      }
+
+      void update_weight_of_node(node_type givenNode, Real new_weight) {
+        std::cout<<"________________updating weight_____________"<<std::endl;
+        auto node = givenNode;
+        Real weightDifference =  new_weight - this->weight_of(node);
+        total_weight+=weightDifference;
+        std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+        while(node>BaseTree::root()){
+            this->value_of(node)+=weightDifference;
+            //std::cout<<"about to change node ";
+            //this->PrintTree();
+            node = nextNode(node);
+            //std::cout<<"just changed node ";
+            //this->PrintTree();
+
+            //std::cout<<"new node is "<<node<<std::endl;
+            
+        }
+        this->value_of(node)+=weightDifference;
+        //std::cout<<"ending tree is ";
+        //this->PrintTree();
       }
 
       
