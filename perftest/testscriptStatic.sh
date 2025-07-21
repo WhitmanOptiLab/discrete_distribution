@@ -149,6 +149,6 @@ average22=$(awk "BEGIN { printf \"%.6f\", $sum22 / $1 }")
 average23=$(awk "BEGIN { printf \"%.6f\", $sum23 / $1 }")
 
 echo " " >> results_$2.csv
-echo "$average0, $average1, $average2, $average3, $average4, $average5, $average6, $average7, $average8, $average9, $average10, $average11, $average12, $average13, $average14, $average15, $average16, $average17, $average18, $average19, $average20, $average21, $average22, $average23" >> results_$2.csv1)
+echo "$average0, $average1, $average2, $average3, $average4, $average5, $average6, $average7, $average8, $average9, $average10, $average11, $average12, $average13, $average14, $average15, $average16, $average17, $average18, $average19, $average20, $average21, $average22, $average23" >> results_$2.csv
     
 
