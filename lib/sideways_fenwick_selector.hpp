@@ -71,7 +71,7 @@ namespace stochastic {
             //std::cout<<"last non leaf has two children ------- sum is "<<this->value_of(lastNonLeaf)<<std::endl;
         }
         //std::cout<<"lastNonLeaf summed"<<std::endl;
-        for (node_type node = lastNonLeaf-1;node>=0;node--){
+        for (node_type node = lastNonLeaf-1;node>0;node--){
           //std::cout<<"left val: "<<this->value_of(BaseTree::left_of(node))<<"    right val "<<this->value_of(BaseTree::right_of(node))<<std::endl;
             this->value_of(node)+=((this->value_of(BaseTree::left_of(node))+(this->value_of(BaseTree::right_of(node)))));
             //std::cout<<"node "<<node<<" summed    new value is "<<this->value_of(node)<<"   new value variable hols"<<newVal<<std::endl;
@@ -190,7 +190,7 @@ namespace stochastic {
       Real total_weight=0;
       //helper function to return the next node to update
       node_type nextNode(node_type currentNode){
-        return currentNode>>((std::countr_zero(~(static_cast<size_t>(currentNode))))+1);
+        return currentNode>>(((std::countr_one(currentNode)))+1);
       }
 
       
@@ -234,11 +234,11 @@ namespace stochastic {
       }
 
       void update_weight_of_node(node_type givenNode, Real new_weight) {
-        std::cout<<"________________updating weight_____________"<<std::endl;
+        //std::cout<<"________________updating weight_____________"<<std::endl;
         auto node = givenNode;
         Real weightDifference =  new_weight - this->weight_of(node);
         total_weight+=weightDifference;
-        std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
         while(node>BaseTree::root()){
             this->value_of(node)+=weightDifference;
             //std::cout<<"about to change node ";
