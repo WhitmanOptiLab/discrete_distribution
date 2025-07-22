@@ -8,7 +8,7 @@ using namespace dense::stochastic;
 
 int main(){
     int numWeights = 10;
-    int numOperations=100000000;
+    int numOperations=10;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
 
@@ -35,7 +35,6 @@ int main(){
     //WOULD START TIMING HERE
     //Constructing the heap random selector
     low_storage_selector<int> selector(weights.begin(), weights.end());
-    std::cout<<"finished constructing"<<std::endl;
 
     outputFile<<"distribution after construction, "<<std::endl;
 
@@ -61,7 +60,6 @@ int main(){
         outputFile<<entry<<", ";
         selector.push_entry(entry);
     }
-    std::cout<<std::endl<<"weights added"<<std::endl;
 
 
     outputFile<<"ending distribution, "<<std::endl;
@@ -70,19 +68,16 @@ int main(){
         outputFile << selector.get_weight(i)<<", ";
     }
 
-    std::cout<<"about to remove"<<std::endl;
-    outputFile<<std::endl<<"removing last 6 weights"<<std::endl;
-    for(int i=0;i<1;i++){
+    outputFile<<std::endl<<"removing last weight"<<std::endl;
+    for(int i=0;i<6;i++){
         selector.remove_last_entry();
     }
     outputFile<<std::endl<<"ending distribution: "<<std::endl;
-    std::cout<<"just removed";
 
-    for (int i=0;i<(numWeights+4-1);i++){
+    for (int i=0;i<(numWeights+4-6);i++){
         outputFile << selector.get_weight(i)<<", ";
         //std::cout<<"getting weight at index "<<i<<std::endl;
     }
-    std::cout<<"about to close file";
 
 
 

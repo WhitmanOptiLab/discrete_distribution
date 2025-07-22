@@ -70,18 +70,14 @@ namespace stochastic {
       {
         size_t n = static_cast<size_t>(last - first);
         node_to_index.resize(n+1);
-        index_to_node.resize(n+1);
+        index_to_node.resize(n);
         InputIt it = first;
         for (index_type i = 0; it != last; ++it, ++i) {
           double w = *it;
-          //Heap::push will add entries through the add_entry method, which
-          //  will create index associations
+
           push_entry(Real(w)); //TODO - change construction
-          //std::cout<<"after construction cycle tree is ";
-          //this->printTree();
-          //std::cout<<std::endl;
+         
         }
-        //WeightSum::compute_weights();
       }
 
       
@@ -130,10 +126,8 @@ namespace stochastic {
       Real total_weight() const { return WeightSum::total_weight(); }
 
       void push_entry(Real weight) {
-        //std::cout<<std::endl<<std::endl<<"################  adding item  ###################"<<std::endl;
-        //std::cout<<std::setprecision(7)<<"the weight being added is"<<std::get<1>(entry)<<std::endl;
+
         BaseTree::add_entry(weight);
-        ///std::cout<<std::endl<<"mapping index "<<BaseTree::entry_count()<<" to node "<<BaseTree::last();
 		    map_node(BaseTree::entry_count()-1, BaseTree::last());
         this->add_to_total_weight(weight);
         node_type node = this->last();
@@ -141,78 +135,66 @@ namespace stochastic {
           node = BaseTree::parent_of(node);
           this->weightsum_of(node)+=weight;
         }
-        // if(this->last()!=this->root()){
-        //   this->weightsum_of(node)+=std::get<1>(entry);
-        // }
-        //std::cout<<"element added to location"<< this->last()<< " is"<<std::to_string(this->at(this->last()))<<std::endl<<std::endl;
-        //std::cout<<"after pushing tree is ";
 
         this->sift_up(this->last());
-        //this->printTree();
-        //std::cout<<std::endl;
+
       }
+
+  
+
+    
     void remove_last_entry() {
-      std::cout<<"entry count is "<<BaseTree::entry_count();
-      // std::cout<<std::endl<<"index to node contains ";
-      // for(int i=0;i<index_to_node.size();i++){
-      //   std::cout<<index_to_node[i]<<", "<<std::endl;
-      // }
-      node_type toRemove = index_to_node[(BaseTree::entry_count())];
-      std::cout<<"removing node "<<toRemove<<" with value "<<this->weight_of(toRemove);
-      Real oldWeight = this->weight_of(toRemove);
-      Real weight_diff = (this->weight_of(this->last()))- oldWeight;
+      Real lastEntryWeight = this->value_of(BaseTree::last());
+      this->update_weight_of_node(BaseTree::last(),0);
+      Real toRemove = index_to_node[BaseTree::entry_count()-1];
+      if (toRemove!=BaseTree::last()){
+        Real oldWeight = this->weight_of(toRemove);
+      Real weight_diff = lastEntryWeight- oldWeight;
+
+      for(node_type node=toRemove;node>=BaseTree::root();node=BaseTree::parent_of(node)){
+        this->weightsum_of(node)+=weight_diff;
+      }
+      if (weight_diff>0) 
+        Heap::sift_up(toRemove);
+      else
+        Heap::sift_down(toRemove);
+      this->add_to_total_weight(weight_diff);
       swap_indexes(toRemove,this->last());
-      std::cout<<std::endl<<"TO REMOVE IS "<<toRemove<<std::endl;
-      this->update_weight_of_node(toRemove,this->weight_of(this->last()));
+
+      }
+      
       BaseTree::remove_last_entry();
-      this->add_to_total_weight(-1*oldWeight-weight_diff);
+     
 
 
 
-      // auto node = index_to_node[i];
-      //   auto origNode = node;
-      //   Real old_weight = weight_of(node);
-      //   Real difference = new_weight - old_weight;
-      //   while (node!=BaseTree::root()){
-      //       this->weightsum_of(node)+=difference;
-      //       node = BaseTree::parent_of(node);
-      //   }
-      //   this->weightsum_of(node)+=difference;
-      //   if (difference>0) //changed this bc I'm pretty sure the original is wrong - I'm confused
-      //     Heap::sift_up(origNode);
-      //   else
-      //     Heap::sift_down(origNode);
-      //   this->add_to_total_weight(difference);
-      //   //std::cout<<"total weight now "<<this->total_weight();
+      
     }
+
+    
+
     
 
     private:
 
      void swap_with_child(node_type parent, node_type child){
-      //std::cout<<"___________swap______________"<<std::endl<<"initial counditions "<<std::endl;
-        //std::cout<<"tree before swap: ";
-        //this->printTree();
-        //std::cout<<std::endl;
-        //std::cout<<"child in position "<<child<< " now has a weight of "<<this->weight_of(child)<<std::endl;
-        //std::cout<<"parent in position "<<parent<<"now has a weight of "<<this->weight_of(parent)<<std::endl;
+      
 
         Real weight_diff = this->weight_of(parent) - this->weight_of(child);
         this->weightsum_of(child)+=weight_diff;
         swap_indexes(parent, child);
-        //std::cout<<"swap occured";
-        //std::cout<<"original parent in position "<<child<< " now has a weight of "<<this->weight_of(child)<<std::endl;
-        //std::cout<<"original child in position "<<parent<< " now has a weight of "<<this->weight_of(parent)<<std::endl;
-
+       
      }
 
       void map_node(index_type i, node_type n) {
-      if(i>=index_to_node.size()+1){
-        index_to_node.resize((index_to_node.size()+1)*2);
-        node_to_index.resize((node_to_index.size()+1)*2);
+      if(i>=index_to_node.size()){
+        index_to_node.push_back(n);
+        node_to_index.push_back(i);
+        return;
       }
     	index_to_node[i] = n;
     	node_to_index[n] = i;
+      return;
 	    }
 
       void swap_indexes(node_type a, node_type b) {
@@ -238,27 +220,22 @@ namespace stochastic {
 		    map_node(i, newp);
       }
 
-      void update_weight_of_node(node_type inputNode, Real new_weight) {
-        int node = inputNode;
-        std::cout<<std::endl<<"updating node "<<node<<" (index "<<node_to_index[node]<< ") to contain "<<new_weight<<std::endl;
+      void update_weight_of_node(node_type node, Real new_weight) {
         auto origNode = node;
         Real old_weight = weight_of(node);
         Real difference = new_weight - old_weight;
-        std::cout<<"about to start updating weight"<<std::endl;
-        std::cout<<"node "<<node;
         while (node!=BaseTree::root()){
             this->weightsum_of(node)+=difference;
             node = BaseTree::parent_of(node);
-            //std::cout<<"node "<<node<<std::endl;
+          
         }
         this->weightsum_of(node)+=difference;
-        std::cout<<"about to start heaping"<<std::endl;
         if (difference>0) //changed this bc I'm pretty sure the original is wrong - I'm confused
           Heap::sift_up(origNode);
         else
           Heap::sift_down(origNode);
         this->add_to_total_weight(difference);
-        //std::cout<<"total weight now "<<this->total_weight();
+
         return;
       }
 
