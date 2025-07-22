@@ -33,6 +33,7 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
   {
     size_t n = std::distance(first, last);
     leaf_start = next_power_of_two(n);
+    leaf_end = n;
     BaseTree::resize(2 * leaf_start, 0.0); //double the size of the weights list (rounded to next power of two)
     //copy weights to leaves
     InputIt it = first;
@@ -110,6 +111,146 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
     return const_cast<This*>(this)->weightsum_of(p);
   }
 
+  void push_back(Real new_weight) {
+    size_t new_leaf_end = leaf_end + 1;
+    if (new_leaf_end > leaf_start) {
+      std::vector<Real> all_weights;
+      all_weights.reserve(new_leaf_end);
+      for(size_t i = 0; i < leaf_end; ++i) {
+        all_weights.push_back(get_weight(i));
+      }
+      all_weights.push_back(new_weight);
+
+      leaf_start = next_power_of_two(new_leaf_end);
+      leaf_end = new_leaf_end;
+      BaseTree::resize(2 * leaf_start, 0.0);
+      for(size_t i = 0; i < leaf_end; ++i) {
+        weightsum_of(leaf_start + i) = all_weights[i];
+      }
+      //Full tree rebuild
+      for (std::ptrdiff_t i = leaf_start - 1; i >= 1; --i) {
+        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
+      }
+    } else {
+      update_weight(leaf_end, new_weight);
+      ++leaf_end;
+    }
+  }
+
+  void pop_back() {
+    if (leaf_end == 0) return;
+
+    size_t item_to_remove_idx = leaf_end - 1;
+
+    //First, efficiently set the weight to 0. This updates parents.
+    update_weight(item_to_remove_idx, 0.0);
+    --leaf_end;
+
+    //Now, check if we should shrink the tree's capacity. If not, there's no more work to be done! Yay! If yes, well, lots of copying.
+    size_t checkSize = next_power_of_two(leaf_end);
+    if (checkSize < leaf_start) {
+      std::vector<Real> active_weights;
+      active_weights.reserve(leaf_end);
+      for (size_t i = 0; i < leaf_end; ++i) {
+        active_weights.push_back(get_weight(i));
+      }
+      leaf_start = checkSize;
+      BaseTree::resize(2 * leaf_start, 0.0);
+      for (size_t i = 0; i < leaf_end; ++i) {
+        weightsum_of(leaf_start + i) = active_weights[i];
+      }
+      for (std::ptrdiff_t i = leaf_start - 1; i >= 1; --i) {
+        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
+      }
+    }
+  }
+
+  //Allows a vector to be inserted into the tree all at once.
+  //Uses efficient tree updating - skips updating nodes multiple times, and
+  //is thus more efficient than just calling the base function repeatedly.
+  template <typename It>
+  void push_back(It first, It last) {
+    size_t count = std::distance(first, last);
+    size_t new_leaf_end = leaf_end + count;
+
+    if (new_leaf_end > leaf_start) {
+      //Full rebuild required :<
+      std::vector<Real> new_leaves;
+      new_leaves.reserve(new_leaf_end);
+      for (size_t i = 0; i < leaf_end; ++i)
+        new_leaves.push_back(weightsum_of(leaf_start + i));
+      for (; first != last; ++first)
+        new_leaves.push_back(*first);
+
+      leaf_start = next_power_of_two(new_leaf_end);
+      leaf_end = new_leaf_end;
+      BaseTree::resize(2 * leaf_start, 0.0);
+
+      for (size_t i = 0; i < leaf_end; ++i)
+        weightsum_of(leaf_start + i) = new_leaves[i];
+
+      for (std::ptrdiff_t i = leaf_start - 1; i >= 1; --i)
+        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
+    } else {
+      //No resize! Partial tree update
+      size_t pos = leaf_end;
+      for (; first != last; ++first)
+        weightsum_of(leaf_start + pos++) = *first;
+
+      size_t first = leaf_start + leaf_end;
+      size_t last  = leaf_start + new_leaf_end - 1;
+
+      while (first > 1) {
+        first >>= 1;
+        last  >>= 1;
+        for (size_t i = first; i <= last; ++i)
+          weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
+      }
+      leaf_end = new_leaf_end;
+    }
+  }
+
+  //Allows a number of back nodes to be deleted from the tree all at once.
+  //Uses efficient tree updating - skips updating nodes multiple times, and
+  //is thus more efficient than just calling the base function repeatedly.
+  void pop_back(size_t count) {
+    if (count > leaf_end) count = leaf_end;
+    size_t new_leaf_end = leaf_end - count;
+
+    for (size_t i = new_leaf_end; i < leaf_end; ++i)
+      weightsum_of(leaf_start + i) = 0.0;
+
+    auto checkSize = next_power_of_two(new_leaf_end);
+    if (checkSize < leaf_start) {
+      //Have to shrink tree for memory efficiency's sake - requires recalculating entire tree though
+      std::vector<Real> kept_leaves(new_leaf_end);
+      for (size_t i = 0; i < new_leaf_end; ++i)
+        kept_leaves[i] = weightsum_of(leaf_start + i);
+
+      leaf_start = checkSize;
+      leaf_end = new_leaf_end;
+      BaseTree::resize(2 * leaf_start, 0.0);
+
+      for (size_t i = 0; i < leaf_end; ++i)
+        weightsum_of(leaf_start + i) = kept_leaves[i];
+
+      for (std::ptrdiff_t i = leaf_start - 1; i >= 1; --i)
+        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
+    } else {
+      //Not possible to shrink tree; so we just zero out deleted sections
+      size_t first = leaf_start + new_leaf_end;
+      size_t last  = leaf_start + leaf_end - 1;
+
+      while (first > 1) {
+        first >>= 1;
+        last  >>= 1;
+        for (size_t i = first; i <= last; ++i)
+          weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
+      }
+      leaf_end = new_leaf_end;
+    }
+  }
+
   PosType id_of(PosType p) { return p-leaf_start; }
 
   PosType node_of(IntType i){return leaf_start+i;}
@@ -118,6 +259,7 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
 
 private:
   size_t leaf_start;
+  size_t leaf_end;
 
   static size_t next_power_of_two(size_t n) {
     size_t p = 1;

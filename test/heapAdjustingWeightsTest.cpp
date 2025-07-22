@@ -1,5 +1,5 @@
 //#include "../lib/new_modifiable_heap_random_selector.hpp"
-#include"../lib/sideways_fenwick.hpp"
+#include"../lib/leaf_sum_tree_selector.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -33,7 +33,7 @@ int main(){
 
     //WOULD START TIMING HERE
     //Constructing the heap random selector
-    sideways_fenwick_selector<int> selector(weights.begin(), weights.end());
+    leaf_sum_tree<int> selector(weights.begin(), weights.end());
 
     //selecting weights
     for (int i=0;i<numOperations;i++){
