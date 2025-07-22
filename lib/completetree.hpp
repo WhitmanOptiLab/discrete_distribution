@@ -60,6 +60,11 @@ namespace stochastic {
       //Tree modification methods
       //
     protected:
+
+      void resize(size_type new_size, entry_type value) {
+        _tree.resize(new_size, value);
+      }
+
       void add_entry(entry_type&& entry) {
         _tree.push_back(entry);
       }
@@ -76,7 +81,6 @@ namespace stochastic {
       void pop_back() {
         if (size() <= 1) return;
         _tree.pop_back();
-        std::cout << "Removed last entry, Size is now " << size() << std::endl;
       }
 
       //Iterator methods

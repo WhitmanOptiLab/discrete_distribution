@@ -111,48 +111,33 @@ namespace stochastic {
 
       Real total_weight() const { return WeightSum::total_weight(); }
 
+
       void pop_back() {
-        for(int i = 0; i < BaseTree::size(); i++) {
-          std::cout << "{" << BaseTree::at(i).first << ", " << BaseTree::at(i).second << "}, ";
-        }
-
-
-        node_type popNode = index_to_node[BaseTree::last() - 1];
-        std::cout << popNode << std::endl;
-
-        swap(popNode, BaseTree::size());
-        std::cout << "swapped" << std::endl;
         // for(int i = 0; i < BaseTree::size(); i++) {
         //   std::cout << "{" << BaseTree::at(i).first << ", " << BaseTree::at(i).second << "}, ";
-        // }
+        // } //printing out weights and weightsums
 
-        update_weight(node_to_index[BaseTree::size()], 0);
+        if(BaseTree::entry_count() == 0) {return;} //making sure user can't remove an entry from an empty tree
+
+        node_type popNode = index_to_node[BaseTree::last() - 1];
+
+        swap(popNode, (node_type)BaseTree::last());
+     
+         
+
+        update_weight(node_to_index[BaseTree::last()], 0);
         
-        std::cout << "swapped and updated" << std::endl;
 
         BaseTree::pop_back();
         node_to_index.pop_back();
         index_to_node.pop_back();
 
-
-        for(int i = 0; i < BaseTree::size(); i++) {
-          std::cout << "{" << BaseTree::at(i).first << ", " << BaseTree::at(i).second << "}, ";
-        }
-
-        //std::cout << "everything in index_to_node: ";
-        // for(auto i : index_to_node) {
-        //   std::cout << i << ", ";
-        // }
-        // std::cout << std::endl << "everything in node_to_index: ";
-        // for(auto i : node_to_index) {
-        //   std::cout << i << ", ";
-        // }
-        //std::cout << node_to_index.size() << std::endl;
-        //std::cout << index_to_node.size()<< std::endl;
-        //std::cout << BaseTree::size()<< std::endl;
       }
 
       void push_back(Real&& newEntry) {
+        if(newEntry < 0) {
+          return;
+        }
         value_type v = {0,0};
         BaseTree::add_entry(v);
         
@@ -163,13 +148,8 @@ namespace stochastic {
       }
 
       void push_back(Real& newEntry) {
-        std::cout << "everything in index_to_node: ";
-        for(auto i : index_to_node) {
-          std::cout << i << ", ";
-        }
-        std::cout << std::endl << "everything in node_to_index: ";
-        for(auto i : node_to_index) {
-          std::cout << i << ", ";
+        if(newEntry < 0) {
+          return;
         }
         value_type v = {0,0};
         BaseTree::add_entry(v);
