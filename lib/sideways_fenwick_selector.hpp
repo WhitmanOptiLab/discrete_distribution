@@ -71,7 +71,7 @@ namespace stochastic {
             //std::cout<<"last non leaf has two children ------- sum is "<<this->value_of(lastNonLeaf)<<std::endl;
         }
         //std::cout<<"lastNonLeaf summed"<<std::endl;
-        for (node_type node = lastNonLeaf-1;node>=0;node--){
+        for (node_type node = lastNonLeaf-1;node>0;node--){
           //std::cout<<"left val: "<<this->value_of(BaseTree::left_of(node))<<"    right val "<<this->value_of(BaseTree::right_of(node))<<std::endl;
             this->value_of(node)+=((this->value_of(BaseTree::left_of(node))+(this->value_of(BaseTree::right_of(node)))));
             //std::cout<<"node "<<node<<" summed    new value is "<<this->value_of(node)<<"   new value variable hols"<<newVal<<std::endl;
@@ -88,8 +88,8 @@ namespace stochastic {
         if (BaseTree::entry_count()%2==1){ //bc size in complete tree returns the size including the 0 index
             this->value_of(lastNonLeaf)-=(this->value_of(BaseTree::right_of(lastNonLeaf)));
         }
-        //std::cout<<"tree after summing: ";
-        //this->PrintTree();
+        // std::cout<<"tree after constructing: ";
+        // this->PrintTree();
 
       }
 
@@ -109,8 +109,10 @@ namespace stochastic {
       template<class URNG>
       index_type operator()(URNG& g) {
         Real target =  std::generate_canonical<Real, precision, URNG>(g)*total_weight;
+
         node_type node = this->root();
         node_type lastNonLeaf = BaseTree::entry_count()/2;
+        //std::cout<<"last non leaf is "<<lastNonLeaf<< " target is "<<target<<std::endl;
         while(node<lastNonLeaf){
           if (target<(this->value_of(node))){
             node = BaseTree::left_of(node);
@@ -122,12 +124,15 @@ namespace stochastic {
         }
         //this is to make sure that there is a right child (if I did this in the loop it would check that there is a right child every time which is unecessary)
         if (node==lastNonLeaf){
+          //std::cout<<"node is last non leaf"<<std::endl;
           if (target<(this->value_of(node))){
             node = BaseTree::left_of(node);
           }
           else if(BaseTree::right_of(node)<BaseTree::size()){
+            //std::cout<<"going right from last non leaf"<<std::endl;
             target -=this->value_of(node);
             node=BaseTree::right_of(node);
+            //std::cout<<"went right node is "<<node<<" and target is "<<target<<std::endl;
           }
         }
         if (target<(this->value_of(node))){
@@ -174,7 +179,7 @@ namespace stochastic {
       Real total_weight=0;
       //helper function to return the next node to update
       node_type nextNode(node_type currentNode){
-        return currentNode>>((std::countr_one(static_cast<size_t>(currentNode)))+1);
+        return currentNode>>((std::countr_one(currentNode))+1);
       }
 
       void add_entry(const entry_type& e) {

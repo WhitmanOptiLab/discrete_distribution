@@ -34,7 +34,7 @@ int main(){
 
     //WOULD START TIMING HERE
     //Constructing the heap random selector
-    sideways_fenwick_selector<int> selector(weights.begin(), weights.end());
+    sideways_fenwick_selector<size_t> selector(weights.begin(), weights.end());
 
     // for(int i=0;i<numWeights;i++){
     //     selector.update_weight(i,selector.get_weight(i)*2);
