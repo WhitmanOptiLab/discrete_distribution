@@ -195,26 +195,13 @@ namespace stochastic {
 
       
 
-        Real weight_of(node_type n) {
-            if (n*2<this->size()){
-              auto i = BaseTree::left_of(n);
-              auto val = this->value_of(n)-this->value_of(i);
-              i=BaseTree::right_of(i);
-              //std::cout<<"weight of"<<n<<"      ";
-              while(i<this->size()){
-                //std::cout<<" node is "<<i;
-                val-=this->value_of(i);
-                i=BaseTree::right_of(i);
-              }
-              //std::cout<<std::endl;
-              return val;
-                
-            }
-            else{
-                return this->value_of(n);
-            }
-    	
-	    }
+    Real weight_of(node_type n) {
+      auto val = this->value_of(n);
+      for (auto i = BaseTree::left_of(n); i <this->size(); i=BaseTree::right_of(i)) {
+        val -= this->value_of(i);
+      }
+      return val;
+	  }
 
       const Real& weight_of(node_type n) const {
         return const_cast<This*>(this)->weight_of(n);
