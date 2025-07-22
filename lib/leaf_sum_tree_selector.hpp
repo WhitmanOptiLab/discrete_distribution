@@ -111,7 +111,33 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
     return const_cast<This*>(this)->weightsum_of(p);
   }
 
-  void push_back(Real new_weight) {
+  void push_back(Real& new_weight) {
+    size_t new_leaf_end = leaf_end + 1;
+    if (new_leaf_end > leaf_start) {
+      std::vector<Real> all_weights;
+      all_weights.reserve(new_leaf_end);
+      for(size_t i = 0; i < leaf_end; ++i) {
+        all_weights.push_back(get_weight(i));
+      }
+      all_weights.push_back(new_weight);
+
+      leaf_start = next_power_of_two(new_leaf_end);
+      leaf_end = new_leaf_end;
+      BaseTree::resize(2 * leaf_start, 0.0);
+      for(size_t i = 0; i < leaf_end; ++i) {
+        weightsum_of(leaf_start + i) = all_weights[i];
+      }
+      //Full tree rebuild
+      for (std::ptrdiff_t i = leaf_start - 1; i >= 1; --i) {
+        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
+      }
+    } else {
+      update_weight(leaf_end, new_weight);
+      ++leaf_end;
+    }
+  }
+
+  void push_back(Real&& new_weight) {
     size_t new_leaf_end = leaf_end + 1;
     if (new_leaf_end > leaf_start) {
       std::vector<Real> all_weights;

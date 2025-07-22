@@ -113,7 +113,26 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
     return const_cast<This*>(this)->weightsum_of(p);
   }
 
-  void push_back(Real new_weight) {
+  void push_back(Real& new_weight) {
+    size_t new_leaf_end = leaf_end + 1;
+    if (new_leaf_end >= leaf_start) {
+      size_t old_leaf_start = leaf_start;
+      leaf_start *= 2;
+
+      BaseTree::resize(leaf_start, 0.0);
+      leaves.resize(new_leaf_end, 0.0);
+      leaves[leaf_end] = new_weight;
+      leaf_end = new_leaf_end;
+      rebuild_full();
+    }
+    else{
+      leaves.resize(new_leaf_end, 0.0);
+      update_weight(leaf_end, new_weight);
+      leaf_end = new_leaf_end;
+    }
+  }
+
+  void push_back(Real&& new_weight) {
     size_t new_leaf_end = leaf_end + 1;
     if (new_leaf_end >= leaf_start) {
       size_t old_leaf_start = leaf_start;
@@ -182,7 +201,7 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
   }
 
   //This resizes leaves before anything else - so don't touch the deleted entries, just let the .resize handle it.
-  void pop_back(size_t count) {
+  void pop_back(size_t& count) {
     if (count == 0) return;
     if (count > leaf_end) count = leaf_end;
     size_t old_leaf_end = leaf_end;
