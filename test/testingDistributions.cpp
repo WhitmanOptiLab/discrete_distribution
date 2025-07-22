@@ -50,6 +50,7 @@ int main(){
     
 
     //selecting weights
+   
     for (int i=0;i<numOperations;i++){
         outputFile<<selector(generator)<<std::endl;
 

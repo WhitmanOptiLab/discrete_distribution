@@ -147,7 +147,7 @@ namespace stochastic {
         Real weightDifference =  new_weight - this->weight_of(node);
         total_weight+=weightDifference;
         //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
-        while(node>BaseTree::root()){
+        while(node>=BaseTree::root()){
             this->value_of(node)+=weightDifference;
             //std::cout<<"about to change node ";
             //this->PrintTree();
@@ -158,7 +158,7 @@ namespace stochastic {
             //std::cout<<"new node is "<<node<<std::endl;
             
         }
-        this->value_of(node)+=weightDifference;
+        //this->value_of(node)+=weightDifference;
         //std::cout<<"ending tree is ";
         //this->PrintTree();
       }
@@ -174,7 +174,7 @@ namespace stochastic {
       Real total_weight=0;
       //helper function to return the next node to update
       node_type nextNode(node_type currentNode){
-        return currentNode>>((std::countr_zero(~(static_cast<size_t>(currentNode))))+1);
+        return currentNode>>((std::countr_one(static_cast<size_t>(currentNode)))+1);
       }
 
       void add_entry(const entry_type& e) {
@@ -189,24 +189,11 @@ namespace stochastic {
       }
 
         Real weight_of(node_type n) {
-            if (n*2<this->size()){
-              auto i = BaseTree::left_of(n);
-              auto val = this->value_of(n)-this->value_of(i);
-              i=BaseTree::right_of(i);
-              //std::cout<<"weight of"<<n<<"      ";
-              while(i<this->size()){
-                //std::cout<<" node is "<<i;
-                val-=this->value_of(i);
-                i=BaseTree::right_of(i);
-              }
-              //std::cout<<std::endl;
-              return val;
-                
+            auto val = this->value_of(n);
+            for (auto i = BaseTree::left_of(n); i <this->size(); i=BaseTree::right_of(i)) {
+              val -= this->value_of(i);
             }
-            else{
-                return this->value_of(n);
-            }
-    	
+            return val;
 	    }
 
       const Real& weight_of(node_type n) const {
