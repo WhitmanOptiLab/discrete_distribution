@@ -1,5 +1,6 @@
 //#include "../lib/new_modifiable_heap_random_selector.hpp"
-#include"../lib/no_weight_storage_modifiable_heap_random_selector.hpp"
+//#include"../lib/no_weight_storage_modifiable_heap_random_selector.hpp"
+#include "../lib/random_selector.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -34,7 +35,7 @@ int main(){
 
     //WOULD START TIMING HERE
     //Constructing the heap random selector
-    low_storage_selector<int> selector(weights.begin(), weights.end());
+    nonuniform_int_distribution<int> selector(weights.begin(), weights.end());
 
     outputFile<<"distribution after construction, "<<std::endl;
 
@@ -64,7 +65,7 @@ int main(){
 
     outputFile<<"ending distribution, "<<std::endl;
 
-    for (int i=0;i<numWeights+4;i++){
+    for (int i=0;i<numWeights+5;i++){
         outputFile << selector.get_weight(i)<<", ";
     }
 

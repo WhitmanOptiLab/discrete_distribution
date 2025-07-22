@@ -57,13 +57,11 @@ class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<R
   }
 
   void push_entry(Real& newEntry) {
-    value_type v = {0,0};
-    BaseTree::add_entry(v);
+    BaseTree::add_entry({0,0});
     WeightSum::update_weight(BaseTree::last(),newEntry);
   }
   void push_entry(Real&& newEntry) {
-    value_type v = {0,0};
-    BaseTree::add_entry(v);
+    BaseTree::add_entry({0,0});
     WeightSum::update_weight(BaseTree::last(),newEntry);
   }
   

@@ -143,13 +143,13 @@ namespace stochastic {
         return *iterator_for(node);
       }
 
-      void printTree(){
-        std::cout<<"printing tree: ";
-        for (int i=1;i<_tree.size();i++){
-          std::cout<<_tree[i]<<", ";
-        }
-        std::cout<<std::endl;
-      }
+      // void printTree(){
+      //   std::cout<<"printing tree: ";
+      //   for (int i=1;i<_tree.size();i++){
+      //     std::cout<<_tree[i]<<", ";
+      //   }
+      //   std::cout<<std::endl;
+      // }
 
     protected:
       reference value_of(position_type node) {
