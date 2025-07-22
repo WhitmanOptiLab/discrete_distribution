@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 
 #include "completetree.hpp"
 #include "heap.hpp"
@@ -27,7 +28,7 @@ namespace stochastic {
     protected heap< fast_random_selector<I, precision>, I>,
 
     //... and the weightsum tree mix-in
-    protected weightsum_tree< fast_random_selector<I, precision>, I, precision>
+    public weightsum_tree< fast_random_selector<I, precision>, I, precision>
   {
 
 
@@ -62,7 +63,7 @@ namespace stochastic {
       {
         size_t n = static_cast<size_t>(last - first);
         node_to_index.resize(n+1);
-        index_to_node.resize(n+1);
+        index_to_node.resize(n);
         InputIt it = first;
         for (index_type i = 0; it != last; ++it, ++i) {
           double w = *it;
@@ -102,33 +103,83 @@ namespace stochastic {
       }
 
       Real get_weight(index_type i) {
+        if(i > index_to_node.size() - 1) {
+          throw std::out_of_range("Cannot get weight of index " + std::to_string(i) + " because current size is " + std::to_string(BaseTree::entry_count()));
+        }
         return weight_of(index_to_node[i]);
       }
 
       Real total_weight() const { return WeightSum::total_weight(); }
 
       void remove_last_entry() {
-        WeightSum::update_weight(BaseTree::last(), 0);
+        for(int i = 0; i < BaseTree::size(); i++) {
+          std::cout << "{" << BaseTree::at(i).first << ", " << BaseTree::at(i).second << "}, ";
+        }
+
+
+        node_type popNode = index_to_node[BaseTree::last() - 1];
+        std::cout << popNode << std::endl;
+
+        swap(popNode, BaseTree::size());
+        std::cout << "swapped" << std::endl;
+        // for(int i = 0; i < BaseTree::size(); i++) {
+        //   std::cout << "{" << BaseTree::at(i).first << ", " << BaseTree::at(i).second << "}, ";
+        // }
+
+        update_weight(node_to_index[BaseTree::size()], 0);
+        
+        std::cout << "swapped and updated" << std::endl;
+
         BaseTree::remove_last_entry();
+        node_to_index.pop_back();
+        index_to_node.pop_back();
+
+
+        for(int i = 0; i < BaseTree::size(); i++) {
+          std::cout << "{" << BaseTree::at(i).first << ", " << BaseTree::at(i).second << "}, ";
+        }
+
+        //std::cout << "everything in index_to_node: ";
+        // for(auto i : index_to_node) {
+        //   std::cout << i << ", ";
+        // }
+        // std::cout << std::endl << "everything in node_to_index: ";
+        // for(auto i : node_to_index) {
+        //   std::cout << i << ", ";
+        // }
+        //std::cout << node_to_index.size() << std::endl;
+        //std::cout << index_to_node.size()<< std::endl;
+        //std::cout << BaseTree::size()<< std::endl;
       }
 
       void push_entry(Real&& newEntry) {
         value_type v = {0,0};
         BaseTree::add_entry(v);
+        
         auto newp = BaseTree::last();
-		    index_type i = BaseTree::entry_count();
+		    index_type i = BaseTree::entry_count() - 1;
 		    map_node(i, newp);
-        update_weight(newp,newEntry);
+        update_weight(i, newEntry);
       }
 
       void push_entry(Real& newEntry) {
+        std::cout << "everything in index_to_node: ";
+        for(auto i : index_to_node) {
+          std::cout << i << ", ";
+        }
+        std::cout << std::endl << "everything in node_to_index: ";
+        for(auto i : node_to_index) {
+          std::cout << i << ", ";
+        }
         value_type v = {0,0};
         BaseTree::add_entry(v);
+        node_to_index.push_back(0);
+        index_to_node.push_back(0);
         auto newp = BaseTree::last();
-		    index_type i = BaseTree::entry_count();
+		    index_type i = BaseTree::entry_count() - 1;
 		    map_node(i, newp);
-        update_weight(newp,newEntry);
-       
+        update_weight(i,newEntry);
+
       }
 
 
