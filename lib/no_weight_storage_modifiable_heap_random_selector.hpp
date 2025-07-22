@@ -20,7 +20,7 @@ namespace stochastic {
 // }
 
   template <
-    typename I = int, size_t precision = std::numeric_limits<Real>::digits
+    typename I = size_t, size_t precision = std::numeric_limits<Real>::digits
   >
   class low_storage_selector :
     //Extends a complete tree...
@@ -75,7 +75,7 @@ namespace stochastic {
         for (index_type i = 0; it != last; ++it, ++i) {
           double w = *it;
 
-          push_entry(Real(w)); //TODO - change construction
+          push_back(Real(w)); //TODO - change construction
          
         }
       }
@@ -125,7 +125,7 @@ namespace stochastic {
 
       Real total_weight() const { return WeightSum::total_weight(); }
 
-      void push_entry(Real weight) {
+      void push_back(Real weight) {
 
         BaseTree::add_entry(weight);
 		    map_node(BaseTree::entry_count()-1, BaseTree::last());
@@ -143,7 +143,7 @@ namespace stochastic {
   
 
     
-    void remove_last_entry() {
+    void pop_back() {
       Real lastEntryWeight = this->value_of(BaseTree::last());
       this->update_weight_of_node(BaseTree::last(),0);
       Real toRemove = index_to_node[BaseTree::entry_count()-1];
@@ -163,7 +163,7 @@ namespace stochastic {
 
       }
       
-      BaseTree::remove_last_entry();
+      BaseTree::pop_back();
      
 
 

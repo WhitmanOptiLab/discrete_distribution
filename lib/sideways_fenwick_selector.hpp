@@ -170,19 +170,19 @@ namespace stochastic {
 
     //   Real total_weight() const { return WeightSum::total_weight(); }
 
-      void push_entry(const entry_type& e) {
+      void push_back(const entry_type& e) {
         value_type v = e;
         BaseTree::add_entry(0);
         update_weight_of_node(BaseTree::last(),v);
       }
-      void push_entry(const entry_type&& e) {
+      void push_back(const entry_type&& e) {
         value_type v = e;
         BaseTree::add_entry(0);
         update_weight_of_node(BaseTree::last(),v);
       }
-      void remove_last_entry() {
+      void pop_back() {
         update_weight_of_node(BaseTree::last(),0);
-        BaseTree::remove_last_entry();
+        BaseTree::pop_back();
       }
 
     private:

@@ -73,7 +73,7 @@ namespace stochastic {
         add_entry(entry_type(std::forward<Args>(args)...));
       }
 
-      void remove_last_entry() {
+      void pop_back() {
         if (size() <= 1) return;
         _tree.pop_back();
         std::cout << "Removed last entry, Size is now " << size() << std::endl;

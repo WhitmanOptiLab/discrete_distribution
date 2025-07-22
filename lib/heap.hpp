@@ -20,7 +20,7 @@ class heap {
     if (_tree().root() != _tree().last()) {
       _tree().swap(_tree().root(), _tree().last());
     }
-    _tree().remove_last_entry();
+    _tree().pop_back();
     sift_down(_tree().root());
   }
 

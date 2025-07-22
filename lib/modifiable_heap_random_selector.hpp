@@ -111,7 +111,7 @@ namespace stochastic {
 
       Real total_weight() const { return WeightSum::total_weight(); }
 
-      void remove_last_entry() {
+      void pop_back() {
         for(int i = 0; i < BaseTree::size(); i++) {
           std::cout << "{" << BaseTree::at(i).first << ", " << BaseTree::at(i).second << "}, ";
         }
@@ -130,7 +130,7 @@ namespace stochastic {
         
         std::cout << "swapped and updated" << std::endl;
 
-        BaseTree::remove_last_entry();
+        BaseTree::pop_back();
         node_to_index.pop_back();
         index_to_node.pop_back();
 
@@ -152,7 +152,7 @@ namespace stochastic {
         //std::cout << BaseTree::size()<< std::endl;
       }
 
-      void push_entry(Real&& newEntry) {
+      void push_back(Real&& newEntry) {
         value_type v = {0,0};
         BaseTree::add_entry(v);
         
@@ -162,7 +162,7 @@ namespace stochastic {
         update_weight(i, newEntry);
       }
 
-      void push_entry(Real& newEntry) {
+      void push_back(Real& newEntry) {
         std::cout << "everything in index_to_node: ";
         for(auto i : index_to_node) {
           std::cout << i << ", ";
