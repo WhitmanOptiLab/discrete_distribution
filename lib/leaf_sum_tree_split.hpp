@@ -251,7 +251,7 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
         return 0.0;
       }
     } else { //It's an internal node.
-      if (index < BaseTree::capacity()) {
+      if (index < BaseTree::size()) {
         return BaseTree::value_of(index);
       }
       return 0.0;
