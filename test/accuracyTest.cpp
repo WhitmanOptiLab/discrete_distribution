@@ -65,7 +65,7 @@ int main(){
 
     outputFile<<"ending distribution, "<<std::endl;
 
-    for (int i=0;i<numWeights+5;i++){
+    for (int i=0;i<numWeights+4;i++){
         outputFile << selector.get_weight(i)<<", ";
     }
 
