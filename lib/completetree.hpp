@@ -76,7 +76,6 @@ namespace stochastic {
       void remove_last_entry() {
         if (size() <= 1) return;
         _tree.pop_back();
-        std::cout << "Removed last entry, Size is now " << size() << std::endl;
       }
 
       //Iterator methods

@@ -13,10 +13,17 @@ int main() {
 
   fast_random_selector<> selector(weights.begin(), weights.end());
   std::cout << "Constructed" << std::endl;
-  std::vector<unsigned int> counts(10);
   selector.push_entry(10);
   selector.push_entry(10);
   selector.remove_last_entry();
+
+  
+
+
+
+   std::vector<unsigned int> counts(selector.max());
+
+
     
     for (int i = 0; i < 100000; i++) {
       int index = selector(generator);
@@ -28,7 +35,7 @@ int main() {
       }
     }
     for (auto c : counts) {
-      std::cout << c * 2 << ',';
+      std::cout << c << ',';
     }
     std::cout << std::endl;
     std::cout << std::endl;
