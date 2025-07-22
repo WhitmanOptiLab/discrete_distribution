@@ -71,7 +71,7 @@ namespace stochastic {
             //std::cout<<"last non leaf has two children ------- sum is "<<this->value_of(lastNonLeaf)<<std::endl;
         }
         //std::cout<<"lastNonLeaf summed"<<std::endl;
-        for (node_type node = lastNonLeaf-1;node>=0;node--){
+        for (node_type node = lastNonLeaf-1;node>0;node--){
           //std::cout<<"left val: "<<this->value_of(BaseTree::left_of(node))<<"    right val "<<this->value_of(BaseTree::right_of(node))<<std::endl;
             this->value_of(node)+=((this->value_of(BaseTree::left_of(node))+(this->value_of(BaseTree::right_of(node)))));
             //std::cout<<"node "<<node<<" summed    new value is "<<this->value_of(node)<<"   new value variable hols"<<newVal<<std::endl;
@@ -190,31 +190,18 @@ namespace stochastic {
       Real total_weight=0;
       //helper function to return the next node to update
       node_type nextNode(node_type currentNode){
-        return currentNode>>((std::countr_zero(~(static_cast<size_t>(currentNode))))+1);
+        return currentNode>>(((std::countr_one(currentNode)))+1);
       }
 
       
 
-        Real weight_of(node_type n) {
-            if (n*2<this->size()){
-              auto i = BaseTree::left_of(n);
-              auto val = this->value_of(n)-this->value_of(i);
-              i=BaseTree::right_of(i);
-              //std::cout<<"weight of"<<n<<"      ";
-              while(i<this->size()){
-                //std::cout<<" node is "<<i;
-                val-=this->value_of(i);
-                i=BaseTree::right_of(i);
-              }
-              //std::cout<<std::endl;
-              return val;
-                
-            }
-            else{
-                return this->value_of(n);
-            }
-    	
-	    }
+      Real weight_of(node_type n) {
+        auto val = this->value_of(n);
+        for (auto i = BaseTree::left_of(n); i <this->size(); i=BaseTree::right_of(i)) {
+          val -= this->value_of(i);
+        }
+        return val;
+      }
 
       const Real& weight_of(node_type n) const {
         return const_cast<This*>(this)->weight_of(n);
@@ -234,11 +221,11 @@ namespace stochastic {
       }
 
       void update_weight_of_node(node_type givenNode, Real new_weight) {
-        std::cout<<"________________updating weight_____________"<<std::endl;
+        //std::cout<<"________________updating weight_____________"<<std::endl;
         auto node = givenNode;
         Real weightDifference =  new_weight - this->weight_of(node);
         total_weight+=weightDifference;
-        std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
         while(node>BaseTree::root()){
             this->value_of(node)+=weightDifference;
             //std::cout<<"about to change node ";

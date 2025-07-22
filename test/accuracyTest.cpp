@@ -9,7 +9,7 @@ using namespace dense::stochastic;
 
 int main(){
     int numWeights = 10;
-    int numOperations=100000000;
+    int numOperations=10;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
 
@@ -27,7 +27,7 @@ int main(){
     outputFile << "Starting distribution: " << std::endl;
     for (int i=0;i<numWeights;i++){
         //double num = distribution(generator);
-        weights.push_back(distribution(generator));
+        weights.push_back(i+1/*distribution(generator)*/);
 
         outputFile << weights[i]<<", "; //outputing the initial weights
     }
@@ -52,9 +52,9 @@ int main(){
 
     //outputing the ending distribution
 
-    outputFile<<"adding weights: ";
-    for(int i=0;i<4;i++){
-        double entry = distribution(generator);
+    outputFile<<std::endl<<"adding weights: ";
+    for(int i=numWeights;i<numWeights+4;i++){
+        double entry = 1.5;//distribution(generator);
         outputFile<<entry<<", ";
         selector.push_entry(entry);
     }
@@ -72,10 +72,11 @@ int main(){
     for(int i=0;i<6;i++){
         selector.remove_last_entry();
     }
-    outputFile<<"ending distribution, "<<std::endl;
+    outputFile<<std::endl<<"ending distribution: "<<std::endl;
 
     for (int i=0; i < selector.max();i++){
         outputFile << selector.get_weight(i)<<", ";
+        //std::cout<<"getting weight at index "<<i<<std::endl;
     }
 
     std::cout << std::endl;
