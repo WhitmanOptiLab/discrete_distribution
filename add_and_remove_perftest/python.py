@@ -8,7 +8,7 @@ from matplotlib.widgets import CheckButtons
 import numpy as np
 
 # Load data as before
-files = sorted(glob.glob("results_*.csv"), key=lambda x: int(x.split("_")[1].split(".")[0]))
+files = sorted(glob.glob("resultsA*.csv"), key=lambda x: int(x.split("_")[1].split(".")[0]))
 levels = []
 data_by_test = {}
 

@@ -167,8 +167,14 @@ namespace stochastic {
     private:
 
       void map_node(index_type i, node_type n) {
+      if(i>=index_to_node.size()){
+        index_to_node.push_back(n);
+        node_to_index.push_back(i);
+        return;
+      }
     	index_to_node[i] = n;
     	node_to_index[n] = i;
+      return;
 	    }
 
       void swap_indexes(node_type a, node_type b) {

@@ -7,8 +7,8 @@
 echo "Number of tests: $1"
 echo "Weightnum: $2"
 
-touch results_C5_$2.csv
-echo "adding_wrs, adding_heap adding_fenwick, adding_leafsum, adding_leaf_sum_split, adding_sideways_fenwick, adding_weightsum, adding_removing_wrs, adding_removing_heap, adding_removing_fenwick, adding_removing_leafsum, adding_removing_leaf_sum_split, adding_removing_sideways_fenwick, adding_removing_weightsum" >> results_C5_$2.csv
+touch resultsAddRemove_$2.csv
+echo "adding_wrs, adding_heap adding_fenwick, adding_leafsum, adding_leaf_sum_split, adding_sideways_fenwick, adding_weightsum, adding_removing_wrs, adding_removing_heap, adding_removing_fenwick, adding_removing_leafsum, adding_removing_leaf_sum_split, adding_removing_sideways_fenwick, adding_removing_weightsum" > resultsAddRemove_$2.csv
 
 # Normal distribution changing_multi weight tests
 g++ -std=c++20 -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>"       "-DWEIGHTNUM=$2" -o test0 adding.cpp
@@ -48,6 +48,7 @@ sum11=0
 
 
 for ((i=1; i<=$1; i++)); do
+    #echo "test 0 start"
     result0=$(./test0)
     result1=$(./test1)
     result2=$(./test2)
@@ -63,7 +64,7 @@ for ((i=1; i<=$1; i++)); do
     
  
 
-    echo "$result0, $result1, $result2, $result3, $result4, $result5, $result6, $result7, $result8, $result9, $result10, $result11" >> results_C1_$2.csv
+    echo "$result0, $result1, $result2, $result3, $result4, $result5, $result6, $result7, $result8, $result9, $result10, $result11" >> resultsAddRemove_$2.csv
 
     sum0=$(awk "BEGIN { printf \"%.6f\", $sum0 + $result0 }")
     sum1=$(awk "BEGIN { printf \"%.6f\", $sum1 + $result1 }")
@@ -95,7 +96,7 @@ average11=$(awk "BEGIN { printf \"%.6f\", $sum11 / $1 }")
 
 
 
-echo " " >> results_C1_$2.csv
+echo " " >> resultsAddRemove_$2.csv
 echo "$average0, $average1, $average2, $average3, $average4, $average5, $average6, $average7, $average8, $average9, $average10, $average11" >> results_C1_$2.csv
     
 

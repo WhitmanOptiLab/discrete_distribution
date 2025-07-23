@@ -39,14 +39,14 @@ int main() {
   WRSLIB selector(weights.begin(), weights.end());
   gettimeofday(&start, NULL);
   
-  int sum
+  int sum=0;
   for (int i = 0; i < 1000000; i++) {
-    int sum+=selector(generator);
-    for(int j=0;i<4;j++){
-      selector.push_back(d(generator))
+    sum+=selector(generator);
+    for(int j=0;j<4;j++){
+      selector.push_back(d(generator));
     }
-    for(int j=0;i<4;j++){
-      selector.pop_back()
+    for(int j=0;j<4;j++){
+      selector.pop_back();
     }
     // selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
     // for(int j = 0; j < 4; j++){
