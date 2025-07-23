@@ -6,7 +6,7 @@ import matplotlib.cm as cm
 import numpy as np
 
 # Get all result files and sort by level
-files = sorted(glob.glob("results_*.csv"), key=lambda x: int(x.split("_")[1].split(".")[0]))
+files = sorted(glob.glob("resultsAddRemove_*.csv"), key=lambda x: int(x.split("_")[1].split(".")[0]))
 
 levels = []
 data_by_test = {}

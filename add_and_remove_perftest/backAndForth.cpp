@@ -43,7 +43,10 @@ int main() {
   for (int i = 0; i < 1000000; i++) {
     sum+=selector(generator);
     for(int j=0;j<4;j++){
-      selector.push_back(d(generator));
+      selector.pop_back();
+    }
+    for(int j=0;j<4;j++){
+    selector.push_back(d(generator));
     }
     // selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
     // for(int j = 0; j < 4; j++){
