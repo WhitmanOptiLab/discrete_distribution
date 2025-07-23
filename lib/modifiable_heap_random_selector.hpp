@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 
 #include "completetree.hpp"
 #include "heap.hpp"
@@ -27,7 +28,7 @@ namespace stochastic {
     protected heap< fast_random_selector<I, precision>, I>,
 
     //... and the weightsum tree mix-in
-    protected weightsum_tree< fast_random_selector<I, precision>, I, precision>
+    public weightsum_tree< fast_random_selector<I, precision>, I, precision>
   {
 
 
@@ -62,7 +63,7 @@ namespace stochastic {
       {
         size_t n = static_cast<size_t>(last - first);
         node_to_index.resize(n+1);
-        index_to_node.resize(n+1);
+        index_to_node.resize(n);
         InputIt it = first;
         for (index_type i = 0; it != last; ++it, ++i) {
           double w = *it;
@@ -114,16 +115,78 @@ namespace stochastic {
       }
 
       Real get_weight(index_type i) {
+        if(i > index_to_node.size() - 1) {
+          throw std::out_of_range("Cannot get weight of index " + std::to_string(i) + " because current size is " + std::to_string(BaseTree::entry_count()));
+        }
         return weight_of(index_to_node[i]);
       }
 
       Real total_weight() const { return WeightSum::total_weight(); }
 
+
+      void pop_back() {
+        // for(int i = 0; i < BaseTree::size(); i++) {
+        //   std::cout << "{" << BaseTree::at(i).first << ", " << BaseTree::at(i).second << "}, ";
+        // } //printing out weights and weightsums
+
+        if(BaseTree::entry_count() == 0) {return;} //making sure user can't remove an entry from an empty tree
+
+        node_type popNode = index_to_node[BaseTree::last() - 1];
+
+        swap(popNode, (node_type)BaseTree::last());
+     
+         
+
+        update_weight(node_to_index[BaseTree::last()], 0);
+        
+
+        BaseTree::pop_back();
+        node_to_index.pop_back();
+        index_to_node.pop_back();
+
+      }
+
+      void push_back(Real&& newEntry) {
+        if(newEntry < 0) {
+          return;
+        }
+        value_type v = {0,0};
+        BaseTree::add_entry(v);
+        
+        auto newp = BaseTree::last();
+		    index_type i = BaseTree::entry_count() - 1;
+		    map_node(i, newp);
+        update_weight(i, newEntry);
+      }
+
+      void push_back(Real& newEntry) {
+        if(newEntry < 0) {
+          return;
+        }
+        value_type v = {0,0};
+        BaseTree::add_entry(v);
+        node_to_index.push_back(0);
+        index_to_node.push_back(0);
+        auto newp = BaseTree::last();
+		    index_type i = BaseTree::entry_count() - 1;
+		    map_node(i, newp);
+        update_weight(i,newEntry);
+
+      }
+
+
+
     private:
 
       void map_node(index_type i, node_type n) {
+      if(i>=index_to_node.size()){
+        index_to_node.push_back(n);
+        node_to_index.push_back(i);
+        return;
+      }
     	index_to_node[i] = n;
     	node_to_index[n] = i;
+      return;
 	    }
 
       void swap_indexes(node_type a, node_type b) {
@@ -165,11 +228,7 @@ namespace stochastic {
         return const_cast<This*>(this)->weightsum_of(n);
       }
 
-      void remove_last_entry() {
-        auto last = BaseTree::value_of(BaseTree::last());
-        WeightSum::update_weight(BaseTree::last(), 0);
-        BaseTree::remove_last_entry();
-      }
+      
 
       fast_random_selector const& const_this() const {
         return static_cast<This const&>(*this);

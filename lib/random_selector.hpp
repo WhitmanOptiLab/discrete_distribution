@@ -45,8 +45,8 @@ class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<R
     return BaseTree::value_of(p).first;
   }
 
-  Real get_weight(PosType p) {
-    return weight_of(p);
+  Real get_weight(IntType p) {
+    return weight_of(p+1);
   }
 
   void update_weight(PosType p, Real new_weight) {
@@ -60,7 +60,21 @@ class nonuniform_int_distribution : protected complete_tree<IntType, std::pair<R
     return const_cast<This*>(this)->weightsum_of(p);
   }
 
-  PosType id_of(PosType p) { return p; }
+  void push_back(Real& newEntry) {
+    BaseTree::add_entry({0,0});
+    WeightSum::update_weight(BaseTree::last(),newEntry);
+  }
+  void push_back(Real&& newEntry) {
+    BaseTree::add_entry({0,0});
+    WeightSum::update_weight(BaseTree::last(),newEntry);
+  }
+  
+  void pop_back() {
+  WeightSum::update_weight(BaseTree::last(), 0);
+  BaseTree::pop_back();
+  }
+
+  PosType id_of(PosType p) { return p-1; }
 
 };
 

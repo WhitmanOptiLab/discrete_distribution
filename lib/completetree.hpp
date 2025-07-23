@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 #include <type_traits>
+#include <iostream>
 namespace dense {
 namespace stochastic {
 
@@ -20,19 +21,6 @@ namespace stochastic {
     typename T
   >
   class complete_tree {
-
-    private:
-
-      enum class ignore {};
-
-      template <typename E>
-      using underlying_if_enum = typename std::conditional<
-        std::is_enum<E>::value,
-        typename std::underlying_type<
-          typename std::conditional<std::is_enum<E>::value, E, ignore>::type
-        >::type,
-        E
-      >::type;
 
     public:
 
@@ -72,6 +60,11 @@ namespace stochastic {
       //Tree modification methods
       //
     protected:
+
+      void resize(size_type new_size, entry_type value) {
+        _tree.resize(new_size, value);
+      }
+
       void add_entry(entry_type&& entry) {
         _tree.push_back(entry);
       }
@@ -85,7 +78,7 @@ namespace stochastic {
         add_entry(entry_type(std::forward<Args>(args)...));
       }
 
-      void remove_last_entry() {
+      void pop_back() {
         if (size() <= 1) return;
         _tree.pop_back();
       }
@@ -155,6 +148,7 @@ namespace stochastic {
       const_reference value_of(position_type node) const {
         return *iterator_for(node);
       }
+
 
     protected:
     //adding resize function for leaf_sum uses

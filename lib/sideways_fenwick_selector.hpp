@@ -147,8 +147,87 @@ namespace stochastic {
       }
 
       void update_weight(index_type i, Real new_weight) {
+        update_weight_of_node(node_of(i),new_weight);
+        // std::cout<<"________________updating weight_____________"<<std::endl;
+        // auto node = node_of(i);
+        // Real weightDifference =  new_weight - this->weight_of(node);
+        // total_weight+=weightDifference;
+        // std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+        // while(node>BaseTree::root()){
+        //     this->value_of(node)+=weightDifference;
+        //     //std::cout<<"about to change node ";
+        //     //this->PrintTree();
+        //     node = nextNode(node);
+        //     //std::cout<<"just changed node ";
+        //     //this->PrintTree();
+
+        //     //std::cout<<"new node is "<<node<<std::endl;
+            
+        // }
+        // this->value_of(node)+=weightDifference;
+        // //std::cout<<"ending tree is ";
+        // //this->PrintTree();
+      }
+
+      Real get_weight(index_type i) {
+        return weight_of(node_of(i));
+      }
+
+    //   Real total_weight() const { return WeightSum::total_weight(); }
+
+      void push_back(const entry_type& e) {
+        value_type v = e;
+        BaseTree::add_entry(0);
+        update_weight_of_node(BaseTree::last(),v);
+      }
+      void push_back(const entry_type&& e) {
+        value_type v = e;
+        BaseTree::add_entry(0);
+        update_weight_of_node(BaseTree::last(),v);
+      }
+      void pop_back() {
+        update_weight_of_node(BaseTree::last(),0);
+        BaseTree::pop_back();
+      }
+
+    private:
+
+      Real total_weight=0;
+      //helper function to return the next node to update
+      node_type nextNode(node_type currentNode){
+        return currentNode>>(((std::countr_one(currentNode)))+1);
+      }
+
+      
+
+      Real weight_of(node_type n) {
+        auto val = this->value_of(n);
+        for (auto i = BaseTree::left_of(n); i <this->size(); i=BaseTree::right_of(i)) {
+          val -= this->value_of(i);
+        }
+        return val;
+      }
+
+      const Real& weight_of(node_type n) const {
+        return const_cast<This*>(this)->weight_of(n);
+      }
+
+      //returns the sum of the left subtree and the node itself
+      Real& weightsum_of(node_type n) {
+        return this->value_of(n);
+      }
+
+      const Real& weightsum_of(node_type n) const {
+        return const_cast<This*>(this)->weightsum_of(n);
+      }
+
+      sideways_fenwick_selector const& const_this() const {
+        return static_cast<This const&>(*this);
+      }
+
+      void update_weight_of_node(node_type givenNode, Real new_weight) {
         //std::cout<<"________________updating weight_____________"<<std::endl;
-        auto node = node_of(i);
+        auto node = givenNode;
         Real weightDifference =  new_weight - this->weight_of(node);
         total_weight+=weightDifference;
         //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
