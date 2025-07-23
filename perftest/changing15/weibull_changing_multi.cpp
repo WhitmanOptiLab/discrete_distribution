@@ -43,8 +43,8 @@ int main() {
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
-    for(int j = 0; j < 4; j++){
-      selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
+    for(int j = 0; j < 14; j++){
+      selector.update_weight(randomIndex(generator), std::max<float>(0.0, d(generator)));
     }
   }
   

@@ -91,6 +91,7 @@ namespace stochastic {
         return id_of(WeightSum::operator()(g));
       }
 
+      /*
       void update_weight(index_type i, Real new_weight) {
         auto node = index_to_node[i];
         Real old_weight = weight_of(node);
@@ -99,6 +100,17 @@ namespace stochastic {
           Heap::sift_up(node);
         else
           Heap::sift_down(node);
+      }
+      */
+
+      void update_weight(index_type i, Real new_weight) {
+        auto node = index_to_node[i];
+        Real old_weight = weight_of(node);
+        WeightSum::update_weight(index_to_node[i], new_weight);
+        if ((new_weight - old_weight) / old_weight > 0.09) //if the weight has increased by more than 9%
+          Heap::sift_up(node);
+        else 
+          return; 
       }
 
       Real get_weight(index_type i) {

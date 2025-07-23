@@ -19,7 +19,7 @@ namespace stochastic {
 // }
 
   template <
-    typename I = int, size_t precision = std::numeric_limits<Real>::digits
+    typename I = size_t, size_t precision = std::numeric_limits<Real>::digits
   >
   class low_storage_selector :
     //Extends a complete tree...

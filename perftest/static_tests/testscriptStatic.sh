@@ -10,37 +10,37 @@ echo "Weightnum: $2"
 echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_static_fenwick, normal_static_leafsum, normal_static_leaf_sum_split, normal_static_sideways_fenwick, normal_static_weightsum, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_static_fenwick, uniform_static_leafsum, uniform_static_leaf_sum_split, uniform_static_sideways_fenwick, uniform_static_weightsum, weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_static_fenwick, weibull_static_leafsum, weibull_static_leaf_sum_split, weibull_static_sideways_fenwick, weibull_static_weightsum" > results_$2.csv
 
 # Normal distribution static weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>"       "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=fast_random_selector<int>"             "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>"       "-DWEIGHTNUM=$2" -o test2 normal_static.cpp
-g++ -std=c++20 -I../fenwick -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test3 normal_static.cpp
-g++ -std=c++20 -I../leaf-weightsum -O3 "-DWRSLIB=leaf_sum_tree<int>"          "-DWEIGHTNUM=$2" -o test4 normal_static.cpp
-g++ -std=c++20 -I../leaf-weightsum -O3 "-DWRSLIB=leaf_sum_tree_split<int>"    "-DWEIGHTNUM=$2" -o test5 normal_static.cpp
-g++ -std=c++20 -I../sideways-fenwick -O3 "-DWRSLIB=sideways_fenwick_selector<int>" "-DWEIGHTNUM=$2" -o test6 normal_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=low_storage_selector<int>" "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
-#g++ -std=c++20 -I../lib -O3 "-DWRSLIB=low_storage_selector<int>" "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>"       "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=fast_random_selector<>"             "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=std::discrete_distribution<>"       "-DWEIGHTNUM=$2" -o test2 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>" "-DWEIGHTNUM=$2" -o test3 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test4 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test5 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test6 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=low_storage_selector<>" "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
+#g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=low_storage_selector<>" "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
 
 #g++ -std=c++20 -I/home/nfs/burnsa/Documents/GitHub/discrete_distribution/lib -O3 ... 
 
 # Uniform distribution static weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>"       "-DWEIGHTNUM=$2" -o test8 uniform_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=fast_random_selector<int>"             "-DWEIGHTNUM=$2" -o test9 uniform_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>"       "-DWEIGHTNUM=$2" -o test10 uniform_static.cpp
-g++ -std=c++20 -I../fenwick -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test11 uniform_static.cpp
-g++ -std=c++20 -I../leaf-weightsum -O3 "-DWRSLIB=leaf_sum_tree<int>"          "-DWEIGHTNUM=$2" -o test12 uniform_static.cpp
-g++ -std=c++20 -I../leaf-weightsum -O3 "-DWRSLIB=leaf_sum_tree_split<int>"    "-DWEIGHTNUM=$2" -o test13 uniform_static.cpp
-g++ -std=c++20 -I../sideways-fenwick -O3 "-DWRSLIB=sideways_fenwick_selector<int>" "-DWEIGHTNUM=$2" -o test14 uniform_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=low_storage_selector<int>"                "-DWEIGHTNUM=$2" -o test15 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>"       "-DWEIGHTNUM=$2" -o test8 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=fast_random_selector<>"             "-DWEIGHTNUM=$2" -o test9 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=std::discrete_distribution<>"       "-DWEIGHTNUM=$2" -o test10 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>" "-DWEIGHTNUM=$2" -o test11 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test12 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test13 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test14 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=low_storage_selector<>"                "-DWEIGHTNUM=$2" -o test15 uniform_static.cpp
 
 # Weibull distribution static weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>"       "-DWEIGHTNUM=$2" -o test16 weibull_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=fast_random_selector<int>"             "-DWEIGHTNUM=$2" -o test17 weibull_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>"       "-DWEIGHTNUM=$2" -o test18 weibull_static.cpp
-g++ -std=c++20 -I../fenwick -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=$2" -o test19 weibull_static.cpp
-g++ -std=c++20 -I../leaf-weightsum -O3 "-DWRSLIB=leaf_sum_tree<int>"          "-DWEIGHTNUM=$2" -o test20 weibull_static.cpp
-g++ -std=c++20 -I../leaf-weightsum -O3 "-DWRSLIB=leaf_sum_tree_split<int>"    "-DWEIGHTNUM=$2" -o test21 weibull_static.cpp
-g++ -std=c++20 -I../sideways-fenwick -O3 "-DWRSLIB=sideways_fenwick_selector<int>" "-DWEIGHTNUM=$2" -o test22 weibull_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=low_storage_selector<int>"                "-DWEIGHTNUM=$2" -o test23 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>"       "-DWEIGHTNUM=$2" -o test16 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=fast_random_selector<>"             "-DWEIGHTNUM=$2" -o test17 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=std::discrete_distribution<>"       "-DWEIGHTNUM=$2" -o test18 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>" "-DWEIGHTNUM=$2" -o test19 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test20 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test21 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test22 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=low_storage_selector<>"                "-DWEIGHTNUM=$2" -o test23 weibull_static.cpp
 
 # Initialize sums
 sum0=0

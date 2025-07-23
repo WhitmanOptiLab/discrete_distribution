@@ -2,8 +2,8 @@
 //Enter the library you want to test after 'DWRSLIB=' and the number of weights after 'DWEIGHTNUM='.
 
 //Ex:
-//g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 uniform_changing.cpp
-//g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 uniform_changing.cpp
+//g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 normal_changing.cpp
+//g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
 
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
@@ -19,20 +19,17 @@
 using namespace dense::stochastic;
 
 int main() {
-  std::uniform_real_distribution<float> d(1,10); 
+  std::normal_distribution<float> d(5,2); 
   std::uniform_int_distribution<int> randomIndex(0, WEIGHTNUM - 1);
 
   std::default_random_engine generator;
   std::vector<float> weights = {};
   
   for(int i = 0; i < WEIGHTNUM; i++){
-    weights.push_back(d(generator));
+    weights.push_back(std::max<float>(0, d(generator)));
   }	      
 
-  float minweight = *std::min_element(weights.begin(), weights.end());
-  for(int i = 0; i < WEIGHTNUM; i++){
-    weights[i] -= minweight;
-  }	      
+      
 
   //start time
   struct timeval start, end;
@@ -41,9 +38,9 @@ int main() {
   
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
-    selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
+    selector.update_weight(index, std::max<float>(0.0, d(generator)));
     for(int j = 0; j < 4; j++){
-      selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
+      selector.update_weight(randomIndex(generator), std::max<float>(0.0, d(generator)));    
     }
   }
   
@@ -54,5 +51,3 @@ int main() {
   std::cout << elapsedtime_sec << std::endl;
   
 }
-
- 
