@@ -61,9 +61,7 @@ namespace stochastic {
       //
     protected:
 
-      void resize(size_type new_size, entry_type value) {
-        _tree.resize(new_size, value);
-      }
+      
 
       void add_entry(entry_type&& entry) {
         _tree.push_back(entry);
