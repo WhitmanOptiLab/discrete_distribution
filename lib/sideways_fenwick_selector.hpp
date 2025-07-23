@@ -200,17 +200,7 @@ namespace stochastic {
 
       
 
-      Real weight_of(node_type n) {
-        auto val = this->value_of(n);
-        for (auto i = BaseTree::left_of(n); i <this->size(); i=BaseTree::right_of(i)) {
-          val -= this->value_of(i);
-        }
-        return val;
-      }
-
-      const Real& weight_of(node_type n) const {
-        return const_cast<This*>(this)->weight_of(n);
-      }
+      
 
       //returns the sum of the left subtree and the node itself
       Real& weightsum_of(node_type n) {
@@ -221,9 +211,7 @@ namespace stochastic {
         return const_cast<This*>(this)->weightsum_of(n);
       }
 
-      sideways_fenwick_selector const& const_this() const {
-        return static_cast<This const&>(*this);
-      }
+      
 
       void update_weight_of_node(node_type givenNode, Real new_weight) {
         //std::cout<<"________________updating weight_____________"<<std::endl;
@@ -247,19 +235,14 @@ namespace stochastic {
         //this->PrintTree();
       }
 
-      Real get_weight(index_type i) {
-        return weight_of(node_of(i));
-      }
+      
 
     //   Real total_weight() const { return WeightSum::total_weight(); }
 
     private:
 
-      Real total_weight=0;
       //helper function to return the next node to update
-      node_type nextNode(node_type currentNode){
-        return currentNode>>((std::countr_one(currentNode))+1);
-      }
+      
 
       void add_entry(const entry_type& e) {
         value_type v = e;
@@ -284,14 +267,7 @@ namespace stochastic {
         return const_cast<This*>(this)->weight_of(n);
       }
 
-      //returns the sum of the left subtree and the node itself
-      Real& weightsum_of(node_type n) {
-        return this->value_of(n);
-      }
-
-      const Real& weightsum_of(node_type n) const {
-        return const_cast<This*>(this)->weightsum_of(n);
-      }
+      
 
       void remove_last_entry() {
         update_weight(BaseTree::last(),0);
