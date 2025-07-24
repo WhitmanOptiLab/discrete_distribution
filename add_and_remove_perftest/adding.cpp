@@ -19,19 +19,20 @@
 using namespace dense::stochastic;
 
 int main() {
-  
   std::uniform_real_distribution<float> d(1,10); 
   std::uniform_int_distribution<int> randomIndex(0, WEIGHTNUM - 1);
 
   std::default_random_engine generator;
   std::vector<float> weights = {};
-
-  int initialSize=2;
   
-  for(int i = 0; i < 2; i++){
+  for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
   }	      
-    
+
+  float minweight = *std::min_element(weights.begin(), weights.end());
+  for(int i = 0; i < WEIGHTNUM; i++){
+    weights[i] -= minweight;
+  }	      
 
   //start time
   struct timeval start, end;
@@ -39,13 +40,15 @@ int main() {
   gettimeofday(&start, NULL);
   
   int sum=0;
-  for (int j = 0; j < 5000000/WEIGHTNUM; j++) {
-    for(int i=initialSize-1;i<WEIGHTNUM;i++){
+  for (int i = 0; i < 1000000; i++) {
+    sum+=selector(generator);
+    for(int j=0;j<4;j++){
       selector.push_back(d(generator));
     }
-    for(int i=WEIGHTNUM-1;i>=initialSize;i--){
-      selector.pop_back();
-    }
+    // selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
+    // for(int j = 0; j < 4; j++){
+    //   selector.update_weight(randomIndex(generator), std::max<float>(0.0, d(generator)));    
+    // }
   }
   
   // end time
@@ -53,6 +56,7 @@ int main() {
   double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
     double(end.tv_usec - start.tv_usec)/1000000.0;
   std::cout << elapsedtime_sec << std::endl;
+  if(sum == 0 ) {std::cout << "hit"; } // Added conditional so compiler must compute sum
 
   
 }

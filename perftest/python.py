@@ -8,7 +8,7 @@ from matplotlib.widgets import CheckButtons
 import numpy as np
 
 # Load data as before
-files = sorted(glob.glob("resultsAddRemove_*.csv"), key=lambda x: int(x.split("_")[1].split(".")[0]))
+files = sorted(glob.glob("results_*.csv"), key=lambda x: int(x.split("_")[1].split(".")[0]))
 levels = []
 data_by_test = {}
 
@@ -133,8 +133,6 @@ check.on_clicked(func)
 # Final formatting
 ax_main.set_xlabel("Number of Weights (Level)")
 ax_main.set_ylabel("Average Time (seconds)")
-ax_main.set_ylim(top=3)
-ax_main.set_ylim(bottom=0)
 ax_main.set_title("Performance of Weighted Random Selection Methods")
 ax_main.grid(True)
 ax_main.set_xscale("log")
