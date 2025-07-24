@@ -5,6 +5,8 @@
 //g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 uniform_changing.cpp
 //g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 uniform_changing.cpp
 
+//g++ -I../../lib perftestCode.cpp -std=c++20 "-DWRSLIB=sideways_fenwick_selector<>" "-DWEIGHTNUM=10000"
+
 #include "random_selector.hpp"
 #include "modifiable_heap_random_selector.hpp"
 #include "no_weight_storage_modifiable_heap_random_selector.hpp"
@@ -17,21 +19,8 @@
 #include <vector>
 #include <algorithm>
 using namespace dense::stochastic;
-int sum = 0;
-
-void updateFunct (WRSLIB& selector, 
-                  std::default_random_engine& generator, 
-                  std::uniform_real_distribution<float>& d, 
-                  std::uniform_int_distribution<int>& randomIndex) {
-    for (int i = 0; i < 15000000; i++) {
-        //sum += selector(generator);
-        selector.update_weight(randomIndex(generator), std::max<float>(0.0, d(generator)));
-    }
-}
-
 
 int main() {
-  //int WEIGHTNUM = 100000; // Default value, can be overridden by compilation flag
   std::uniform_real_distribution<float> d(1,10); 
   std::uniform_int_distribution<int> randomIndex(0, WEIGHTNUM - 1);
 
@@ -52,7 +41,13 @@ int main() {
   WRSLIB selector(weights.begin(), weights.end());
   gettimeofday(&start, NULL);
   
-  updateFunct(selector, generator, d, randomIndex);
+  for (int i = 0; i < 1000000; i++) {
+    int index = selector(generator);
+    selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
+    for(int j = 0; j < 14; j++){
+      selector.update_weight(randomIndex(generator), std::max<float>(0.0, d(generator)));
+    }
+  }
   
   // end time
   gettimeofday(&end, NULL);

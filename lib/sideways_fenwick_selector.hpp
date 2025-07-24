@@ -219,11 +219,18 @@ namespace stochastic {
         Real weightDifference =  new_weight - this->weight_of(node);
         total_weight+=weightDifference;
         //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+        int64_t fromLeft = -1;
         while(node>=BaseTree::root()){
-            this->value_of(node)+=weightDifference;
+            auto oldval = this->value_of(node);
+            Real masked_real;
+            masked_real = reinterpret_cast<int64_t&>(weightDifference) & fromLeft;
+            this->value_of(node) = oldval + masked_real;;
+            fromLeft = (node&1) - 1;
+            node = BaseTree::parent_of(node);
+            //this->value_of(node)+=weightDifference;
             //std::cout<<"about to change node ";
             //this->PrintTree();
-            node = nextNode(node);
+            //node = nextNode(node);
             //std::cout<<"just changed node ";
             //this->PrintTree();
 

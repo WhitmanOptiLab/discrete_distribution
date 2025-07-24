@@ -17,21 +17,8 @@
 #include <vector>
 #include <algorithm>
 using namespace dense::stochastic;
-int sum = 0;
-
-void updateFunct (WRSLIB& selector, 
-                  std::default_random_engine& generator, 
-                  std::uniform_real_distribution<float>& d, 
-                  std::uniform_int_distribution<int>& randomIndex) {
-    for (int i = 0; i < 15000000; i++) {
-        //sum += selector(generator);
-        selector.update_weight(randomIndex(generator), std::max<float>(0.0, d(generator)));
-    }
-}
-
 
 int main() {
-  //int WEIGHTNUM = 100000; // Default value, can be overridden by compilation flag
   std::uniform_real_distribution<float> d(1,10); 
   std::uniform_int_distribution<int> randomIndex(0, WEIGHTNUM - 1);
 
@@ -52,7 +39,13 @@ int main() {
   WRSLIB selector(weights.begin(), weights.end());
   gettimeofday(&start, NULL);
   
-  updateFunct(selector, generator, d, randomIndex);
+  for (int i = 0; i < 1000000; i++) {
+    int index = selector(generator);
+    selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
+    for(int j = 0; j < 4; j++){
+      selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
+    }
+  }
   
   // end time
   gettimeofday(&end, NULL);

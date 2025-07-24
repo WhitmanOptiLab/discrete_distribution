@@ -1,5 +1,6 @@
 #include"../lib/modifiable_heap_random_selector.hpp"
 #include "../lib/random_selector.hpp"
+#include "../lib/sideways_fenwick_selector.hpp"
 
 
 #include <iostream>
@@ -9,30 +10,26 @@ using namespace dense::stochastic;
 
 int main() {
   std::default_random_engine generator(5);
-  std::vector<float> weights = {1, 2, 3, 4};
+  std::vector<float> weights = {1, 2, 3, 4, 90};
 
-  fast_random_selector<> selector(weights.begin(), weights.end());
+  sideways_fenwick_selector<> selector(weights.begin(), weights.end());
   std::cout << "Constructed" << std::endl;
-  selector.push_entry(10);
-  selector.push_entry(10);
-  selector.remove_last_entry();
+  
 
   
 
 
 
-   std::vector<unsigned int> counts(selector.max());
+   std::vector<unsigned int> counts(10);
 
 
     
     for (int i = 0; i < 100000; i++) {
       int index = selector(generator);
       //if(index == 0) {std::cout << "4!" << std::endl;}
-      if (index < 0 || index >= selector.max()) {
-        std::cout << "Error, index out of range" << std::endl;
-      } else {
+      
         counts[index]++;
-      }
+      
     }
     for (auto c : counts) {
       std::cout << c << ',';
