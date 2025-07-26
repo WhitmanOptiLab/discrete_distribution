@@ -33,13 +33,12 @@ int main(){
 
     //WOULD START TIMING HERE
     //Constructing the heap random selector
-    leaf_sum_tree<int> selector(weights.begin(), weights.end());
+    leaf_sum_tree<size_t> selector(weights.begin(), weights.end());
 
     //selecting weights
     for (int i=0;i<numOperations;i++){
-        int selectedItemIndex = selector(generator);
-        selector.update_weight(selectedItemIndex,distribution(generator));
-
+        size_t selectedItemIndex = selector(generator);
+        selector.update_weight(selectedItemIndex,std::max(distribution(generator),0.0));
     }
     //WOULD STOP TIMING HERE
 
