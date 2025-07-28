@@ -114,7 +114,7 @@ public:
     if (target == 0) return 0;
 
     PosType node = BaseTree::root();
-
+    if (leaf_end_ > 65536){
     while (node < leaf_start_) {
       //if (BaseTree::value_of(node) == 0) std::cout << node << " " << target << " " << BaseTree::value_of(1) << std::endl;
       //std::cout << "Target: " << target << std::endl;
@@ -129,6 +129,20 @@ public:
       //std::cout << std::endl;
     }
     //std::cout << "Returning node " << node << ", which has weight: " << weightsum_of(node) << std::endl;
+    }
+    else{
+      while (node < leaf_start_) {
+        PosType left = left_of(node);
+        PosType right = right_of(node);
+        Real left_sum = weightsum_of(left);
+
+        unsigned int go_left = static_cast<unsigned int>(target < left_sum);
+
+        node = left * go_left + right * (1 - go_left);
+        target -= (1 - go_left) * left_sum;
+      }
+
+    }
 
     return id_of(node);
   }
