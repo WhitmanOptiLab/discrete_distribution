@@ -12,8 +12,13 @@ namespace stochastic {
 
 
 
-//Class to randomly select an index where each index's probability of being...
-//...selected is weighted by a given vector.
+//Class to randomly select an index where each index's probability of being
+//selected is weighted by a given vector. Supports O(log(n)) selection and
+//update while using 2n memory space, along with O(1) addition and removal
+//while size stays within the range of the nearest powers of two. If size
+//has to expand beyond that or can contract below that, then the structure
+//has to be rebuilt, resulting in an O(2n) cost. Construction itself always
+//takes O(2n) time.
 template <class int_type = size_t, size_t precision = std::numeric_limits<Real>::digits>
 
 
@@ -27,15 +32,15 @@ using result_type = int_type;
 
 
 
-class param_type {
+class Param {
   public:
-    param_type(const std::vector<Real>& weights) : weights_(weights) {}
-    param_type(std::vector<Real>&& weights) : weights_(std::move(weights)) {}
+    Param(const std::vector<Real>& weights) : weights_(weights) {}
+    Param(std::vector<Real>&& weights) : weights_(std::move(weights)) {}
 
     std::vector<Real> weights() const { return weights_; }
 
-    bool operator==(const param_type& other) const { return weights_ == other.weights_; }
-    bool operator!=(const param_type& other) const { return !(*this == other); }
+    bool operator==(const Param& other) const { return weights_ == other.weights_; }
+    bool operator!=(const Param& other) const { return !(*this == other); }
 
   private:
     std::vector<Real> weights_;
@@ -47,7 +52,7 @@ class param_type {
 //Methods accessible to the end user
 public:
 
-  using param_type = param_type;
+  using param_type = Param;
 
 
 ////MEMBER FUNCTIONS////
@@ -58,6 +63,10 @@ public:
   //Param-compatible constructor, turns a vector of weights into iterators for the main constructor
   leaf_sum_tree(const std::vector<Real>& weights)
   : leaf_sum_tree(weights.begin(), weights.end()) {}
+
+  //Two-entry compatible list constructor
+  leaf_sum_tree(const std::initializer_list<Real>& il)
+  : leaf_sum_tree(il.begin(), il.end()) {}
 
   //Main constructor - takes iterators to the start and end of an array of weights
   template< class InputIt >
