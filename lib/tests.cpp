@@ -6,6 +6,7 @@
 #include <cassert>
 #include <map>
 #include <iomanip>
+#include <sstream>
 #include "leaf_sum_tree_selector.hpp"
 
 using Tree = dense::stochastic::leaf_sum_tree<>;
@@ -95,6 +96,32 @@ void test_update_weight_edge_cases() {
     std::cout << "Update weight edge cases passed.\n";
 }
 
+void test_stream_operators() {
+    std::cout << "\nTest: Stream Operators\n";
+
+    // Step 1: Original distribution
+    std::vector<double> weights = {0.5, 1.5, 2.0, 3.0};
+    Tree original(weights);
+    std::cout << std::endl;
+
+    // Step 2: Stream to string
+    std::stringstream ss;
+    ss << original;
+    std::string serialized = ss.str();
+    std::cout << "Serialized: " << serialized << std::endl;
+
+    // Step 3: Read back into new distribution
+    Tree loaded;
+    ss.seekg(0); // rewind the stream
+    ss >> loaded;
+
+    // Step 4: Compare
+    assert(original == loaded && "Deserialized distribution does not match original");
+
+    std::cout << "✅ Stream operators passed." << std::endl;
+}
+
+
 void test_single_element_tree() {
     std::cout << "\nTest: Single Element Tree\n";
     Tree tree({42.0});
@@ -116,6 +143,8 @@ int main() {
     test_push_pop_stress();
     test_update_weight_edge_cases();
     test_single_element_tree();
+    test_stream_operators();
+
 
     std::cout << "\n🎉 All extreme tests passed!\n";
     return 0;

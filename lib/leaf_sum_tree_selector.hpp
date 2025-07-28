@@ -32,7 +32,7 @@ class param_type {
     param_type(const std::vector<Real>& weights) : weights_(weights) {}
     param_type(std::vector<Real>&& weights) : weights_(std::move(weights)) {}
 
-    const std::vector<Real>& weights() const { return weights_; }
+    std::vector<Real> weights() const { return weights_; }
 
     bool operator==(const param_type& other) const { return weights_ == other.weights_; }
     bool operator!=(const param_type& other) const { return !(*this == other); }
@@ -410,33 +410,57 @@ private:
   size_t leaf_end_;
 };
 
-  template <typename int_type = size_t, size_t precision = std::numeric_limits<Real>::digits>
+
+  //Function to return a stream output of the entirety of the given tree object. The first item in the stream is the total number of weights.
+  template <typename int_type, size_t precision>
   std::ostream& operator<<(std::ostream& os, const leaf_sum_tree<int_type, precision>& dist) {
-    const auto& weights = dist.param().weights();
+    std::ios_base::fmtflags old_flags = os.flags();
+    char old_fill = os.fill();
+
+    os.setf(std::ios_base::dec | std::ios_base::left, std::ios_base::basefield | std::ios_base::adjustfield);
+    os.fill(' ');
+
+    const auto weights = dist.param().weights();
     os << weights.size();
-    for (auto w : weights) {
+    for (const auto& w : weights) {
       os << ' ' << w;
     }
+
+    os.flags(old_flags);
+    os.fill(old_fill);
     return os;
   }
 
-  template <typename int_type = size_t, size_t precision = std::numeric_limits<Real>::digits>
+
+  //Function to construct a tree object from a string input.
+  template <typename int_type, size_t precision>
   std::istream& operator>>(std::istream& is, leaf_sum_tree<int_type, precision>& dist) {
+    std::ios_base::fmtflags old_flags = is.flags();
+    is.setf(std::ios_base::dec, std::ios_base::basefield);
+
     size_t n;
     is >> n;
-    if (!is) return is;
+    if (!is) {
+      is.flags(old_flags);
+      return is;
+    }
 
     std::vector<double> weights(n);
     for (size_t i = 0; i < n; ++i) {
       is >> weights[i];
       if (!is) {
         is.setstate(std::ios::failbit);
+        is.flags(old_flags);
         return is;
       }
     }
+
     dist.param(weights);
+
+    is.flags(old_flags);
     return is;
   }
+
 
 }
 }

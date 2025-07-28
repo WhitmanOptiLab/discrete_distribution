@@ -72,20 +72,23 @@ void test_push_and_pop() {
 void test_param_sampling() {
     std::cout << "\nTest: Param Sampling\n";
 
-    Tree tree({1.0, 1.0, 1.0});
+    Tree source({1.0, 1.0, 1.0});
+    source.update_weight(0, 0.0);
+    source.update_weight(1, 1.0);
+    source.update_weight(2, 9.0);
 
-    // Update weights through the proper API
-    tree.update_weight(0, 0.0);
-    tree.update_weight(1, 1.0);
-    tree.update_weight(2, 9.0);
-
-    auto param = tree.param(); // read-only snapshot
+    // Grab param snapshot
+    auto param = source.param();
     const std::vector<Real>& pw = param.weights();
+
+    // Create a NEW tree with different weights
+    Tree target({1.0, 1.0, 1.0}); // Dummy init
+    target.param(param); // Use param setter to overwrite
 
     std::mt19937 rng(9);
     std::map<Pos, int> counts;
     for (int i = 0; i < 100'000; ++i)
-        counts[tree(rng, param)]++;
+        counts[target(rng)]++;
 
     Real total = std::accumulate(pw.begin(), pw.end(), 0.0);
     for (Pos i = 0; i < pw.size(); ++i) {
@@ -95,6 +98,7 @@ void test_param_sampling() {
         assert(std::abs(actual - expected) < 0.02);
     }
 }
+
 
 
 void test_zero_weight_behavior() {
