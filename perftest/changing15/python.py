@@ -133,9 +133,10 @@ check.on_clicked(func)
 # Final formatting
 ax_main.set_xlabel("Number of Weights (Level)")
 ax_main.set_ylabel("Average Time (seconds)")
-ax_main.set_title("Performance of Weighted Random Selection Methods")
+ax_main.set_title("Performance of Weighted Random Selection Methods: 15:1")
 ax_main.grid(True)
 ax_main.set_xscale("log")
 
 plt.tight_layout()
 plt.show()
+print("Plotting complete.")

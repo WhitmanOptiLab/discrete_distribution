@@ -6,6 +6,8 @@
 #include <functional>
 #include <type_traits>
 #include <iostream>
+#include <sys/mman.h>
+
 namespace dense {
 namespace stochastic {
 
