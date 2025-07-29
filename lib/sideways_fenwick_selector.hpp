@@ -65,7 +65,7 @@ namespace stochastic {
         //this->PrintTree();
         node_type lastNonLeaf = (BaseTree::entry_count())/2;
         //std::cout<<"last non leaf is "<<lastNonLeaf<<std::endl;
-        if (lastNonLeaf%2==1){
+        if (BaseTree::entry_count()%2==1){
             this->value_of(lastNonLeaf)+=(this->value_of(BaseTree::left_of(lastNonLeaf)));
         }
         else{
