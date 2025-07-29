@@ -1,6 +1,7 @@
 //#include "../lib/new_modifiable_heap_random_selector.hpp"
 //#include"../lib/no_weight_storage_modifiable_heap_random_selector.hpp"
-#include "../lib/random_selector.hpp"
+//#include "../lib/random_selector.hpp"
+#include "../lib/sideways_fenwick_selector.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -35,7 +36,7 @@ int main(){
 
     //WOULD START TIMING HERE
     //Constructing the heap random selector
-    nonuniform_int_distribution<int> selector(weights.begin(), weights.end());
+    sideways_fenwick_selector<> selector(weights.begin(), weights.end());
 
     outputFile<<"distribution after construction, "<<std::endl;
 
