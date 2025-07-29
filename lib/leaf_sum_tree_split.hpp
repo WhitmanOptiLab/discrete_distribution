@@ -85,7 +85,6 @@ class leaf_sum_tree_split : protected complete_tree<IntType, Real> {
 
     bool go_left = (target < left_sum);
     node = go_left ? left : BaseTree::right_of(node);
-    if (!go_left) target -= left_sum;
     //std::cout << std::endl;
 
     //std::cout << "Returning node " << node-leaf_start << ", which has weight: " << leaves[node-leaf_start] << std::endl;
