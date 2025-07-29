@@ -58,10 +58,10 @@ class heap_random_selector : protected complete_tree<IntType, std::tuple<IntType
   }
 
  private:
-  void remove_last_entry() {
+  void pop_entry() {
     auto last = BaseTree::value_of(BaseTree::last());
     WeightSum::update_weight(BaseTree::last(), 0);
-    BaseTree::remove_last_entry();
+    BaseTree::pop_entry();
   }
 
 

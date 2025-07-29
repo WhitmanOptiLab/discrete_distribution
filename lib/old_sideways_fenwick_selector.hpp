@@ -271,9 +271,9 @@ namespace stochastic {
 
       
 
-      void remove_last_entry() {
+      void pop_entry() {
         update_weight(BaseTree::last(),0);
-        BaseTree::remove_last_entry();
+        BaseTree::pop_entry();
       }
 
       old_sideways_fenwick_selector const& const_this() const {
