@@ -218,7 +218,7 @@ namespace stochastic {
       }
 
       
-
+      /*
       void update_weight_of_node(node_type givenNode, Real new_weight) {
         auto node = givenNode;
         Real weightDifference =  new_weight - weight_of(node);
@@ -237,6 +237,52 @@ namespace stochastic {
             
         }
       }
+      */
+     ///*
+
+
+      void update_weight_of_node(node_type givenNode, Real new_weight) {
+        //std::cout<<"________________updating weight_____________"<<std::endl;
+        auto node = givenNode;
+        Real weightDifference =  new_weight - this->weight_of(node);
+        total_weight+=weightDifference;
+        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+        
+        while(__builtin_expect(node>BaseTree::root(), 0)){
+            this->value_of(node)+=weightDifference;
+            //std::cout<<"about to change node ";
+            //this->PrintTree();
+            node = nextNode(node);
+            //std::cout<<"just changed node ";
+            //this->PrintTree();
+
+            //std::cout<<"new node is "<<node<<std::endl;
+            
+        }
+        this->value_of(node)+=weightDifference;
+        //std::cout<<"ending tree is ";
+        //this->PrintTree();
+      }
+
+/*
+      void update_weight_of_node(node_type givenNode, Real new_weight) {
+        auto node = givenNode;
+        Real weightDifference =  new_weight - weight_of(node);
+        total_weight += weightDifference;
+        int fromLeft = 1;
+        while(node>=BaseTree::root()){
+            
+        
+            //masked_real = reinterpret_cast<int64_t&>(weightDifference) & fromLeft;
+
+
+            this->value_of(node) += (weightDifference * fromLeft);
+            fromLeft = (node & 1) == 0 ? 1 : 0;
+            node = BaseTree::parent_of(node);
+            
+        }
+      }
+        //*/
 
       
 

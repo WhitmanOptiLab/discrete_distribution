@@ -15,7 +15,7 @@ int main() {
   sideways_fenwick_selector<> selector(weights.begin(), weights.end());
   std::cout << "Constructed" << std::endl;
   
-
+  selector.update_weight(4, 10);
   
 
 
