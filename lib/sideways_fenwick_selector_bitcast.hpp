@@ -1,5 +1,5 @@
-#ifndef SIDEWAYS_FENWICK_RANDOM_SELECTOR
-#define SIDEWAYS_FENWICK_RANDOM_SELECTOR
+#ifndef SIDEWAYS_FENWICK_RANDOM_SELECTOR_BITCAST
+#define SIDEWAYS_FENWICK_RANDOM_SELECTOR_BITCAST
 ////////////////////////////////IMPORTANT/////////////////////////////////////
 //must compile this file using the -std=c++20 flag
 //compiling testingDistributions: g++ -std=c++20 test/testingDistributions.cpp
@@ -26,7 +26,7 @@ namespace stochastic {
   template <
     typename I = size_t, size_t precision = std::numeric_limits<Real>::digits
   >
-  class sideways_fenwick_selector :
+  class sideways_fenwick_selector_bitcast :
     //Extends a complete tree...
     protected complete_tree<I, Real >
   {
@@ -36,7 +36,7 @@ namespace stochastic {
 
       using size_type = std::ptrdiff_t;
       using index_type = I;
-      using This = sideways_fenwick_selector<index_type, precision>;
+      using This = sideways_fenwick_selector_bitcast<index_type, precision>;
       using node_type = index_type;
       using value_type = Real;
       using entry_type = Real;
@@ -46,10 +46,10 @@ namespace stochastic {
       using const_reference = value_type const&;
       using BaseTree = complete_tree<node_type, value_type>;
 
-      sideways_fenwick_selector() = delete;
+      sideways_fenwick_selector_bitcast() = delete;
 
       template<typename InputIt>
-      sideways_fenwick_selector(InputIt first, InputIt last) :
+      sideways_fenwick_selector_bitcast(InputIt first, InputIt last) :
           BaseTree() 
       {
         //std::cout<<"__________constructor__________"<<std::endl;
@@ -95,15 +95,15 @@ namespace stochastic {
 
       }
 
-      sideways_fenwick_selector(sideways_fenwick_selector const&) = default;
+      sideways_fenwick_selector_bitcast(sideways_fenwick_selector_bitcast const&) = default;
 
-      sideways_fenwick_selector(sideways_fenwick_selector &&) = default;
+      sideways_fenwick_selector_bitcast(sideways_fenwick_selector_bitcast &&) = default;
 
-      sideways_fenwick_selector& operator=(sideways_fenwick_selector const&) = default;
+      sideways_fenwick_selector_bitcast& operator=(sideways_fenwick_selector_bitcast const&) = default;
 
-      sideways_fenwick_selector& operator=(sideways_fenwick_selector &&) = default;
+      sideways_fenwick_selector_bitcast& operator=(sideways_fenwick_selector_bitcast &&) = default;
 
-      ~sideways_fenwick_selector() = default;
+      ~sideways_fenwick_selector_bitcast() = default;
 
 
       // //Methods of WeightSum we want to make available
@@ -213,8 +213,8 @@ namespace stochastic {
         return const_cast<This*>(this)->weightsum_of(n);
       }
 
+    
       
-      /*
       void update_weight_of_node(node_type givenNode, Real new_weight) {
         auto node = givenNode;
         Real weightDifference =  new_weight - weight_of(node);
@@ -233,66 +233,9 @@ namespace stochastic {
             
         }
       }
-      */
-     ///*
+      
 
 
-      // void update_weight_of_node(node_type givenNode, Real new_weight) {
-      //   //std::cout<<"________________updating weight_____________"<<std::endl;
-      //   auto node = givenNode;
-      //   Real weightDifference =  new_weight - this->weight_of(node);
-      //   total_weight+=weightDifference;
-      //   //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
-      //   auto nextUpdate = nextNode(node);
-      //   while(node>=BaseTree::root()){
-            
-      //       this->value_of(node)+=weightDifference; // SKIP VERSION
-      //       node = nextNode(node); //SKIP VERSION
-
-
-      //       //std::cout<<"just changed node ";
-      //       //this->PrintTree();
-
-      //       //std::cout<<"new node is "<<node<<std::endl;
-            
-      //   }
-      //   //this->value_of(node)+=weightDifference;
-      //   //std::cout<<"ending tree is ";
-      //   //this->PrintTree();
-      // }
-        
-
-void update_weight_of_node(node_type givenNode, Real new_weight) {
-        //std::cout<<"________________updating weight_____________"<<std::endl;
-        //auto node = givenNode;
-        auto node = givenNode;
-        Real weightDifference =  new_weight - this->weight_of(node);
-        total_weight+=weightDifference;
-        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
-        
-        //std::cout<<"node "<<std::bitset<32>(node) << std::endl;
-
-        uint iterCount = ~node;
-        //std::cout<<"reversed node "<<std::bitset<32>(iterCount) << std::endl;
-        int leadingOnes = std::countl_one(iterCount);
-        //std::cout<<"leading ones "<<leadingOnes<<std::endl;
-        iterCount = iterCount << std::countl_one(iterCount);
-
-        //std::cout<<"shifted by leading ones ";
-        //std:: cout << std::bitset<32>(iterCount) << std::endl;
-
-        iterCount = std::popcount(iterCount);
-        iterCount++;
-
-        //std::cout << iterCount -1 << std::endl;
-
-        for(int i = 0; i < iterCount; i++) {
-            //std::cout << "iteration #: " << i << std::endl;
-            this->value_of(node)+=weightDifference; // SKIP VERSION
-            node = nextNode(node); //SKIP VERSION
-        }
-
-}
         
         
 
@@ -335,7 +278,7 @@ void update_weight_of_node(node_type givenNode, Real new_weight) {
         BaseTree::pop_entry();
       }
 
-      sideways_fenwick_selector const& const_this() const {
+      sideways_fenwick_selector_bitcast const& const_this() const {
         return static_cast<This const&>(*this);
       }
 

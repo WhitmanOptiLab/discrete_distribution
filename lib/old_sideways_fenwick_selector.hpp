@@ -63,7 +63,7 @@ namespace stochastic {
         //this->PrintTree();
         node_type lastNonLeaf = (BaseTree::entry_count())/2;
         //std::cout<<"last non leaf is "<<lastNonLeaf<<std::endl;
-        if (BaseTree::entry_count()%2==1){
+        if (BaseTree::entry_count()%2==0){
             this->value_of(lastNonLeaf)+=(this->value_of(BaseTree::left_of(lastNonLeaf)));
         }
         else{
@@ -219,7 +219,16 @@ namespace stochastic {
         Real weightDifference =  new_weight - this->weight_of(node);
         total_weight+=weightDifference;
         //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
-        auto nextUpdate = nextNode(node);
+
+        auto iterCount = ~node;
+        iterCount = std::popcount(iterCount << std::countl_one(iterCount));
+
+
+
+        for(int i = 0; i < iterCount; i++) {
+            this->value_of(node)+=weightDifference; // SKIP VERSION
+            node = nextNode(node); //SKIP VERSION
+        }
         while(node>=BaseTree::root()){
             
             this->value_of(node)+=weightDifference; // SKIP VERSION

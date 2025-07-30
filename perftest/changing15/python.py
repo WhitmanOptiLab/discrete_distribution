@@ -22,11 +22,11 @@ for file in files:
 
 # Define families and marker styles
 family_colors_rgb = {
-    "fenwick": mcolors.to_rgb("red"),
-    "discrete": mcolors.to_rgb("blue"),
+    "jump": mcolors.to_rgb("red"),
     "leafsum": mcolors.to_rgb("green"),
-    "wrs": mcolors.to_rgb("orange"),
-    "heap": mcolors.to_rgb("purple"),
+    "leaf_sum_split": mcolors.to_rgb("blue"),
+    "itercount": mcolors.to_rgb("orange"),
+    "bitcast": mcolors.to_rgb("purple"),
 }
 families = list(family_colors_rgb.keys())
 family_to_tests = {fam: [] for fam in families}
@@ -115,7 +115,7 @@ labels, lines, colors = zip(*line_objects)
 # Create CheckButtons
 check = CheckButtons(ax_legend, labels, [True] * len(labels))
 
-# Style labels with colors
+# Style labels with colorsAstronomy
 for label_text, color in zip(check.labels, colors):
     label_text.set_color(color)
     label_text.set_fontsize(9)

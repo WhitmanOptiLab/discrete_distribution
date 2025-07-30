@@ -24,7 +24,7 @@ int main(){
     std::uniform_real_distribution<double> uniformDistribution(percentWeightMin,percentWeightMax);
     std::vector<double> weights;
 
-    outputFile.open("test/adjustingWeightsHeapOutput.csv");
+    outputFile.open("adjustingWeightsHeapOutput.csv");
     outputFile<<"starting distribution, "<<std::endl;
     for (int i=0;i<numWeights;i++){
         //double num = distribution(generator);
@@ -60,7 +60,7 @@ int main(){
     for(int i=numWeights;i<numWeights+4;i++){
         double entry = 1.5;//distribution(generator);
         outputFile<<entry<<", ";
-        selector.push_entry(entry);
+        selector.push_back(entry);
     }
 
 
@@ -72,7 +72,7 @@ int main(){
 
     outputFile<<std::endl<<"removing last weight"<<std::endl;
     for(int i=0;i<6;i++){
-        selector.remove_last_entry();
+        selector.pop_back();
     }
     outputFile<<std::endl<<"ending distribution: "<<std::endl;
 

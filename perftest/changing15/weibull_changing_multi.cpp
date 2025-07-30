@@ -12,6 +12,7 @@
 #include "leaf_sum_tree_split.hpp"
 #include "sideways_fenwick_selector.hpp"
 #include "old_sideways_fenwick_selector.hpp"
+#include "sideways_fenwick_selector_bitcast.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>

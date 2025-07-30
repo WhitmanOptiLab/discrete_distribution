@@ -1,5 +1,11 @@
 starting distribution, 
-6.60737, 1.56934, 6.10701, 3.80953, 2.79561, 3.8967, 2.38654, 3.01376, 5.45273, 3.8629, 
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
 
-ending distribution, 
-6.60737, 1.56934, 6.10701, 3.80953, 2.79561, 3.8967, 2.38654, 3.01376, 5.45273, 3.8629, 
+distribution after construction, 
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+adding weights: 1.5, 1.5, 1.5, 1.5, ending distribution, 
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1.5, 1.5, 1.5, 1.5, 
+removing last weight
+
+ending distribution: 
+1, 2, 3, 4, 5, 6, 7, 8, 
