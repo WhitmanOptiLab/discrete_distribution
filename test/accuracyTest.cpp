@@ -1,6 +1,6 @@
 //#include "../lib/new_modifiable_heap_random_selector.hpp"
 //#include"../lib/no_weight_storage_modifiable_heap_random_selector.hpp"
-#include "../lib/random_selector.hpp"
+#include "../lib/sideways_fenwick_selector.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -14,7 +14,7 @@ int main(){
     double percentWeightMax=1.2;
 
     std::ofstream outputFile;
-
+    std::cout << "start" << std::endl;
 
     //Generating a normally distributed vector of weights
     std::default_random_engine generator(10);
@@ -35,7 +35,7 @@ int main(){
 
     //WOULD START TIMING HERE
     //Constructing the heap random selector
-    nonuniform_int_distribution<int> selector(weights.begin(), weights.end());
+    sideways_fenwick_selector<int> selector(weights.begin(), weights.end());
 
     outputFile<<"distribution after construction, "<<std::endl;
 
@@ -59,7 +59,7 @@ int main(){
     for(int i=numWeights;i<numWeights+4;i++){
         double entry = 1.5;//distribution(generator);
         outputFile<<entry<<", ";
-        selector.push_entry(entry);
+        selector.push_back(entry);
     }
 
 
@@ -69,9 +69,9 @@ int main(){
         outputFile << selector.get_weight(i)<<", ";
     }
 
-    outputFile<<std::endl<<"removing last weight"<<std::endl;
+    outputFile<<std::endl<<"removing last 6 weights"<<std::endl;
     for(int i=0;i<6;i++){
-        selector.remove_last_entry();
+        selector.pop_back();
     }
     outputFile<<std::endl<<"ending distribution: "<<std::endl;
 

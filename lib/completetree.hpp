@@ -59,6 +59,14 @@ namespace stochastic {
         return _tree.empty();
       }
 
+      void PrintTree()const{
+        std::cout<<"printing tree ";
+        for(int i=1;i<_tree.size();i++){
+          std::cout<<_tree[i]<<", ";
+        }
+        std::cout<<std::endl;
+      }
+
       //Tree modification methods
       //
     protected:
