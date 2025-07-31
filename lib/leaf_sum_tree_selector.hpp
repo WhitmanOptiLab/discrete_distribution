@@ -6,6 +6,7 @@
 #include <cassert>
 #include <ostream>
 #include <istream>
+#include <iostream>
 
 namespace dense {
 namespace stochastic {
@@ -74,17 +75,16 @@ public:
     BaseTree()
   {
     size_t n = std::distance(first, last);
-    leaf_start_ = next_power_of_two(n);
     leaf_end_ = n;
-    BaseTree::resize(2 * leaf_start_, 0.0); //double the size of the weights list (rounded to next power of two)
+    BaseTree::resize(2 * leaf_end_, 0.0); //double the size of the weights list (rounded to next power of two)
     //copy weights to leaves
     InputIt it = first;
     for (size_t i = 0; it != last; ++it, ++i) {
-      BaseTree::value_of(leaf_start_ + i) = std::max(Real(*it),0.0);
+      BaseTree::value_of(node_of(i)) = std::max(Real(*it),0.0);
     }
 
     //build sums from leaves up
-    for (std::ptrdiff_t i = leaf_start_ - 1; i >= 1; --i) {
+    for (std::ptrdiff_t i = leaf_end_ - 1; i >= 1; --i) {
       BaseTree::value_of(i) = BaseTree::value_of(2 * i) + BaseTree::value_of(2 * i + 1);
     }
   }
@@ -114,7 +114,7 @@ public:
     if (target == 0) return 0;
 
     PosType node = BaseTree::root();
-    while (node < leaf_start_/2) {
+    while (node < leaf_end_) {
       //if (BaseTree::value_of(node) == 0) std::cout << node << " " << target << " " << BaseTree::value_of(1) << std::endl;
       //std::cout << "Target: " << target << std::endl;
 
@@ -126,15 +126,15 @@ public:
       node = go_left ? left : right_of(node);
       if (!go_left) target -= left_sum;
       //std::cout << std::endl;
-    //std::cout << "Returning node " << node << ", which has weight: " << weightsum_of(node) << std::endl;
 
     }
-    PosType left = left_of(node);
-    Real left_sum = weightsum_of(left);
-    bool go_left = (target < left_sum);
-    node = go_left ? left : right_of(node);
+//    PosType left = left_of(node);
+//    Real left_sum = weightsum_of(left);
+//    bool go_left = (target < left_sum);
+//    node = go_left ? left : right_of(node);
 
-    return id_of(node);
+	//std::cout << "Returning node " << node << ", which has weight: " << weightsum_of(node) << std::endl;
+    return (id_of(node));
   }
 
   //Param_type compatible
@@ -152,7 +152,7 @@ public:
   std::vector<double> probabilities(){
     std::vector<double> probabilities(leaf_end_);
     double total_weight = this->total_weight();
-    for (size_t i = leaf_start_, j = 0; i < BaseTree::size() && j < probabilities.size(); ++i, ++j){
+    for (size_t i = leaf_end_, j = 0; i < BaseTree::size() && j < probabilities.size(); ++i, ++j){
       probabilities[j] = BaseTree::value_of(i)/total_weight;
     }
     return probabilities;
@@ -197,7 +197,7 @@ public:
   //...the weights in the class can be different from those originally inputted
   Real get_weight(PosType i) const {
     assert(i >= 0 && i < static_cast<PosType>(leaf_end_));
-    return BaseTree::value_of(leaf_start_ + i);
+    return BaseTree::value_of(node_of(i));
   }
 
   void push_back(std::vector<Real> weights) {
@@ -206,86 +206,30 @@ public:
 
   //Adds a weight to the tree. If the tree is large enough to handle it, the weight is just added, but otherwise the tree has to double its size (costly).
   void push_back(Real& new_weight) {
-    size_t new_leaf_end = leaf_end_ + 1;
-    if (new_leaf_end > leaf_start_) {
-      std::vector<Real> all_weights;
-      all_weights.reserve(new_leaf_end);
-      for(size_t i = 0; i < leaf_end_; ++i) {
-        all_weights.push_back(get_weight(i));
-      }
-      all_weights.push_back(new_weight);
-
-      leaf_start_ = next_power_of_two(new_leaf_end);
-      leaf_end_ = new_leaf_end;
-      BaseTree::resize(2 * leaf_start_, 0.0);
-      for(size_t i = 0; i < leaf_end_; ++i) {
-        weightsum_of(leaf_start_ + i) = all_weights[i];
-      }
-      //Full tree rebuild
-      for (std::ptrdiff_t i = leaf_start_ - 1; i >= 1; --i) {
-        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
-      }
-    } else {
-      update_weight(leaf_end_, new_weight);
-      ++leaf_end_;
-    }
+    size_t new_leaf_end = leaf_end_ + 2;
+    BaseTree::add_entry(BaseTree::value_of(leaf_end_));
+    BaseTree::add_entry(0.0);
+    update_weight(new_leaf_end, new_weight);
+    leaf_end_ = new_leaf_end;
   }
 
-  //Adds a weight to the tree. If the tree is large enough to handle it, the weight is just added, but otherwise the tree has to double its size (costly).
+  //Adds a weight to the tree.
   void push_back(Real&& new_weight) {
-    size_t new_leaf_end = leaf_end_ + 1;
-    if (new_leaf_end > leaf_start_) {
-      std::vector<Real> all_weights;
-      all_weights.reserve(new_leaf_end);
-      for(size_t i = 0; i < leaf_end_; ++i) {
-        all_weights.push_back(get_weight(i));
-      }
-      all_weights.push_back(new_weight);
-
-      leaf_start_ = next_power_of_two(new_leaf_end);
-      leaf_end_ = new_leaf_end;
-      BaseTree::resize(2 * leaf_start_, 0.0);
-      for(size_t i = 0; i < leaf_end_; ++i) {
-        weightsum_of(leaf_start_ + i) = all_weights[i];
-      }
-      //Full tree rebuild
-      for (std::ptrdiff_t i = leaf_start_ - 1; i >= 1; --i) {
-        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
-      }
-    } else {
-      update_weight(leaf_end_, new_weight);
-      ++leaf_end_;
-    }
+    size_t new_leaf_end = leaf_end_ + 2;
+    BaseTree::add_entry(BaseTree::value_of(leaf_end_));
+    BaseTree::add_entry(0.0);
+    update_weight(new_leaf_end, new_weight);
+    leaf_end_ = new_leaf_end;
   }
 
   //Removes the last inserted weight (whatever's at the end of the input array).
-  //If the new size is half or less of the tree's current memory size, then the tree will rebuild to shrink to that size.
   void pop_back() {
     if (leaf_end_ == 0) return;
-
     size_t item_to_remove_idx = leaf_end_ - 1;
-
-    //First, set the weight to 0. This updates parents.
     update_weight(item_to_remove_idx, 0.0);
-    --leaf_end_;
-
-    //Now, check if we should shrink the tree's capacity. If not, there's no more work to be done! Yay! If yes, well, lots of copying.
-    size_t checkSize = next_power_of_two(leaf_end_);
-    if (checkSize < leaf_start_) {
-      std::vector<Real> active_weights;
-      active_weights.reserve(leaf_end_);
-      for (size_t i = 0; i < leaf_end_; ++i) {
-        active_weights.push_back(get_weight(i));
-      }
-      leaf_start_ = checkSize;
-      BaseTree::resize(2 * leaf_start_, 0.0);
-      for (size_t i = 0; i < leaf_end_; ++i) {
-        weightsum_of(leaf_start_ + i) = active_weights[i];
-      }
-      for (std::ptrdiff_t i = leaf_start_ - 1; i >= 1; --i) {
-        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
-      }
-    }
+    leaf_end_ -= 2;
+    BaseTree::remove_last_entry();
+    BaseTree::remove_last_entry();
   }
 
   //Allows a vector to be inserted into the tree all at once.
@@ -294,43 +238,25 @@ public:
   template <typename It>
   void push_back(It first, It last) {
     size_t count = std::distance(first, last);
-    size_t new_leaf_end = leaf_end_ + count;
+    size_t new_leaf_end = leaf_end_ + count*2;
 
-    if (new_leaf_end > leaf_start_) {
-      //Full rebuild required :<
-      std::vector<Real> new_leaves;
-      new_leaves.reserve(new_leaf_end);
-      for (size_t i = 0; i < leaf_end_; ++i)
-        new_leaves.push_back(weightsum_of(leaf_start_ + i));
-      for (; first != last; ++first)
-        new_leaves.push_back(*first);
-
-      leaf_start_ = next_power_of_two(new_leaf_end);
-      leaf_end_ = new_leaf_end;
-      BaseTree::resize(2 * leaf_start_, 0.0);
-
-      for (size_t i = 0; i < leaf_end_; ++i)
-        weightsum_of(leaf_start_ + i) = new_leaves[i];
-
-      for (std::ptrdiff_t i = leaf_start_ - 1; i >= 1; --i)
-        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
-    } else {
       //No resize! Partial tree update
       size_t pos = leaf_end_;
-      for (; first != last; ++first)
-        weightsum_of(leaf_start_ + pos++) = *first;
+      for (; first != last; ++first, pos += 2){
+        BaseTree::add_entry(BaseTree::value_of(pos));
+        BaseTree::add_entry(*first);
+      }
 
-      size_t first = leaf_start_ + leaf_end_;
-      size_t last  = leaf_start_ + new_leaf_end - 1;
+      size_t first1 = leaf_end_*2;
+      size_t last1  = new_leaf_end*2 - 1;
 
-      while (first > 1) {
-        first >>= 1;
-        last  >>= 1;
-        for (size_t i = first; i <= last; ++i)
+      while (first1 > 1) {
+        first1 >>= 1;
+        last1  >>= 1;
+        for (size_t i = first1; i <= last1; ++i)
           weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
       }
       leaf_end_ = new_leaf_end;
-    }
   }
 
   //Allows a number of back nodes to be deleted from the tree all at once.
@@ -338,29 +264,12 @@ public:
   //is thus more efficient than just calling the base function repeatedly.
   void pop_back(size_t count) {
     if (count > leaf_end_) count = leaf_end_;
-    size_t new_leaf_end = leaf_end_ - count;
+    size_t new_leaf_end = leaf_end_ - count*2;
 
-    for (size_t i = new_leaf_end; i < leaf_end_; ++i)
+    for (size_t i = new_leaf_end; i < leaf_end_; ++i){
       weightsum_of(leaf_start_ + i) = 0.0;
+    }
 
-    auto checkSize = next_power_of_two(new_leaf_end);
-    if (checkSize < leaf_start_) {
-      //Have to shrink tree for memory efficiency's sake - requires recalculating entire tree though
-      std::vector<Real> kept_leaves(new_leaf_end);
-      for (size_t i = 0; i < new_leaf_end; ++i)
-        kept_leaves[i] = weightsum_of(leaf_start_ + i);
-
-      leaf_start_ = checkSize;
-      leaf_end_ = new_leaf_end;
-      BaseTree::resize(2 * leaf_start_, 0.0);
-
-      for (size_t i = 0; i < leaf_end_; ++i)
-        weightsum_of(leaf_start_ + i) = kept_leaves[i];
-
-      for (std::ptrdiff_t i = leaf_start_ - 1; i >= 1; --i)
-        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
-    } else {
-      //Not possible to shrink tree; so we just zero out deleted sections
       size_t first = leaf_start_ + new_leaf_end;
       size_t last  = leaf_start_ + leaf_end_ - 1;
 
@@ -371,7 +280,6 @@ public:
           weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
       }
       leaf_end_ = new_leaf_end;
-    }
   }
 
   size_t size() const {return leaf_end_;}
@@ -380,6 +288,26 @@ public:
   //Return the value stored in the root, which is the sum of all values in the tree
   Real total_weight() const noexcept {
     return BaseTree::value_of(1);  //root
+  }
+
+    //Gets a user-visible ID from a leaf node
+  PosType node_of(PosType p) const {
+    int depth_added = 0;
+    depth_added = static_cast<int>(log2(p)+1);
+    if (p == 0) depth_added = 0;
+    PosType node = 2*p + 1;
+    int depthDifference = std::max(static_cast<int>((log2(BaseTree::size()-1)-1)) - depth_added, 0);
+    node = node<<depthDifference;
+    if (node<=(BaseTree::size()-1)/2 && depthDifference >= 0){
+      node = node << 1;
+    }
+    return node;
+  }
+
+  //Gets an internal tree node from a user-visible ID
+  PosType id_of(result_type i) const {
+    PosType node = i>>std::countr_zero(i);
+    return (node * 0.5) -0.5;
   }
 
 //Methods only for use by the class itself
@@ -396,15 +324,6 @@ private:
     return const_cast<This*>(this)->weightsum_of(p);
   }
 
-  //Gets a user-visible ID from a leaf node
-  PosType id_of(PosType p) {
-    assert(p>=leaf_start_);
-    return p-leaf_start_; }
-
-  //Gets an internal tree node from a user-visible ID
-  PosType node_of(result_type i){
-    assert(i>=0 && i<=leaf_end_);
-    return leaf_start_+i;}
 
   //Returns the next largest power of two. Used in constructing the tree, either in the constructor or when rebuilding to be larger or smaller
   static size_t next_power_of_two(size_t n) {
