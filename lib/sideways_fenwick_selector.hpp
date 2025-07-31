@@ -218,12 +218,16 @@ namespace stochastic {
       }
 
       
-      /*
+      
       void update_weight_of_node(node_type givenNode, Real new_weight) {
         auto node = givenNode;
         Real weightDifference =  new_weight - weight_of(node);
         total_weight+=weightDifference;
         int64_t fromLeft = -1;
+        int depthDiff=(int)std::log2(BaseTree::entry_count())-(int)std::log2(givenNode);
+        node = ~node;
+        node=node>>depthDiff;
+        node=~node;
         while(node>=BaseTree::root()){
             auto oldval = this->value_of(node);
             Real masked_real;
@@ -237,7 +241,7 @@ namespace stochastic {
             
         }
       }
-      */
+      
      ///*
 
 
@@ -266,37 +270,9 @@ namespace stochastic {
       // }
         
 
-void update_weight_of_node(node_type givenNode, Real new_weight) {
-        //std::cout<<"________________updating weight_____________"<<std::endl;
-        //auto node = givenNode;
-        auto node = givenNode;
-        Real weightDifference =  new_weight - this->weight_of(node);
-        total_weight+=weightDifference;
-        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
-        
-        //std::cout<<"node "<<std::bitset<32>(node) << std::endl;
 
-        uint iterCount = ~node;
-        //std::cout<<"reversed node "<<std::bitset<32>(iterCount) << std::endl;
-        int leadingOnes = std::countl_one(iterCount);
-        //std::cout<<"leading ones "<<leadingOnes<<std::endl;
-        iterCount = iterCount << std::countl_one(iterCount);
 
-        //std::cout<<"shifted by leading ones ";
-        //std:: cout << std::bitset<32>(iterCount) << std::endl;
-
-        iterCount = std::popcount(iterCount);
-        iterCount++;
-
-        //std::cout << iterCount -1 << std::endl;
-
-        for(int i = 0; i < iterCount; i++) {
-            //std::cout << "iteration #: " << i << std::endl;
-            this->value_of(node)+=weightDifference; // SKIP VERSION
-            node = nextNode(node); //SKIP VERSION
-        }
-
-}
+//}
         
         
 

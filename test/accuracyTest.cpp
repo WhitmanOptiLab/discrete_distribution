@@ -8,13 +8,13 @@
 using namespace dense::stochastic;
 
 int main(){
-    int numWeights = 10;
+    int numWeights = 12;
     int numOperations=10;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
 
     std::ofstream outputFile;
-    std::cout << "start" << std::endl;
+ 
 
     //Generating a normally distributed vector of weights
     std::default_random_engine generator(10);
@@ -62,11 +62,25 @@ int main(){
         selector.push_back(entry);
     }
 
+    
+
 
     outputFile<<"ending distribution, "<<std::endl;
 
     for (int i=0;i<numWeights+4;i++){
         outputFile << selector.get_weight(i)<<", ";
+    }
+
+    std::cout<<"about to update ";
+    outputFile<<"updating last weight to 10"<<std::endl;
+    selector.update_weight(numWeights+3,10);
+
+    outputFile<<std::endl<<"ending distribution: "<<std::endl;
+    std::cout<<"just updated "<<std::endl;
+
+    for (int i=0;i<(numWeights+4);i++){
+        outputFile << selector.get_weight(i)<<", ";
+        //std::cout<<"getting weight at index "<<i<<std::endl;
     }
 
     outputFile<<std::endl<<"removing last 6 weights"<<std::endl;
