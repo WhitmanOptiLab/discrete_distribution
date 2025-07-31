@@ -55,11 +55,24 @@ public:
 
   using param_type = Param;
 
+  void print_tree(){
+    int size = 0;
+    for (int i = 1; i < BaseTree::size(); ++i) {
+      if (static_cast<int>(log2(i))>size){
+        std::cout << std::endl;
+        size = static_cast<int>(log2(i));
+      }
+      std::cout << i << ": "<< BaseTree::value_of(i) << " ";
+
+    }
+    std::cout << std::endl;
+  }
+
 
 ////MEMBER FUNCTIONS////
 
   //Empty constructor, allows you to add later items to it
-  leaf_sum_tree() : BaseTree(1), leaf_start_(1), leaf_end_(0) {}
+  leaf_sum_tree() : BaseTree(1), leaf_end_(0) {}
 
   //Param-compatible constructor, turns a vector of weights into iterators for the main constructor
   leaf_sum_tree(const std::vector<Real>& weights)
@@ -193,6 +206,18 @@ public:
     weightsum_of(i) += weight_diff;
   }
 
+    //Set a given leaf's weight to any positive real value
+  void update_weight_internal(PosType i, Real new_weight) {
+    assert(new_weight >= 0);
+    //i=node_of(i);
+    Real weight_diff = new_weight - weightsum_of(i);
+    while (i != BaseTree::root()) {
+      weightsum_of(i) += weight_diff;
+      i = BaseTree::parent_of(i);
+    }
+    weightsum_of(i) += weight_diff;
+  }
+
   //Gets a leaf's weight. Needed for this class because weights can be changed, and so...
   //...the weights in the class can be different from those originally inputted
   Real get_weight(PosType i) const {
@@ -206,28 +231,34 @@ public:
 
   //Adds a weight to the tree. If the tree is large enough to handle it, the weight is just added, but otherwise the tree has to double its size (costly).
   void push_back(Real& new_weight) {
-    size_t new_leaf_end = leaf_end_ + 2;
+    size_t new_leaf_end = leaf_end_ + 1;
     BaseTree::add_entry(BaseTree::value_of(leaf_end_));
     BaseTree::add_entry(0.0);
-    update_weight(new_leaf_end, new_weight);
+    update_weight_internal(new_leaf_end, new_weight);
     leaf_end_ = new_leaf_end;
   }
 
   //Adds a weight to the tree.
   void push_back(Real&& new_weight) {
-    size_t new_leaf_end = leaf_end_ + 2;
+    size_t new_leaf_end = leaf_end_ + 1;
     BaseTree::add_entry(BaseTree::value_of(leaf_end_));
+            print_tree();
+
     BaseTree::add_entry(0.0);
-    update_weight(new_leaf_end, new_weight);
+    update_weight_internal(new_leaf_end*2-1, new_weight);
+            print_tree();
+
     leaf_end_ = new_leaf_end;
   }
 
   //Removes the last inserted weight (whatever's at the end of the input array).
   void pop_back() {
     if (leaf_end_ == 0) return;
-    size_t item_to_remove_idx = leaf_end_ - 1;
-    update_weight(item_to_remove_idx, 0.0);
-    leaf_end_ -= 2;
+    size_t item_to_remove_idx = BaseTree::size() - 1;
+    update_weight_internal(item_to_remove_idx, 0.0);
+    Real value = BaseTree::value_of(item_to_remove_idx-1);
+    BaseTree::value_of(parent_of(item_to_remove_idx-1)) = value;
+    leaf_end_ -= 1;
     BaseTree::remove_last_entry();
     BaseTree::remove_last_entry();
   }
@@ -238,23 +269,19 @@ public:
   template <typename It>
   void push_back(It first, It last) {
     size_t count = std::distance(first, last);
-    size_t new_leaf_end = leaf_end_ + count*2;
+    size_t new_leaf_end = leaf_end_ + count;
 
       //No resize! Partial tree update
       size_t pos = leaf_end_;
-      for (; first != last; ++first, pos += 2){
-        BaseTree::add_entry(BaseTree::value_of(pos));
+      if (pos == 0){
         BaseTree::add_entry(*first);
+        ++first;
+        pos = 1;
       }
-
-      size_t first1 = leaf_end_*2;
-      size_t last1  = new_leaf_end*2 - 1;
-
-      while (first1 > 1) {
-        first1 >>= 1;
-        last1  >>= 1;
-        for (size_t i = first1; i <= last1; ++i)
-          weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
+      for (; first != last; ++first, pos += 1){
+        BaseTree::add_entry(BaseTree::value_of(pos));
+        BaseTree::add_entry(0.0);
+        update_weight_internal(BaseTree::size()-1, *first);
       }
       leaf_end_ = new_leaf_end;
   }
@@ -267,11 +294,12 @@ public:
     size_t new_leaf_end = leaf_end_ - count*2;
 
     for (size_t i = new_leaf_end; i < leaf_end_; ++i){
-      weightsum_of(leaf_start_ + i) = 0.0;
+      weightsum_of(leaf_end_ + i) = 0.0;
+
     }
 
-      size_t first = leaf_start_ + new_leaf_end;
-      size_t last  = leaf_start_ + leaf_end_ - 1;
+      size_t first = leaf_end_ + new_leaf_end;
+      size_t last  = leaf_end_*2 - 1;
 
       while (first > 1) {
         first >>= 1;
@@ -280,6 +308,10 @@ public:
           weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
       }
       leaf_end_ = new_leaf_end;
+
+      for (int i = 0; i <count; i++){
+        BaseTree::remove_last_entry();
+      }
   }
 
   size_t size() const {return leaf_end_;}
@@ -291,17 +323,14 @@ public:
   }
 
     //Gets a user-visible ID from a leaf node
-  PosType node_of(PosType p) const {
-    int depth_added = 0;
-    depth_added = static_cast<int>(log2(p)+1);
-    if (p == 0) depth_added = 0;
-    PosType node = 2*p + 1;
-    int depthDifference = std::max(static_cast<int>((log2(BaseTree::size()-1)-1)) - depth_added, 0);
-    node = node<<depthDifference;
-    if (node<=(BaseTree::size()-1)/2 && depthDifference >= 0){
-      node = node << 1;
-    }
-    return node;
+  PosType node_of(size_t p) {
+  PosType node = 2*p + 1;
+  PosType depthDifference = std::max(__builtin_clz(node)-1 - __builtin_clz(BaseTree::size()-1),0);
+  node = node<<depthDifference;
+  if (node<=(BaseTree::size()-1)/2 && depthDifference >= 0){
+    node = node << 1;
+  }
+  return node;
   }
 
   //Gets an internal tree node from a user-visible ID
@@ -338,7 +367,6 @@ private:
   static PosType parent_of(PosType i) { return BaseTree::parent_of(i);}
 
   //Used for keeping track of indexing properly.
-  size_t leaf_start_;
   size_t leaf_end_;
 };
 
