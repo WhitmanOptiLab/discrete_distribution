@@ -26,7 +26,7 @@ namespace stochastic {
 
     public:
 
-      using size_type = std::ptrdiff_t;
+      using size_type = size_t;
       using position_type = P;
       using entry_type = T;
       using iterator = entry_type*;

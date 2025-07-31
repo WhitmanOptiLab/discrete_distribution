@@ -220,14 +220,30 @@ namespace stochastic {
       
       
       void update_weight_of_node(node_type givenNode, Real new_weight) {
-        auto node = givenNode;
+        size_t node = givenNode;
         Real weightDifference =  new_weight - weight_of(node);
         total_weight+=weightDifference;
         int64_t fromLeft = -1;
-        int depthDiff=(int)std::log2(BaseTree::entry_count())-(int)std::log2(givenNode);
+        int depthDiff=std::countl_zero(node) - std::countl_zero(BaseTree::entry_count());
+        //std::cout << "Node before: " << std::bitset<64>(node) << std::endl;
         node = ~node;
-        node=node>>depthDiff;
+        //std::cout << "Node after flipping: " << std::bitset<64>(node) << std::endl;
+
+        node=node << depthDiff;
+        //std::cout << "Node afrer shifting: " << std::bitset<64>(node) << std::endl;
+
         node=~node;
+        
+        //std::cout << "Node after: " << std::bitset<64>(node) << std::endl;
+
+        //std::cout << "node is " << node << "and entry count is " << BaseTree::entry_count() << std::endl;
+        // if(node > BaseTree::entry_count()) {
+        //   node = BaseTree::parent_of(node);
+        // }
+        //std::cout << "node is " << node << "and entry count is " << BaseTree::entry_count() << std::endl;
+        node = node >> (node > BaseTree::entry_count());
+        
+
         while(node>=BaseTree::root()){
             auto oldval = this->value_of(node);
             Real masked_real;
