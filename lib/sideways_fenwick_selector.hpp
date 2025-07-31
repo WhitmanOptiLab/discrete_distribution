@@ -59,6 +59,8 @@ namespace stochastic {
           Real w = *it;
           BaseTree::add_entry(Real(w));
         }
+        //std::cout<<"all entries added ";
+        //this->PrintTree();
         
 
         //go through entire tree and change entries into weightsums of ENTIRE tree
@@ -68,6 +70,7 @@ namespace stochastic {
         //std::cout<<"last non leaf is "<<lastNonLeaf<<std::endl;
         if (BaseTree::entry_count()%2==0){
             this->value_of(lastNonLeaf)+=(this->value_of(BaseTree::left_of(lastNonLeaf)));
+            //std::cout<<"last non leaf has 1 child   last non leaf is "<<lastNonLeaf<<std::endl;
         }
         else{
             this->value_of(lastNonLeaf)+=(this->value_of(BaseTree::left_of(lastNonLeaf)))+(this->value_of(BaseTree::right_of(lastNonLeaf)));
@@ -78,6 +81,7 @@ namespace stochastic {
             this->value_of(node)+=((this->value_of(BaseTree::left_of(node))+(this->value_of(BaseTree::right_of(node)))));
             //std::cout<<"node "<<node<<" summed    new value is "<<this->value_of(node)<<"   new value variable hols"<<newVal<<std::endl;
         }
+
         //std::cout<<"weightsum tree: ";
         //this->PrintTree();
         total_weight = this->value_of(this->root());
@@ -91,7 +95,7 @@ namespace stochastic {
             this->value_of(lastNonLeaf)-=(this->value_of(BaseTree::right_of(lastNonLeaf)));
         }
         // std::cout<<"tree after constructing: ";
-        // this->PrintTree();
+        //this->PrintTree();
 
       }
 
