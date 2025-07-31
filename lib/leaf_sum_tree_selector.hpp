@@ -323,7 +323,7 @@ public:
   }
 
     //Gets a user-visible ID from a leaf node
-  PosType node_of(size_t p) {
+  PosType node_of(size_t p) const {
   PosType node = 2*p + 1;
   PosType depthDifference = std::max(__builtin_clz(node)-1 - __builtin_clz(BaseTree::size()-1),0);
   node = node<<depthDifference;
