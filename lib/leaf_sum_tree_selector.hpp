@@ -271,19 +271,29 @@ public:
     size_t count = std::distance(first, last);
     size_t new_leaf_end = leaf_end_ + count;
 
-      //No resize! Partial tree update
-      size_t pos = leaf_end_;
-      if (pos == 0){
-        BaseTree::add_entry(*first);
-        ++first;
-        pos = 1;
-      }
-      for (; first != last; ++first, pos += 1){
-        BaseTree::add_entry(BaseTree::value_of(pos));
-        BaseTree::add_entry(0.0);
-        update_weight_internal(BaseTree::size()-1, *first);
-      }
-      leaf_end_ = new_leaf_end;
+    size_t pos = leaf_end_;
+    if (pos == 0){
+      BaseTree::add_entry(*first);
+      ++first;
+      pos = 1;
+    }
+    for (; first != last; ++first, pos += 1){
+      BaseTree::add_entry(BaseTree::value_of(pos));
+      BaseTree::add_entry(*first);
+    }
+    size_t total = BaseTree::size();
+    size_t first_parent = (total - 2 * count) >> 1;
+    size_t last_parent  = (total - 1) >> 1;
+
+    while (first_parent > 0) {
+      for (size_t i = first_parent; i <= last_parent; ++i) {
+        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
+    }
+    first_parent >>= 1;
+    last_parent  >>= 1;
+  }
+
+  leaf_end_ = new_leaf_end;
   }
 
   //Allows a number of back nodes to be deleted from the tree all at once.
@@ -291,28 +301,36 @@ public:
   //is thus more efficient than just calling the base function repeatedly.
   void pop_back(size_t count) {
     if (count > leaf_end_) count = leaf_end_;
-    size_t new_leaf_end = leaf_end_ - count*2;
 
-    for (size_t i = new_leaf_end; i < leaf_end_; ++i){
-      weightsum_of(leaf_end_ + i) = 0.0;
+    // Each push_back adds two nodes (internal + right leaf)
+    size_t new_leaf_end = leaf_end_ - count;
 
+    // Zero out the weights of the most recent right children (newest weights)
+    for (size_t i = 0; i < count; ++i) {
+      PosType right_child = BaseTree::size() - 1 - 2 * i; // right child is last entry
+      weightsum_of(right_child) = 0.0;
     }
 
-      size_t first = leaf_end_ + new_leaf_end;
-      size_t last  = leaf_end_*2 - 1;
+    // Recalculate all affected internal nodes upward
+    size_t first = (BaseTree::size() - 2 * count) >> 1;
+    size_t last  = (BaseTree::size() - 1) >> 1;
 
-      while (first > 1) {
-        first >>= 1;
-        last  >>= 1;
-        for (size_t i = first; i <= last; ++i)
-          weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
-      }
-      leaf_end_ = new_leaf_end;
+    while (first > 0) {
+      for (size_t i = first; i <= last; ++i)
+        weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
+      first >>= 1;
+      last  >>= 1;
+    }
 
-      for (int i = 0; i <count; i++){
-        BaseTree::remove_last_entry();
-      }
+    // Shrink leaf_end_
+    leaf_end_ = new_leaf_end;
+
+    // Actually remove 2 * count entries (left + right children)
+    for (size_t i = 0; i < 2 * count; ++i) {
+      BaseTree::remove_last_entry();
+    }
   }
+
 
   size_t size() const {return leaf_end_;}
 
