@@ -345,9 +345,7 @@ public:
   PosType node = 2*p + 1;
   PosType depthDifference = __builtin_clz(node) - __builtin_clz(BaseTree::size()-1);
   node = node<<depthDifference;
-  if (node>(BaseTree::size()-1)){
-    node = node >> 1;
-  }
+  node = (node > (BaseTree::size() - 1)) ? (node >> 1) : node; //this *should* be a CMOV, but I'm not sure yet whether it will be.
   return node;
   }
 
