@@ -233,10 +233,8 @@ public:
   void push_back(Real& new_weight) {
     size_t new_leaf_end = leaf_end_ + 1;
     BaseTree::add_entry(BaseTree::value_of(leaf_end_));
-
     BaseTree::add_entry(0.0);
     update_weight_internal(new_leaf_end*2-1, new_weight);
-
     leaf_end_ = new_leaf_end;
   }
 
@@ -244,10 +242,8 @@ public:
   void push_back(Real&& new_weight) {
     size_t new_leaf_end = leaf_end_ + 1;
     BaseTree::add_entry(BaseTree::value_of(leaf_end_));
-
     BaseTree::add_entry(0.0);
     update_weight_internal(new_leaf_end*2-1, new_weight);
-
     leaf_end_ = new_leaf_end;
   }
 
@@ -285,7 +281,7 @@ public:
     size_t first_parent = (total - 2 * count) >> 1;
     size_t last_parent  = (total - 1) >> 1;
 
-    while (first_parent > 0) {
+    while (last_parent > 0) {
       for (size_t i = first_parent; i <= last_parent; ++i) {
         weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
     }
@@ -315,7 +311,7 @@ public:
     size_t first = (BaseTree::size() - 2 * count) >> 1;
     size_t last  = (BaseTree::size() - 1) >> 1;
 
-    while (first > 0) {
+    while (last > 0) {
       for (size_t i = first; i <= last; ++i)
         weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
       first >>= 1;
