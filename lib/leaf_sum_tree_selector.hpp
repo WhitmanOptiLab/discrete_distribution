@@ -233,8 +233,10 @@ public:
   void push_back(Real& new_weight) {
     size_t new_leaf_end = leaf_end_ + 1;
     BaseTree::add_entry(BaseTree::value_of(leaf_end_));
+
     BaseTree::add_entry(0.0);
-    update_weight_internal(new_leaf_end, new_weight);
+    update_weight_internal(new_leaf_end*2-1, new_weight);
+
     leaf_end_ = new_leaf_end;
   }
 
@@ -242,11 +244,9 @@ public:
   void push_back(Real&& new_weight) {
     size_t new_leaf_end = leaf_end_ + 1;
     BaseTree::add_entry(BaseTree::value_of(leaf_end_));
-            print_tree();
 
     BaseTree::add_entry(0.0);
     update_weight_internal(new_leaf_end*2-1, new_weight);
-            print_tree();
 
     leaf_end_ = new_leaf_end;
   }
