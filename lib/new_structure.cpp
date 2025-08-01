@@ -10,18 +10,20 @@
 
 using Tree = dense::stochastic::leaf_sum_tree<>;
 using Real = double;
-using Pos = size_t;
+using PosType = size_t;
 std::default_random_engine generator;
 
-size_t node_of(size_t p, size_t size) {
-  size_t node = 2*p + 1;
-  int depthDifference = std::max(__builtin_clz(node)-1 - __builtin_clz(size),0);
+PosType node_of(size_t p, size_t size)  {
+  PosType node = 2*p + 1;
+  PosType depthDifference = __builtin_clz(node) - __builtin_clz(size);
   node = node<<depthDifference;
-  if (node<=(size)/2 && depthDifference >= 0){
-    node = node << 1;
+  if (node>(size)){
+    node = node >> 1;
   }
   return node;
 }
+
+
 
 void test_id(){
   auto tree = Tree({0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15});

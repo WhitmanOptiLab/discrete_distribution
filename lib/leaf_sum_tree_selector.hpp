@@ -125,7 +125,7 @@ public:
   PosType operator()(URNG& g) {
     Real target = std::generate_canonical<Real, precision, URNG>(g) * total_weight();
     if (target == 0) return 0;
-
+    //size_t max_depth = next_power_of_two(leaf_end_*2);
     PosType node = BaseTree::root();
     while (node < leaf_end_) {
       //if (BaseTree::value_of(node) == 0) std::cout << node << " " << target << " " << BaseTree::value_of(1) << std::endl;
@@ -343,10 +343,10 @@ public:
     //Gets a user-visible ID from a leaf node
   PosType node_of(size_t p) const {
   PosType node = 2*p + 1;
-  PosType depthDifference = std::max(__builtin_clz(node)-1 - __builtin_clz(BaseTree::size()-1),0);
+  PosType depthDifference = __builtin_clz(node) - __builtin_clz(BaseTree::size()-1);
   node = node<<depthDifference;
-  if (node<=(BaseTree::size()-1)/2 && depthDifference >= 0){
-    node = node << 1;
+  if (node>(BaseTree::size()-1)){
+    node = node >> 1;
   }
   return node;
   }
@@ -354,7 +354,7 @@ public:
   //Gets an internal tree node from a user-visible ID
   PosType id_of(result_type i) const {
     PosType node = i>>std::countr_zero(i);
-    return (node * 0.5) -0.5;
+    return (node>>1);
   }
 
 //Methods only for use by the class itself
