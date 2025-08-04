@@ -8,11 +8,11 @@ echo "Number of tests: $1"
 echo "Weightnum: $2"
 
 
-echo "normal_changing_multi_SF_bitcast, normal_changing_multi_SF_wholeTree, normal_changing_multi_leafsum, normal_changing_multi_leaf_sum_split, normal_changing_multi_sf_jump, uniform_changing_multi_SF_bitcast, uniform_changing_multi_SF_wholeTree, uniform_changing_multi_leafsum, uniform_changing_multi_leaf_sum_split, uniform_changing_multi_sf_jump, weibull_changing_multi_SF_bitcast, weibull_changing_multi_SF_wholeTree, weibull_changing_multi_leafsum, weibull_changing_multi_leaf_sum_split, weibull_changing_multi_SF_jump" > resultsC15_$2.csv
+echo "normal_changing_multi_SF_bitcast, normal_changing_multi_incremental_LS, normal_changing_multi_leafsum, normal_changing_multi_leaf_sum_split, normal_changing_multi_sf_jump, uniform_changing_multi_SF_bitcast, uniform_changing_multi_incremental_LS, uniform_changing_multi_leafsum, uniform_changing_multi_leaf_sum_split, uniform_changing_multi_sf_jump, weibull_changing_multi_SF_bitcast, weibull_changing_multi_incremental_LS, weibull_changing_multi_leafsum, weibull_changing_multi_leaf_sum_split, weibull_changing_multi_SF_jump" > resultsC15_$2.csv
 
 # Normal distribution changing_multi weight tests
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector_bitcast<>"       "-DWEIGHTNUM=$2" -o test0 normal_changing_multi.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>"             "-DWEIGHTNUM=$2" -o test1 normal_changing_multi.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=incremental_leaf_sum_tree<>"             "-DWEIGHTNUM=$2" -o test1 normal_changing_multi.cpp
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test2 normal_changing_multi.cpp
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test3 normal_changing_multi.cpp
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=old_sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test4 normal_changing_multi.cpp
@@ -23,7 +23,7 @@ g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=old_sideways_fenwick_selector<>" "-DWEI
 
 # Uniform distribution changing_multi weight tests
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector_bitcast<>"       "-DWEIGHTNUM=$2" -o test6 uniform_changing_multi.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>"             "-DWEIGHTNUM=$2" -o test7 uniform_changing_multi.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=incremental_leaf_sum_tree<>"             "-DWEIGHTNUM=$2" -o test7 uniform_changing_multi.cpp
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test8 uniform_changing_multi.cpp
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test9 uniform_changing_multi.cpp
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=old_sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test10 uniform_changing_multi.cpp
@@ -31,7 +31,7 @@ g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=old_sideways_fenwick_selector<>" "-DWEI
 
 # Weibull distribution changing_multi weight tests
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector_bitcast<>"       "-DWEIGHTNUM=$2" -o test12 weibull_changing_multi.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>"             "-DWEIGHTNUM=$2" -o test13 weibull_changing_multi.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=incremental_leaf_sum_tree<>"             "-DWEIGHTNUM=$2" -o test13 weibull_changing_multi.cpp
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test14 weibull_changing_multi.cpp
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test15 weibull_changing_multi.cpp
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=old_sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test16 weibull_changing_multi.cpp
@@ -84,7 +84,6 @@ for ((i=1; i<=$1; i++)); do
 
     sum0=$(awk "BEGIN { printf \"%.6f\", $sum0 + $result0 }")
     sum1=$(awk "BEGIN { printf \"%.6f\", $sum1 + $result1 }")
-    echo $result1
     sum2=$(awk "BEGIN { printf \"%.6f\", $sum2 + $result2 }")
     sum3=$(awk "BEGIN { printf \"%.6f\", $sum3 + $result3 }")
     sum4=$(awk "BEGIN { printf \"%.6f\", $sum4 + $result4 }")

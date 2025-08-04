@@ -1,6 +1,7 @@
 #include"../lib/modifiable_heap_random_selector.hpp"
 #include "../lib/random_selector.hpp"
 #include "../lib/sideways_fenwick_selector.hpp"
+#include "../lib/no_weight_storage_modifiable_heap_random_selector.hpp"
 
 
 #include <iostream>
@@ -10,9 +11,9 @@ using namespace dense::stochastic;
 
 int main() {
   std::default_random_engine generator(5);
-  std::vector<float> weights = {1, 2, 3, 4, 90, 10};
+  std::vector<float> weights = {1, 2, 3, 4, 90};
 
-  sideways_fenwick_selector<> selector(weights.begin(), weights.end());
+  low_storage_selector<> selector(weights.begin(), weights.end());
   std::cout << "Constructed" << std::endl;
   
   selector.update_weight(4, 10);
