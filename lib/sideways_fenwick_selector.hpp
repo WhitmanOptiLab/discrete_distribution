@@ -318,6 +318,7 @@ namespace stochastic {
               val -= this->value_of(i);
             }
             return val;
+            //return 10;
 	    }
 
       const Real& weight_of(node_type n) const {

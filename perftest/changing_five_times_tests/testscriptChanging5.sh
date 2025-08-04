@@ -8,7 +8,7 @@ echo "Number of tests: $1"
 echo "Weightnum: $2"
 
 
-echo "normal_changing_multi_SF_bitcast, normal_changing_multi_SF_wholeTree, normal_changing_multi_leafsum, normal_changing_multi_leaf_sum_split, normal_changing_multi_sf_jump, uniform_changing_multi_SF_bitcast, uniform_changing_multi_SF_wholeTree, uniform_changing_multi_leafsum, uniform_changing_multi_leaf_sum_split, uniform_changing_multi_sf_jump, weibull_changing_multi_SF_bitcast, weibull_changing_multi_SF_wholeTree, weibull_changing_multi_leafsum, weibull_changing_multi_leaf_sum_split, weibull_changing_multi_SF_jump" > resultsC15_$2.csv
+echo "normal_changing_multi_SF_bitcast, normal_changing_multi_SF_wholeTree, normal_changing_multi_leafsum, normal_changing_multi_leaf_sum_split, normal_changing_multi_sf_jump, uniform_changing_multi_SF_bitcast, uniform_changing_multi_SF_wholeTree, uniform_changing_multi_leafsum, uniform_changing_multi_leaf_sum_split, uniform_changing_multi_sf_jump, weibull_changing_multi_SF_bitcast, weibull_changing_multi_SF_wholeTree, weibull_changing_multi_leafsum, weibull_changing_multi_leaf_sum_split, weibull_changing_multi_SF_jump" > resultsC5_$2.csv
 
 # Normal distribution changing_multi weight tests
 g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector_bitcast<>"       "-DWEIGHTNUM=$2" -o test0 normal_changing_multi.cpp
