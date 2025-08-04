@@ -15,11 +15,7 @@ namespace stochastic {
 
 //Class to randomly select an index where each index's probability of being
 //selected is weighted by a given vector. Supports O(log(n)) selection and
-//update while using 2n memory space, along with O(1) addition and removal
-//while size stays within the range of the nearest powers of two. If size
-//has to expand beyond that or can contract below that, then the structure
-//has to be rebuilt, resulting in an O(2n) cost. Construction itself always
-//takes O(2n) time.
+//update while using 2n memory space, along with O(1) addition and removal.
 template <class int_type = size_t, size_t precision = std::numeric_limits<Real>::digits>
 
 
@@ -55,19 +51,6 @@ public:
 
   using param_type = Param;
 
-  void print_tree(){
-    int size = 0;
-    for (int i = 1; i < BaseTree::size(); ++i) {
-      if (static_cast<int>(log2(i))>size){
-        std::cout << std::endl;
-        size = static_cast<int>(log2(i));
-      }
-      std::cout << i << ": "<< BaseTree::value_of(i) << " ";
-
-    }
-    std::cout << std::endl;
-  }
-
 
 ////MEMBER FUNCTIONS////
 
@@ -93,12 +76,12 @@ public:
     //copy weights to leaves
     InputIt it = first;
     for (size_t i = 0; it != last; ++it, ++i) {
-      BaseTree::value_of(node_of(i)) = std::max(Real(*it),0.0);
+      weightsum_of(node_of(i)) = std::max(Real(*it),0.0);
     }
 
     //build sums from leaves up
     for (std::ptrdiff_t i = leaf_end_ - 1; i >= 1; --i) {
-      BaseTree::value_of(i) = BaseTree::value_of(2 * i) + BaseTree::value_of(2 * i + 1);
+      weightsum_of(i) = weightsum_of(2 * i) + weightsum_of(2 * i + 1);
     }
   }
 
@@ -123,30 +106,19 @@ public:
 
   template<class URNG>
   PosType operator()(URNG& g) {
-    Real target = std::generate_canonical<Real, precision, URNG>(g) * total_weight();
-    if (target == 0) return 0;
-    //size_t max_depth = next_power_of_two(leaf_end_*2);
-    PosType node = BaseTree::root();
-    while (node < leaf_end_) {
-      //if (BaseTree::value_of(node) == 0) std::cout << node << " " << target << " " << BaseTree::value_of(1) << std::endl;
-      //std::cout << "Target: " << target << std::endl;
-
+    Real target = std::generate_canonical<Real, precision, URNG>(g) * total_weight(); //Generate a target number between 0 and the sum of all the weights
+    //if (target == 0) return 0;
+    PosType node = BaseTree::root(); //node starts at 1
+    while (node < leaf_end_) { //While the node is in the internal half of the tree:
       PosType left = left_of(node);
-      //std::cout << node << " left weight: " << weightsum_of(left) << ", right weight: " << weightsum_of(BaseTree::right_of(node)) << std::endl;
-      Real left_sum = weightsum_of(left);
+      Real left_sum = weightsum_of(left); //Get the value in the node's left child
 
-      bool go_left = (target < left_sum);
-      node = go_left ? left : right_of(node);
-      if (!go_left) target -= left_sum;
-      //std::cout << std::endl;
+      bool go_left = (target < left_sum); //If the target is less than the left child's sum, then move to the left child's node
+      node = go_left ? left : right_of(node); //Else, if the larget is larger than the left child, then move to the right child's node, and...
+      if (!go_left) target -= left_sum; //Subtract the left child's sum from the target.
 
-    }
-//    PosType left = left_of(node);
-//    Real left_sum = weightsum_of(left);
-//    bool go_left = (target < left_sum);
-//    node = go_left ? left : right_of(node);
+    } //Repeat until the target is contained within one of the weights
 
-	//std::cout << "Returning node " << node << ", which has weight: " << weightsum_of(node) << std::endl;
     return (id_of(node));
   }
 
@@ -166,7 +138,7 @@ public:
     std::vector<double> probabilities(leaf_end_);
     double total_weight = this->total_weight();
     for (size_t i = leaf_end_, j = 0; i < BaseTree::size() && j < probabilities.size(); ++i, ++j){
-      probabilities[j] = BaseTree::value_of(i)/total_weight;
+      probabilities[j] = weightsum_of(i)/total_weight;
     }
     return probabilities;
   }
@@ -181,7 +153,7 @@ public:
 
   //Turns an existing tree into a tree with leaves containing only the weights given in p
   void param(const param_type& p) {
-    *this = leaf_sum_tree(p.weights()); //reconstruct the tree from new weights
+    *this = leaf_sum_tree(p.weights());
   }
 
   //Returns the minimum index possible (always 0)
@@ -193,6 +165,8 @@ public:
 
 
 ////NON-MEMBER FUNCTIONS////
+
+  //WEIGHT ACCESS//
 
   //Set a given leaf's weight to any positive real value
   void update_weight(PosType i, Real new_weight) {
@@ -206,10 +180,9 @@ public:
     weightsum_of(i) += weight_diff;
   }
 
-    //Set a given leaf's weight to any positive real value
+  //This function exists as a clone of update_weight() to skip calculating node_of(i), which for pushing or popping repeatedly, can make a big difference
   void update_weight_internal(PosType i, Real new_weight) {
     assert(new_weight >= 0);
-    //i=node_of(i);
     Real weight_diff = new_weight - weightsum_of(i);
     while (i != BaseTree::root()) {
       weightsum_of(i) += weight_diff;
@@ -218,45 +191,43 @@ public:
     weightsum_of(i) += weight_diff;
   }
 
-  //Gets a leaf's weight. Needed for this class because weights can be changed, and so...
-  //...the weights in the class can be different from those originally inputted
+  //Gets a leaf's weight. Needed for this class because weights can be changed, and so
+  //the weights in the class can be different from those originally inputted
   Real get_weight(PosType i) const {
     assert(i >= 0 && i < static_cast<PosType>(leaf_end_));
-    return BaseTree::value_of(node_of(i));
+    return weightsum_of(node_of(i));
   }
 
-  void push_back(std::vector<Real> weights) {
+
+  //PUSHING AND POPPING//
+
+
+  //Adds a weight to the tree using update_weight_internal().
+  void push_back(Real& new_weight) {
+    size_t new_leaf_end = leaf_end_ + 1;
+    BaseTree::add_entry(weightsum_of(leaf_end_));
+    BaseTree::add_entry(0.0);
+    update_weight_internal(new_leaf_end*2-1, new_weight);
+    leaf_end_ = new_leaf_end;
+  }
+
+  //Adds a weight to the tree using update_weight_internal().
+  void push_back(Real&& new_weight) {
+    size_t new_leaf_end = leaf_end_ + 1;
+    BaseTree::add_entry(weightsum_of(leaf_end_));
+    BaseTree::add_entry(0.0);
+    update_weight_internal(new_leaf_end*2-1, new_weight);
+    leaf_end_ = new_leaf_end;
+  }
+
+  //Overload to allow giving a direct vector object reference to push_back()
+  void push_back(std::vector<Real>& weights) {
     push_back(weights.begin(), weights.end());
   }
 
-  //Adds a weight to the tree. If the tree is large enough to handle it, the weight is just added, but otherwise the tree has to double its size (costly).
-  void push_back(Real& new_weight) {
-    size_t new_leaf_end = leaf_end_ + 1;
-    BaseTree::add_entry(BaseTree::value_of(leaf_end_));
-    BaseTree::add_entry(0.0);
-    update_weight_internal(new_leaf_end*2-1, new_weight);
-    leaf_end_ = new_leaf_end;
-  }
-
-  //Adds a weight to the tree.
-  void push_back(Real&& new_weight) {
-    size_t new_leaf_end = leaf_end_ + 1;
-    BaseTree::add_entry(BaseTree::value_of(leaf_end_));
-    BaseTree::add_entry(0.0);
-    update_weight_internal(new_leaf_end*2-1, new_weight);
-    leaf_end_ = new_leaf_end;
-  }
-
-  //Removes the last inserted weight (whatever's at the end of the input array).
-  void pop_back() {
-    if (leaf_end_ == 0) return;
-    size_t item_to_remove_idx = BaseTree::size() - 1;
-    update_weight_internal(item_to_remove_idx, 0.0);
-    Real value = BaseTree::value_of(item_to_remove_idx-1);
-    BaseTree::value_of(parent_of(item_to_remove_idx-1)) = value;
-    leaf_end_ -= 1;
-    BaseTree::remove_last_entry();
-    BaseTree::remove_last_entry();
+  //Overload to allow giving a direct vector object reference to push_back()
+  void push_back(std::vector<Real>&& weights) {
+    push_back(weights.begin(), weights.end());
   }
 
   //Allows a vector to be inserted into the tree all at once.
@@ -274,7 +245,7 @@ public:
       pos = 1;
     }
     for (; first != last; ++first, pos += 1){
-      BaseTree::add_entry(BaseTree::value_of(pos));
+      BaseTree::add_entry(weightsum_of(pos));
       BaseTree::add_entry(*first);
     }
     size_t total = BaseTree::size();
@@ -292,22 +263,30 @@ public:
   leaf_end_ = new_leaf_end;
   }
 
+  //Removes the last inserted weight (whatever's at the end of the input array).
+  void pop_back() {
+    if (leaf_end_ == 0) return;
+    size_t item_to_remove_idx = BaseTree::size() - 1;
+    update_weight_internal(item_to_remove_idx, 0.0);
+    Real value = weightsum_of(item_to_remove_idx-1);
+    weightsum_of(parent_of(item_to_remove_idx-1)) = value;
+    leaf_end_ -= 1;
+    BaseTree::remove_last_entry();
+    BaseTree::remove_last_entry();
+  }
+
   //Allows a number of back nodes to be deleted from the tree all at once.
   //Uses efficient tree updating - skips updating nodes multiple times, and
   //is thus more efficient than just calling the base function repeatedly.
   void pop_back(size_t count) {
     if (count > leaf_end_) count = leaf_end_;
-
-    // Each push_back adds two nodes (internal + right leaf)
     size_t new_leaf_end = leaf_end_ - count;
 
-    // Zero out the weights of the most recent right children (newest weights)
     for (size_t i = 0; i < count; ++i) {
-      PosType right_child = BaseTree::size() - 1 - 2 * i; // right child is last entry
+      PosType right_child = BaseTree::size() - 1 - 2 * i;
       weightsum_of(right_child) = 0.0;
     }
 
-    // Recalculate all affected internal nodes upward
     size_t first = (BaseTree::size() - 2 * count) >> 1;
     size_t last  = (BaseTree::size() - 1) >> 1;
 
@@ -318,41 +297,41 @@ public:
       last  >>= 1;
     }
 
-    // Shrink leaf_end_
     leaf_end_ = new_leaf_end;
 
-    // Actually remove 2 * count entries (left + right children)
     for (size_t i = 0; i < 2 * count; ++i) {
       BaseTree::remove_last_entry();
     }
   }
 
+  //SIZE METHODS//
 
+  //Return the number of entries, aka leaves
   size_t size() const {return leaf_end_;}
 
 
   //Return the value stored in the root, which is the sum of all values in the tree
   Real total_weight() const noexcept {
-    return BaseTree::value_of(1);  //root
-  }
-
-    //Gets a user-visible ID from a leaf node
-  PosType node_of(size_t p) const {
-  PosType node = 2*p + 1;
-  PosType depthDifference = __builtin_clz(node) - __builtin_clz(BaseTree::size()-1);
-  node = node<<depthDifference;
-  node = (node > (BaseTree::size() - 1)) ? (node >> 1) : node; //this *should* be a CMOV, but I'm not sure yet whether it will be.
-  return node;
-  }
-
-  //Gets an internal tree node from a user-visible ID
-  PosType id_of(result_type i) const {
-    PosType node = i>>std::countr_zero(i);
-    return (node>>1);
+    return weightsum_of(1);  //root
   }
 
 //Methods only for use by the class itself
 private:
+
+  //Returns a user-visible ID from a leaf node. Goes through the swizzling process
+  PosType node_of(size_t p) const {
+  PosType node = 2*p + 1;
+  PosType depthDifference = __builtin_clz(node) - __builtin_clz(BaseTree::size()-1);
+  node = node<<depthDifference;
+  node = (node > (BaseTree::size() - 1)) ? (node >> 1) : node; //Hopefully the compiler can recognize that this can be a CMOV instead of a branch
+  return node;
+  }
+
+  //Gets an internal tree node from a user-visible ID, assuming the tree is swizzled
+  PosType id_of(result_type i) const {
+    PosType node = i>>std::countr_zero(i);
+    return (node>>1);
+  }
 
 
   //Raw value in any given tree (not user) index. Is a weight if >= leaf_start_, is a weightsum if less than leaf_start_
