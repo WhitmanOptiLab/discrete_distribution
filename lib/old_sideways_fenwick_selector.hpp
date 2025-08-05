@@ -230,7 +230,6 @@ namespace stochastic {
         // //     node = nextNode(node); //SKIP VERSION
         // // }
 
-        std::vector<int>
 
         while(node>=BaseTree::root()){
             

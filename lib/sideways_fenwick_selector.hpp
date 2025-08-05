@@ -220,74 +220,74 @@ namespace stochastic {
 
       
       
-      void update_weight_of_node(node_type givenNode, Real new_weight) {
-        size_t node = givenNode;
-        __m128d weightDifference =  _mm_set_pd(new_weight - weight_of(node), 0.0);
-        //total_weight += weightDifference;
-        __m128d fromLeft;
-        __m128i ssenode = _mm_set_epi64x(node, 0);
-        fromLeft = _mm_castpd_si128(_mm_set_epi64x(-1, 0));
-        //int depthDiff=std::countl_zero(node) - std::countl_zero(BaseTree::entry_count());
-        //std::cout << "Node before: " << std::bitset<64>(node) << std::endl;
-        // node = ~node;
-        // //std::cout << "Node after flipping: " << std::bitset<64>(node) << std::endl;
+      // void update_weight_of_node(node_type givenNode, Real new_weight) {
+      //   size_t node = givenNode;
+      //   __m128d weightDifference =  _mm_set_pd(new_weight - weight_of(node), 0.0);
+      //   //total_weight += weightDifference;
+      //   __m128d fromLeft;
+      //   __m128i ssenode = _mm_set_epi64x(node, 0);
+      //   fromLeft = _mm_castpd_si128(_mm_set_epi64x(-1, 0));
+      //   //int depthDiff=std::countl_zero(node) - std::countl_zero(BaseTree::entry_count());
+      //   //std::cout << "Node before: " << std::bitset<64>(node) << std::endl;
+      //   // node = ~node;
+      //   // //std::cout << "Node after flipping: " << std::bitset<64>(node) << std::endl;
 
-        // node=node << depthDiff;
-        // //std::cout << "Node afrer shifting: " << std::bitset<64>(node) << std::endl;
+      //   // node=node << depthDiff;
+      //   // //std::cout << "Node afrer shifting: " << std::bitset<64>(node) << std::endl;
 
-        // node=~node;
+      //   // node=~node;
         
-        // //std::cout << "Node after: " << std::bitset<64>(node) << std::endl;
+      //   // //std::cout << "Node after: " << std::bitset<64>(node) << std::endl;
 
-        // //std::cout << "node is " << node << "and entry count is " << BaseTree::entry_count() << std::endl;
-        // // if(node > BaseTree::entry_count()) {
-        // //   node = BaseTree::parent_of(node);
-        // // }
-        // //std::cout << "node is " << node << "and entry count is " << BaseTree::entry_count() << std::endl;
-        // node = node >> (node > BaseTree::entry_count());
+      //   // //std::cout << "node is " << node << "and entry count is " << BaseTree::entry_count() << std::endl;
+      //   // // if(node > BaseTree::entry_count()) {
+      //   // //   node = BaseTree::parent_of(node);
+      //   // // }
+      //   // //std::cout << "node is " << node << "and entry count is " << BaseTree::entry_count() << std::endl;
+      //   // node = node >> (node > BaseTree::entry_count());
         
 
-        while(node>=BaseTree::root()){
-            //auto oldval = this->value_of(node);
-            __m128d masked_real;
-            masked_real = _mm_and_pd(weightDifference, fromLeft);
-            //masked_real = reinterpret_cast<int64_t&>(weightDifference) & fromLeft;
+      //   while(node>=BaseTree::root()){
+      //       //auto oldval = this->value_of(node);
+      //       __m128d masked_real;
+      //       masked_real = _mm_and_pd(weightDifference, fromLeft);
+      //       //masked_real = reinterpret_cast<int64_t&>(weightDifference) & fromLeft;
 
 
-            _mm_store_pd(&(this->value_of(node)), _mm_add_sd(_mm_load_sd(&(this->value_of(node))), masked_real));
-            fromLeft = _mm_sub_epi64(_mm_and_si128(ssenode, _mm_set_epi64x(1, 0)), _mm_set_epi64x(1, 0));
-            ssenode = _mm_srli_epi64(ssenode, 1);
-            node = BaseTree::parent_of(node);
+      //       _mm_store_pd(&(this->value_of(node)), _mm_add_sd(_mm_load_sd(&(this->value_of(node))), masked_real));
+      //       fromLeft = _mm_sub_epi64(_mm_and_si128(ssenode, _mm_set_epi64x(1, 0)), _mm_set_epi64x(1, 0));
+      //       ssenode = _mm_srli_epi64(ssenode, 1);
+      //       node = BaseTree::parent_of(node);
             
-        }
-      }
+      //   }
+      // }
       
      ///*
 
 
-      // void update_weight_of_node(node_type givenNode, Real new_weight) {
-      //   //std::cout<<"________________updating weight_____________"<<std::endl;
-      //   auto node = givenNode;
-      //   Real weightDifference =  new_weight - this->weight_of(node);
-      //   total_weight+=weightDifference;
-      //   //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
-      //   auto nextUpdate = nextNode(node);
-      //   while(node>=BaseTree::root()){
+      void update_weight_of_node(node_type givenNode, Real new_weight) {
+        //std::cout<<"________________updating weight_____________"<<std::endl;
+        auto node = givenNode;
+        Real weightDifference =  new_weight - this->weight_of(node);
+        total_weight+=weightDifference;
+        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+        auto nextUpdate = nextNode(node);
+        while(node>=BaseTree::root()){
             
-      //       this->value_of(node)+=weightDifference; // SKIP VERSION
-      //       node = nextNode(node); //SKIP VERSION
+            this->value_of(node)+=weightDifference; // SKIP VERSION
+            node = nextNode(node); //SKIP VERSION
 
 
-      //       //std::cout<<"just changed node ";
-      //       //this->PrintTree();
+            //std::cout<<"just changed node ";
+            //this->PrintTree();
 
-      //       //std::cout<<"new node is "<<node<<std::endl;
+            //std::cout<<"new node is "<<node<<std::endl;
             
-      //   }
-      //   //this->value_of(node)+=weightDifference;
-      //   //std::cout<<"ending tree is ";
-      //   //this->PrintTree();
-      // }
+        }
+        //this->value_of(node)+=weightDifference;
+        //std::cout<<"ending tree is ";
+        //this->PrintTree();
+      }
         
 
 
