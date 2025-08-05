@@ -226,7 +226,7 @@ namespace stochastic {
         //total_weight += weightDifference;
         __m128d fromLeft;
         __m128i ssenode = _mm_set_epi64x(node, 0);
-        fromLeft = _mm_castpd_si128(_mm_set_epi64x(-1, 0));
+        fromLeft = _mm_castsi128_pd(_mm_set_epi64x(-1, 0));
         //int depthDiff=std::countl_zero(node) - std::countl_zero(BaseTree::entry_count());
         //std::cout << "Node before: " << std::bitset<64>(node) << std::endl;
         // node = ~node;
@@ -254,8 +254,8 @@ namespace stochastic {
             //masked_real = reinterpret_cast<int64_t&>(weightDifference) & fromLeft;
 
 
-            _mm_store_pd(&(this->value_of(node)), _mm_add_sd(_mm_load_sd(&(this->value_of(node))), masked_real));
-            fromLeft = _mm_sub_epi64(_mm_and_si128(ssenode, _mm_set_epi64x(1, 0)), _mm_set_epi64x(1, 0));
+            _mm_store_sd(&(this->value_of(node)), _mm_add_sd(_mm_load_sd(&(this->value_of(node))), masked_real));
+            fromLeft = _mm_castsi128_pd(_mm_sub_epi64(_mm_and_si128(ssenode, _mm_set_epi64x(1, 0)), _mm_set_epi64x(1, 0)));
             ssenode = _mm_srli_epi64(ssenode, 1);
             node = BaseTree::parent_of(node);
             
