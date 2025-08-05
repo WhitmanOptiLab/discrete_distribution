@@ -11,6 +11,8 @@
 #include "leaf_sum_tree_selector.hpp"
 #include "leaf_sum_tree_split.hpp"
 #include "sideways_fenwick_selector.hpp"
+#include "sideways_fenwick_selector_bitcast.hpp"
+#include "incremental_leaf_sum_tree.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
@@ -27,40 +29,36 @@ int main() {
   
   for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
-  }	      
-
-  float minweight = *std::min_element(weights.begin(), weights.end());
-  for(int i = 0; i < WEIGHTNUM; i++){
-    weights[i] -= minweight;
-  }	      
+  }	            
 
   //constructing the selector
   size_t selector_size = 1000;
-  std::vector<WRSLIB> selector(selector_size);
-  for(int i = 0; i < selector_size; i++){
-    selector[i] = WRSLIB(weights.begin(), weights.end());
-  }
+  WRSLIB selector = WRSLIB(weights.begin(), weights.end());
+
+  int sum = 0;
 
   //start time
   struct timeval start, end;
   gettimeofday(&start, NULL);
   
 
-  int sum=0;
-  //adding until selector reaches a certain size
-  for(int j = 0; j < 32000; j++){
-    for (int i = 0; i < selector_size; i++) {
-        sum+=selector[i](generator);
-        selector[i].push_back(d(generator));
+  for(int k = 0; k < 1000000; k++) {
+    for(int i = 0; i < 5; i++) {
+      selector.push_back(d(generator));
     }
+    for(int j = 0; j < 5; j++) {
+      selector.pop_back();
+    }
+    
   }
+
   
   // end time
   gettimeofday(&end, NULL);
   double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
     double(end.tv_usec - start.tv_usec)/1000000.0;
   std::cout << elapsedtime_sec << std::endl;
-  if(sum == 0 ) {std::cout << "hit"; } // Added conditional so compiler must compute sum
+  if(sum == 0 ) {sum++; } // Added conditional so compiler must compute sum
 
   
 }
