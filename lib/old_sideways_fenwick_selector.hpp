@@ -231,6 +231,7 @@ namespace stochastic {
         // // }
 
 
+
         while(node>=BaseTree::root()){
             
             this->value_of(node)+=weightDifference; // SKIP VERSION

@@ -337,14 +337,14 @@ public:
 
     //Gets a user-visible ID from a leaf node
   PosType node_of(size_t p) const {
-  PosType node = 2*p + 1;
-  PosType depthDifference = __builtin_clz(node) - __builtin_clz(BaseTree::size()-1);
-  node = node<<depthDifference;
-  //node = (node > (BaseTree::size() - 1)) ? (node >> 1) : node; //this *should* be a CMOV, but I'm not sure yet whether it will be.
-  if (node>(BaseTree::size()-1)){
-    node = node >> 1;
-  }
-  return node;
+    PosType node = 2*p + 1;
+    PosType depthDifference = __builtin_clz(node) - __builtin_clz(BaseTree::size()-1);
+    node = node<<depthDifference;
+    //node = (node > (BaseTree::size() - 1)) ? (node >> 1) : node; //this *should* be a CMOV, but I'm not sure yet whether it will be.
+    if (node>(BaseTree::size()-1)){
+      node = node >> 1;
+    }
+    return node;
   }
 
   //Gets an internal tree node from a user-visible ID
