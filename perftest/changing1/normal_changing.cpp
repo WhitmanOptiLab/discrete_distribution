@@ -26,25 +26,34 @@ int main() {
   std::normal_distribution<float> d(5,2); 
   std::default_random_engine generator;
   std::vector<float> weights = {};
+
+
   
   for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
   }	      
 
-  float minweight = *std::min_element(weights.begin(), weights.end());
-  for(int i = 0; i < WEIGHTNUM; i++){
-    weights[i] -= minweight;
-  }	      
+  // float minweight = *std::min_element(weights.begin(), weights.end());
+  // for(int i = 0; i < WEIGHTNUM; i++){
+  //   weights[i] -= minweight;
+  // }	
+  
+  // vector<Element> elements{};
+  // for(int i=0;i<weights.size();i++){
+  //   elements.emplace_back(i,i,weights[i]);
+  // }
 
   //start time
   struct timeval start, end;
   WRSLIB selector(weights.begin(), weights.end());
+  //WRSLIB selector(elements.size(),elements);
   gettimeofday(&start, NULL);
   
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
   }
+
   
   // end time
   gettimeofday(&end, NULL);

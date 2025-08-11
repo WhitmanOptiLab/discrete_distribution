@@ -6,7 +6,7 @@ struct Element {
 		value = _value;
 		weight = _weight;
 	}
-    Element(){}
+    // Element(){}
 	~Element() {}
 	friend bool operator < (const Element& a, const Element& b) {
 		if (a.weight > b.weight) {
@@ -21,6 +21,12 @@ struct Element {
 			else
 				return false;
 		}
+	}
+	friend bool operator == (const Element& a, const Element&b){
+		if (a.key==b.key&&a.value==b.value&&a.weight==b.weight){
+			return true;
+		}
+		return false;
 	}
 	int key; // searched by key
 	double weight;

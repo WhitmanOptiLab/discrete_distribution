@@ -21,9 +21,13 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 using namespace dense::stochastic;
 
+
 int main() {
+  //std::ofstream debug;
+  //debug.open("debug.txt");
   std::weibull_distribution<float> d(0.5); 
   std::default_random_engine generator;
   std::vector<float> weights = {};
@@ -32,19 +36,29 @@ int main() {
     weights.push_back(d(generator));
   }	      
 
-  float minweight = *std::min_element(weights.begin(), weights.end());
   for(int i = 0; i < WEIGHTNUM; i++){
-    weights[i] -= minweight;
-  }	      
+    if (weights[i]<=0){weights[i]=.01;}
+  }	
+  
+  //   vector<Element> elements{};
+  // for(int i=0;i<weights.size();i++){
+  //   elements.emplace_back(i,i,weights[i]);
+  // }
 
   //start time
   struct timeval start, end;
   WRSLIB selector(weights.begin(), weights.end());
+  //WRSLIB selector(elements.size(),elements);
   gettimeofday(&start, NULL);
+
   
   for (int i = 0; i < 1000000; i++) {
+    //debug<<"about to select "<<i<<std::endl;
     int index = selector(generator);
-    selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
+    //debug<<"selected "<<i<<std::endl;
+    //debug<<"about to update "<<i<<std::endl;
+    selector.update_weight(index, std::max<float>(0.0, d(generator)));
+    //debug<<"updated "<<i<<std::endl<<std::endl;
   }
   
   // end time
@@ -52,5 +66,6 @@ int main() {
   double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
     double(end.tv_usec - start.tv_usec)/1000000.0;
   std::cout << elapsedtime_sec << std::endl;
+//debug.close();
   
 }
