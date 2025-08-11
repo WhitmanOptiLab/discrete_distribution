@@ -223,7 +223,7 @@ public:
 
     // }
     template<class URNG>
-    int operator()(URNG rng) {
+    int operator()(URNG& rng) {
         int cur_block_id;
         //int setAt=0;
         Bucket* cur_bucket = NULL;
@@ -266,6 +266,7 @@ public:
             //checkForBucketMismatch(*cur_bucket,"cur_bucket just set (checkpoint 1)");
             uniform_real_distribution<double> dr(0, tot_weight);
             double random_bucket_weight = dr(rng); //chooses a weight between 0 and the total weight of all elements
+            std::cout<<"target is "<<random_bucket_weight<<std::endl;
             for (auto i : tmp_bucket_list) { //go down through the buckets (bucket Ids are decreasing and see if random weight is more than the bucket weight. if yes, select. if no, subtract the bucket weight from the random weight)
                 if (random_bucket_weight <= i.first) {
                     major_flag = 1;

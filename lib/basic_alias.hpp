@@ -59,7 +59,7 @@ public:
     }
     //randomly generate
     template <class URNG>
-    int operator()(URNG rng) {
+    int operator()(URNG& rng) {
         if (reconstruct_flag == 1) {
             init();
             reconstruct_flag = 0;

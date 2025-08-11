@@ -40,6 +40,10 @@ int main(){
     BucketMethod selector(weights.begin(), weights.end());
     std::cout<<"constructed"<<std::endl;
 
+    for(int i=0; i<5;i++){
+        selector.update_weight(i,5);
+    }
+
     //outputFile<<"distribution after construction: ";
 
     // for (int i=0;i<numWeights;i++){
