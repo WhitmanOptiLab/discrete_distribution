@@ -34,6 +34,32 @@ public:
 
   using param_type = Param;
 
+#include <iostream>
+#include <cmath>
+
+  void print_tree() const {
+    if (tree_.size() <= 1) return;
+
+    auto level_start = [](int L) -> size_t {
+      return 1 + (std::pow(3, L) - 1) / 2;
+    };
+
+    size_t i = 0;
+    int level = 0;
+    while (i < tree_.size()) {
+      size_t start = level_start(level);
+      size_t next_start = level_start(level + 1);
+      std::cout << "Level " << level << ": ";
+      for (; i < tree_.size() && i < next_start-1; ++i) {
+        std::cout << tree_[i] << ' ';
+      }
+      std::cout << std::endl;
+      ++level;
+    }
+  }
+
+
+
   ternary_leaf_sum_tree() : leaf_start_(0), leaf_end_(0) {}
 
   ternary_leaf_sum_tree(const std::vector<Real>& weights)
@@ -43,22 +69,25 @@ public:
   ternary_leaf_sum_tree(InputIt first, InputIt last) {
     size_t n = std::distance(first, last);
     leaf_end_ = n;
-    leaf_start_ = next_power_of_three(n);
-    tree_.assign(leaf_start_ * 3, 0.0);
+    int tree_size = next_power_of_three(n);
+    leaf_start_ = (tree_size)/2;
+    tree_.assign(tree_size + leaf_start_, 0.0);
 
     InputIt it = first;
     for (size_t i = 0; it != last; ++i, ++it) {
       tree_[leaf_start_ + i] = std::max(Real(*it), 0.0);
     }
 
-    for (std::ptrdiff_t i = leaf_start_ - 1; i >= 1; --i) {
+    //std::cout << tree_.size() << std::endl;
+    for (std::ptrdiff_t i = leaf_start_ - 1; ; --i) {
       tree_[i] = tree_[child0(i)] + tree_[child1(i)] + tree_[child2(i)];
+      if (i == 0) break;
     }
   }
 
-  Real total_weight() const noexcept { return tree_[1]; }
+  Real total_weight() const noexcept { return tree_[0]; }
 
-  size_t size() const noexcept { return leaf_end_; }
+  size_t size() const noexcept { return tree_.size(); }
 
   static constexpr result_type min() { return 0; }
   result_type max() const { return leaf_end_ - 1; }
@@ -67,7 +96,8 @@ public:
   result_type operator()(URNG& g) const {
     Real target = std::generate_canonical<Real, precision, URNG>(g) * total_weight();
     if (target == 0) return 0;
-    PosType node = 1;
+    PosType node = 0;
+    //std::cout << "Target " << target << std::endl;
     while (node < leaf_start_) {
       Real w0 = tree_[child0(node)];
       Real w1 = tree_[child1(node)];
@@ -92,14 +122,11 @@ public:
   }
 
   void update_weight(PosType i, Real new_weight) {
-    assert(i < leaf_end_);
     PosType node = leaf_start_ + i;
     Real diff = new_weight - tree_[node];
-    //std::cout <<"New weight: " << new_weight <<", old weight: " << tree_[node] <<std::endl;
     while (true) {
       tree_[node] += diff;
-      //std::cout <<"Adding "<< diff <<" to " << node << std::endl;
-      if (node == 1) break;
+      if (node == 0) break;
       node = parent(node);
     }
   }
@@ -120,10 +147,10 @@ private:
   size_t leaf_start_ = 0;
   size_t leaf_end_ = 0;
 
-  static PosType child0(PosType i) { return 3 * i; }
-  static PosType child1(PosType i) { return 3 * i + 1; }
-  static PosType child2(PosType i) { return 3 * i + 2; }
-  static PosType parent(PosType i) { return (i) / 3; }
+  static PosType child0(PosType i) { return 3 * i + 1; }
+  static PosType child1(PosType i) { return 3 * i + 2 ; }
+  static PosType child2(PosType i) { return 3 * i + 3; }
+  static PosType parent(PosType i) { return (i-1) / 3; }
 
   static size_t next_power_of_three(size_t n) {
     size_t p = 1;

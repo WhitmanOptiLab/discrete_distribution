@@ -11,6 +11,9 @@
 
 #include "leaf_sum_tree_selector.hpp"
 #include "leaf_sum_tree_split.hpp"
+#include "ternary_tree_selector.hpp"
+#include "exponential.hpp"
+
 
 #include <sys/time.h>
 #include <iostream>

@@ -10,44 +10,44 @@
 
 echo "Number of tests: $1" # first argument is num of tests
 echo "Weightnum: $2" # second argument is number of weights in data structure
-echo "normal_static_leafsum, normal_static_leafsum_split, normal_static_sideways_fenwick, normal_changing_leafsum, normal_changing_leafsum_split, normal_changing_sideways_fenwick, uniform_static_leafsum, uniform_static_leafsum_split, uniform_static_sideways_fenwick, uniform_changing_leafsum, uniform_changing_leafsum_split, uniform_changing_sideways_fenwick, weibull_static_leafsum, weibull_static_leafsum_split, weibull_static_sideways_fenwick, weibull_changing_leafsum, weibull_changing_leafsum_split, weibull_changing_sideways_fenwick"  > results_$2.csv
+echo "normal_static_leafsum, normal_static_ternary_leafsum, normal_static_leafsum_split, normal_changing_leafsum, normal_changing_exponential_leafsum, normal_changing_leafsum_split, uniform_static_leafsum, uniform_static_exponential_leafsum, uniform_static_leafsum_split, uniform_changing_leafsum, uniform_changing_exponential_leafsum, uniform_changing_leafsum_split, weibull_static_leafsum, weibull_static_exponential_leafsum, weibull_static_leafsum_split, weibull_changing_leafsum, weibull_changing_exponential_leafsum, weibull_changing_leafsum_split"  > results_$2.csv
 
 # Normal distribution static weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<int>" "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<int>" "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=sideways_fenwick_selector<int>" "-DWEIGHTNUM=$2" -o test2 normal_static.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>" "-DWEIGHTNUM=$2" -o test2 normal_static.cpp
 
 
 
 
 # Normal distribution changing weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<int>" "-DWEIGHTNUM=$2" -o test3 normal_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<int>" "-DWEIGHTNUM=$2" -o test4 normal_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=sideways_fenwick_selector<int>" "-DWEIGHTNUM=$2" -o test5 normal_changing.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test3 normal_changing.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test4 normal_changing.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>" "-DWEIGHTNUM=$2" -o test5 normal_changing.cpp
 
 
 # Uniform distribution static weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<int>" "-DWEIGHTNUM=$2" -o test6 uniform_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<int>" "-DWEIGHTNUM=$2" -o test7 uniform_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=sideways_fenwick_selector<int>" "-DWEIGHTNUM=$2" -o test8 uniform_static.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test6 uniform_static.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test7 uniform_static.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>" "-DWEIGHTNUM=$2" -o test8 uniform_static.cpp
 
 
 # Uniform distribution changing weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<int>" "-DWEIGHTNUM=$2" -o test9 uniform_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<int>" "-DWEIGHTNUM=$2" -o test10 uniform_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=sideways_fenwick_selector<int>" "-DWEIGHTNUM=$2" -o test11 uniform_changing.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test9 uniform_changing.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test10 uniform_changing.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>" "-DWEIGHTNUM=$2" -o test11 uniform_changing.cpp
 
 
 # Weibull distribution static weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<int>" "-DWEIGHTNUM=$2" -o test12 weibull_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<int>" "-DWEIGHTNUM=$2" -o test13 weibull_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=sideways_fenwick_selector<int>" "-DWEIGHTNUM=$2" -o test14 weibull_static.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test12 weibull_static.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test13 weibull_static.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>" "-DWEIGHTNUM=$2" -o test14 weibull_static.cpp
 
 
 # Weibull distribution changing weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<int>" "-DWEIGHTNUM=$2" -o test15 weibull_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<int>" "-DWEIGHTNUM=$2" -o test16 weibull_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=sideways_fenwick_selector<int>" "-DWEIGHTNUM=$2" -o test17 weibull_changing.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test15 weibull_changing.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test16 weibull_changing.cpp
+g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>" "-DWEIGHTNUM=$2" -o test17 weibull_changing.cpp
 
 
 sum0=0
@@ -165,23 +165,23 @@ echo "$average0, $average1, $average2, $average3, $average4, $average5, $average
 
 # Print the average
 echo "normal_static_leafsum: $average0"
-echo "normal_static_leafsum_split: $average1"
-echo "normal_static_sideways_fenwick: $average2"
+echo "normal_static_exponential_leafsum: $average1"
+echo "normal_static_leafsum_split: $average2"
 echo "normal_changing_leafsum: $average3"
-echo "normal_changing_leafsum_split: $average4"
-echo "normal_changing_sideways_fenwick: $average5"
+echo "normal_changing_exponential_leafsum: $average4"
+echo "normal_changing_leafsum_split: $average5"
 echo "uniform_static_leafsum: $average6"
-echo "uniform_static_leafsum_split: $average7"
-echo "uniform_static_sideways_fenwick: $average8"
+echo "uniform_static_exponential_leafsum: $average7"
+echo "uniform_static_leafsum_split: $average8"
 echo "uniform_changing_leafsum: $average9"
-echo "uniform_changing_leafsum_split: $average10"
-echo "uniform_changing_sideways_fenwick: $average11"
+echo "uniform_changing_exponential_leafsum: $average10"
+echo "uniform_changing_leafsum_split: $average11"
 echo "weibull_static_leafsum: $average12"
-echo "weibull_static_leafsum_split: $average13"
-echo "weibull_static_sideways_fenwick: $average14"
+echo "weibull_static_exponential_leafsum: $average13"
+echo "weibull_static_leafsum_split: $average14"
 echo "weibull_changing_leafsum: $average15"
-echo "weibull_changing_leafsum_split: $average16"
-echo "weibull_changing_sideways_fenwick: $average17" 
+echo "weibull_changing_exponential_leafsum: $average16"
+echo "weibull_changing_leafsum_split: $average17" 
 
 
 

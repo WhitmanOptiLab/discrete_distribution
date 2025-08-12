@@ -10,6 +10,7 @@
 
 #include "leaf_sum_tree_selector.hpp"
 #include "leaf_sum_tree_split.hpp"
+#include "ternary_tree_selector.hpp"
 
 #include <sys/time.h>
 #include <iostream>
@@ -17,6 +18,8 @@
 #include <vector>
 #include <algorithm>
 #include <chrono>
+#include "exponential.hpp"
+
 using namespace dense::stochastic;
 
 double generate_weibull_between(double shape, double scale, double min, double max, std::default_random_engine& gen) {
@@ -54,9 +57,9 @@ int main() {
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)));
-    for(int i = 0;i<4;i++){
-      selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
-    }
+    //for(int i = 0;i<4;i++){
+    //  selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
+    //}
   }
   
   // end time

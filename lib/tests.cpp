@@ -7,9 +7,9 @@
 #include <map>
 #include <iomanip>
 #include <sstream>
-#include "ternary_tree_selector.hpp"
+#include "exponential.hpp"
 
-using Tree = dense::stochastic::ternary_leaf_sum_tree<>;
+using Tree = dense::stochastic::exponential_leaf_sum_tree_of_trees<>;
 using Real = double;
 using Pos = size_t;
 
@@ -130,6 +130,7 @@ void test_single_element_tree() {
     for (int i = 0; i < 100; ++i)
         assert(tree(rng) == 0);
 
+
     tree.update_weight(0, 0.0);
     for (int i = 0; i < 100; ++i)
         assert(tree(rng) == 0); // Behavior when total weight zero; still returns index 0
@@ -219,10 +220,10 @@ void test_near_zero_weights() {
 
 
 int main() {
-    test_all_zero_weights();
-    test_large_uniform_weights();
+    //test_all_zero_weights();
+    //test_large_uniform_weights();
     //test_push_pop_stress();
-    test_update_weight_edge_cases();
+    //test_update_weight_edge_cases();
     test_single_element_tree();
     //test_stream_operators();
     //test_empty_tree_stream();

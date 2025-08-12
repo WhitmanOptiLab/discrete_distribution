@@ -4,13 +4,16 @@
 //Ex:
 //g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 normal_static.cpp
 //g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_static.cpp
-//g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test2 normal_static.cpp
+//g++ -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=10000" -o test2 normal_static.cpp
 
 #include "sideways_fenwick.hpp"
 
 
 #include "leaf_sum_tree_selector.hpp"
 #include "leaf_sum_tree_split.hpp"
+#include "ternary_tree_selector.hpp"
+#include "exponential.hpp"
+
 
 #include <sys/time.h>
 #include <iostream>

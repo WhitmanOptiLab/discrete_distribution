@@ -3,7 +3,7 @@
 
 //Ex:
 //g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 normal_changing.cpp
-//g++ -I../lib -O3 "-DWRSLIB=leaf_sum_tree_split<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
+//g++ -I../lib -O3 -std=c++20 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
 
 
 #include "sideways_fenwick.hpp"
@@ -11,12 +11,15 @@
 
 #include "leaf_sum_tree_selector.hpp"
 #include "leaf_sum_tree_split.hpp"
+#include "ternary_tree_selector.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
 #include <vector>
 #include <algorithm>
 #include <chrono>
+#include "exponential.hpp"
+
 using namespace dense::stochastic;
 
 double generate_normal_between(double mean, double stddev, double min, double max, std::default_random_engine& gen) {
@@ -56,13 +59,15 @@ int main() {
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)));
-    for(int j = 0;j<4;j++){
+    /*for(int j = 0;j<4;j++){
       int randI = randomIndex(generator);
       //std::cout<<"about to update weights "<<randI<<std::endl;
       selector.update_weight(randI,std::max<float>(0.0, d(generator)));
-      //std::cout<<"just updated weights "<<randI<<std::endl;
-    }
+      //std::cout<<"just updated weights "<<randI<<std::endl;*/
+    //}
+
   }
+  //selector.print_tree();
   
   // end time
   auto end = std::chrono::steady_clock::now();

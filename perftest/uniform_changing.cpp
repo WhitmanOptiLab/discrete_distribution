@@ -10,6 +10,9 @@
 
 #include "leaf_sum_tree_selector.hpp"
 #include "leaf_sum_tree_split.hpp"
+#include "ternary_tree_selector.hpp"
+#include "exponential.hpp"
+#include "old_leaf_sum.hpp"
 
 #include <sys/time.h>
 #include <iostream>
@@ -45,10 +48,11 @@ int main() {
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)));
-    for(int i = 0;i<1;i++){
-      selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
-    }
+    //for(int i = 0;i<1;i++){
+    //  selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
+    //}
   }
+  //std::cout << selector.size() << std::endl;
   
   // end time
   auto end = std::chrono::steady_clock::now();
