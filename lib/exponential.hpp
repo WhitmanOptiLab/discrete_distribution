@@ -13,6 +13,31 @@ namespace stochastic {
   template <class int_type = size_t, class Real = double, size_t fanout = 8>
 class kary_complete_tree {
 public:
+
+    // Compute minimal complete k-ary tree size to store exactly n leaves
+    // without needing bounds checks during selection.
+    static std::pair<size_t, size_t> minimal_tree_shape(size_t n) {
+    // returns {total_nodes, leaf_start_index}
+    if (n == 0) return {1, 0};
+
+    size_t leaves = n;
+    size_t total_nodes = n;  // count leaves
+    std::vector<size_t> level_counts;
+    level_counts.push_back(n);
+
+    // Climb up until we reach the root
+    while (leaves > 1) {
+        size_t parents = (leaves + fanout - 1) / fanout; // ceil
+        total_nodes += parents;
+        level_counts.push_back(parents);
+        leaves = parents;
+    }
+
+    // leaf_start is total_nodes - n (since leaves are last in array)
+    size_t leaf_start = total_nodes - n;
+    return {total_nodes, leaf_start};
+}
+
     static_assert((fanout & (fanout - 1)) == 0, "fanout must be power of two");
 
     using position_type = int_type;
@@ -32,14 +57,10 @@ public:
             return;
         }
 
-        // total nodes in a complete k-ary tree with n leaves:
-        // total_nodes = (fanout * n - 1) / (fanout - 1)
-        size_t total_nodes = (fanout * n - 1) / (fanout - 1);
-
+        auto [total_nodes, leaf_start] = minimal_tree_shape(n);
         data_.assign(total_nodes, Real(0));
-
         leaf_count_ = n;
-        leaf_start_ = total_nodes - n;  // leaves are the last n nodes
+        leaf_start_ = leaf_start;
     }
 
     size_t size() const {
@@ -91,7 +112,7 @@ private:
     size_t leaf_start_;
     size_t leaf_count_;
 
-    static constexpr size_t log2_fanout = [] {
+    size_t log2_fanout = [] {
         size_t v = fanout;
         size_t r = 0;
         while (v > 1) {
@@ -155,26 +176,17 @@ public:
     size_t n = std::distance(first, last);
     leaf_end_ = n;
 
-    // Round up leaves to nearest full complete k-ary tree level (power of fanout)
-    size_t leaves_rounded = 1;
-    while (leaves_rounded < n) {
-      leaves_rounded *= fanout;
-    }
-
-    BaseTree::resize(leaves_rounded);
-
-    size_t total_nodes = BaseTree::size(); // zero-based, size() == number of nodes
-    leaf_start_ = total_nodes - leaves_rounded; // first leaf index (0-based)
+    auto [total_nodes, leaf_start] = BaseTree::minimal_tree_shape(n);
+BaseTree::resize(n); // will now use minimal_tree_shape internally
+leaf_start_ = leaf_start;
 
     // Copy weights to leaves, pad with zeros
     InputIt it = first;
-    for (size_t i = 0; i < leaves_rounded; ++i) {
+    for (size_t i = 0; i < leaf_start_; ++i) {
       if (i < n) {
         weightsum_of(leaf_start_ + i) = std::max(Real(*it), Real(0));
         ++it;
-      } else {
-        weightsum_of(leaf_start_ + i) = Real(0);
-      }
+        }
     }
 
     // Build sums bottom-up from leaves to root
@@ -353,166 +365,6 @@ private:
   size_t leaf_end_;   // number of leaves requested by user
   size_t leaf_start_; // index of first leaf in data_
 };
-
-// -----------------------------------------------------------------------------
-// Two-level "tree-of-trees" selector (array-based, compact)
-// -----------------------------------------------------------------------------
-//
-// Usage notes:
-// - BucketSize controls how many original items go into each inner tree.
-// - InnerFanout controls the inner-tree branching factor (keep small, e.g. 4 or 8).
-// - OuterFanout controls the outer-tree branching factor (can be larger).
-//
-// Example:
-//   using TwoLevel = exponential_leaf_sum_tree_of_trees<size_t,double,8,4>;
-//   TwoLevel s(weights.begin(), weights.end(), /*bucket_size=*/64);
-// -----------------------------------------------------------------------------
-
-template <
-  class int_type = size_t,
-  class Real = double,
-  size_t OuterFanout = 16,
-  size_t InnerFanout = 2,
-  size_t precision = std::numeric_limits<Real>::digits,
-  size_t bucket_size_ = 16
->
-class exponential_leaf_sum_tree_of_trees {
-public:
-  using index_type = int_type;
-  using result_type = int_type;
-  using inner_tree_type = exponential_leaf_sum_tree<int_type, Real, InnerFanout, precision>;
-  using outer_tree_type = exponential_leaf_sum_tree<size_t,   Real, OuterFanout, precision>;
-
-  // constructor from iterator pair + explicit bucket_size
-  exponential_leaf_sum_tree_of_trees(std::vector<Real> weights) : exponential_leaf_sum_tree_of_trees(weights.begin(), weights.end()) {
-  }
-
-  template <typename InputIt>
-  exponential_leaf_sum_tree_of_trees(InputIt first, InputIt last)
-  {
-    assert(bucket_size_ >= 1);
-    total_items_ = static_cast<size_t>(std::distance(first, last));
-    if (total_items_ == 0) {
-      // empty
-      outer_tree_ = outer_tree_type();
-      return;
-    }
-
-    // number of buckets (ceil)
-    num_buckets_ = (total_items_ + bucket_size_ - 1) / bucket_size_;
-    inner_trees_.reserve(num_buckets_);
-
-    // Build inner trees from contiguous chunks
-    InputIt it = first;
-    for (size_t b = 0; b < num_buckets_; ++b) {
-      size_t start_idx = b * bucket_size_;
-      size_t remain = (start_idx < total_items_) ? (total_items_ - start_idx) : 0;
-      size_t take = std::min(remain, bucket_size_);
-
-      if (take == 0) {
-        // empty bucket (shouldn't happen except maybe last with total_items_ == 0)
-        inner_trees_.emplace_back(); // default empty inner tree
-      } else {
-        // construct inner tree from [it, it + take)
-        inner_trees_.emplace_back(inner_tree_type(it, it + take));
-        std::advance(it, take);
-      }
-    }
-
-    // Build outer tree from sums of inner trees
-    std::vector<Real> outer_weights;
-    outer_weights.reserve(num_buckets_);
-    for (size_t b = 0; b < num_buckets_; ++b) {
-      outer_weights.push_back(inner_trees_[b].total_weight());
-    }
-    outer_tree_ = outer_tree_type(outer_weights);
-  }
-
-  // default empty ctor
-  exponential_leaf_sum_tree_of_trees() = default;
-
-  // pick a random global index
-  template <class URNG>
-  result_type operator()(URNG &g) const {
-    if (total_items_ == 0) return result_type(0);
-    // pick bucket via outer tree
-    size_t bucket = outer_tree_(g);
-    if (bucket >= inner_trees_.size()) bucket = inner_trees_.size() - 1; // defensive
-
-    // pick inside bucket
-    size_t local = inner_trees_[bucket](g);
-
-    // convert to global index, clamp if beyond total_items_
-    size_t global = bucket * bucket_size_ + local;
-    if (global >= total_items_) global = total_items_ - 1;
-    return static_cast<result_type>(global);
-  }
-
-  // pick using a provided param (keeps compatibility, builds a temporary)
-//  template <class URNG>
-//  result_type operator()(URNG &g, const typename inner_tree_type::param_type &p) const {
-//    // build temporary two-level tree from param vector (simple approach)
-//    std::vector<Real> weights = p.weights();
-//    exponential_leaf_sum_tree_of_trees tmp(weights.begin(), weights.end(), bucket_size_);
-//    return tmp(g);
-//  }
-
-  // update an individual weight (propagates inner -> outer)
-  void update_weight(size_t global_idx, Real new_weight) {
-    assert(global_idx < total_items_);
-    assert(new_weight >= Real(0));
-    size_t bucket = global_idx / bucket_size_;
-    size_t local  = global_idx % bucket_size_;
-    // Update inner tree (note: inner tree was built from a possibly smaller chunk for the last bucket)
-    inner_trees_[bucket].update_weight(static_cast<PosType>(local), new_weight); // PosType alias in inner_tree
-    // Now update outer tree with the new sum
-    Real new_sum = inner_trees_[bucket].total_weight();
-    outer_tree_.update_weight(static_cast<PosType>(bucket), new_sum);
-  }
-
-  // get weight for a global index
-  Real get_weight(size_t global_idx) const {
-    assert(global_idx < total_items_);
-    size_t bucket = global_idx / bucket_size_;
-    size_t local  = global_idx % bucket_size_;
-    return inner_trees_[bucket].get_weight(static_cast<PosType>(local));
-  }
-
-  // total items
-  size_t size() const { return total_items_; }
-
-  Real total_weight() const noexcept {
-    return outer_tree_.total_weight();
-  }
-
-  // Debug print: outer tree then optionally each inner tree summary
-  void print_tree(std::ostream &os = std::cout, bool print_inner = true) const {
-    os << "Two-level tree-of-trees: total_items=" << total_items_
-       << " bucket_size=" << bucket_size_
-       << " num_buckets=" << num_buckets_ << "\n";
-    os << "Outer tree:\n";
-    outer_tree_.print_tree(os);
-    if (print_inner) {
-      for (size_t b = 0; b < inner_trees_.size(); ++b) {
-        os << " Inner bucket " << b << " (base_index=" << (b*bucket_size_) << "):\n";
-        inner_trees_[b].print_tree(os);
-      }
-    }
-  }
-
-private:
-  using PosType = typename inner_tree_type::result_type; // same as int_type
-
-  //size_t bucket_size_{0};
-  size_t total_items_{0};
-  size_t num_buckets_{0};
-
-  std::vector<inner_tree_type> inner_trees_;
-  outer_tree_type outer_tree_;
-};
-
-
-
-} // namespace stochastic
-} // namespace dense
+}
+}
 #endif

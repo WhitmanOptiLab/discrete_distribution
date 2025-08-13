@@ -9,7 +9,7 @@
 #include <sstream>
 #include "exponential.hpp"
 
-using Tree = dense::stochastic::exponential_leaf_sum_tree_of_trees<>;
+using Tree = dense::stochastic::exponential_leaf_sum_tree<>;
 using Real = double;
 using Pos = size_t;
 

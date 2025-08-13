@@ -107,7 +107,7 @@ public:
   template<class URNG>
   PosType operator()(URNG& g) {
     Real target = std::generate_canonical<Real, precision, URNG>(g) * total_weight(); //Generate a target number between 0 and the sum of all the weights
-    //if (target == 0) return 0;
+    if (target == 0) return 0;
     PosType node = BaseTree::root(); //node starts at 1
     while (node < leaf_end_) { //While the node is in the internal half of the tree:
       PosType left = left_of(node);
@@ -134,9 +134,9 @@ public:
 ////CHARACTERISTICS////
 
   //Returns a list of the probabilities of landing on each of the indexes
-  std::vector<double> probabilities(){
-    std::vector<double> probabilities(leaf_end_);
-    double total_weight = this->total_weight();
+  std::vector<Real> probabilities(){
+    std::vector<Real> probabilities(leaf_end_);
+    Real total_weight = this->total_weight();
     for (size_t i = leaf_end_, j = 0; i < BaseTree::size() && j < probabilities.size(); ++i, ++j){
       probabilities[j] = weightsum_of(i)/total_weight;
     }
@@ -396,7 +396,7 @@ private:
       return is;
     }
 
-    std::vector<double> weights(n);
+    std::vector<Real> weights(n);
     for (size_t i = 0; i < n; ++i) {
       is >> weights[i];
       if (!is) {
