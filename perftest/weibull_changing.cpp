@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <chrono>
 #include "exponential.hpp"
+#include "low_storage.hpp"
 
 using namespace dense::stochastic;
 
@@ -38,28 +39,22 @@ int main() {
   std::uniform_real_distribution<float> d2(0.99, 1.01);
   std::uniform_int_distribution<int> randomIndex(0,WEIGHTNUM-1);
 
-
-
   
   for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
   }	      
 
-  float minweight = *std::min_element(weights.begin(), weights.end());
-  for(int i = 0; i < WEIGHTNUM; i++){
-    weights[i] -= minweight;
-  }	      
 
   //start time
   auto start = std::chrono::steady_clock::now();
   WRSLIB selector(weights.begin(), weights.end());
   
   for (int i = 0; i < 1000000; i++) {
-    int index = selector(generator);
+    size_t index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)));
-    //for(int i = 0;i<4;i++){
-    //  selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
-    //}
+    for(int i = 0;i<14;i++){
+      selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
+    }
   }
   
   // end time

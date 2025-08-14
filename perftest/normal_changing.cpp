@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <chrono>
 #include "exponential.hpp"
+#include "low_storage.hpp"
 
 using namespace dense::stochastic;
 
@@ -41,13 +42,13 @@ int main() {
 
   
   for(int i = 0; i < WEIGHTNUM; i++){
-    weights.push_back(d(generator));
+    weights.push_back(std::max<float>(0.0, d(generator)));
   }	      
 
-  float minweight = *std::min_element(weights.begin(), weights.end());
-  for(int i = 0; i < WEIGHTNUM; i++){
-    weights[i] -= minweight;
-  }	      
+  //float minweight = *std::min_element(weights.begin(), weights.end());
+//  for(int i = 0; i < WEIGHTNUM; i++){
+//    weights[i] -= minweight;
+//  }
 
   //start time
   WRSLIB selector(weights.begin(), weights.end());
@@ -57,14 +58,11 @@ int main() {
 
   
   for (int i = 0; i < 1000000; i++) {
-    int index = selector(generator);
+    size_t index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)));
-    /*for(int j = 0;j<4;j++){
-      int randI = randomIndex(generator);
-      //std::cout<<"about to update weights "<<randI<<std::endl;
-      selector.update_weight(randI,std::max<float>(0.0, d(generator)));
-      //std::cout<<"just updated weights "<<randI<<std::endl;*/
-    //}
+    for(int i = 0;i<14;i++){
+      selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
+    }
 
   }
   //selector.print_tree();

@@ -13,6 +13,7 @@
 #include "leaf_sum_tree_split.hpp"
 #include "ternary_tree_selector.hpp"
 #include "exponential.hpp"
+#include "low_storage.hpp"
 
 
 #include <sys/time.h>
@@ -27,16 +28,12 @@ int main() {
   std::weibull_distribution<float> d(0.5); 
   std::default_random_engine generator;
   std::vector<float> weights = {};
-  int sum = 1;
+  size_t sum = 1;
   
   for(int i = 0; i < WEIGHTNUM; i++){
     weights.push_back(d(generator));
   }	      
 
-  float minweight = *std::min_element(weights.begin(), weights.end());
-  for(int i = 0; i < WEIGHTNUM; i++){
-    weights[i] -= minweight;
-  }	      
 
   //start time
   auto start = std::chrono::steady_clock::now();
