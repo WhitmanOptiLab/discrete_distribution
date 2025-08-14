@@ -266,7 +266,7 @@ public:
             //checkForBucketMismatch(*cur_bucket,"cur_bucket just set (checkpoint 1)");
             uniform_real_distribution<double> dr(0, tot_weight);
             double random_bucket_weight = dr(rng); //chooses a weight between 0 and the total weight of all elements
-            std::cout<<"target is "<<random_bucket_weight<<std::endl;
+            //std::cout<<"target is "<<random_bucket_weight<<std::endl;
             for (auto i : tmp_bucket_list) { //go down through the buckets (bucket Ids are decreasing and see if random weight is more than the bucket weight. if yes, select. if no, subtract the bucket weight from the random weight)
                 if (random_bucket_weight <= i.first) {
                     major_flag = 1;
@@ -331,58 +331,58 @@ public:
         }
     }
 
-    void checkAllBuckets(){
-        for(auto it=bucket_map.begin();it!=bucket_map.end();it++){
-            for(int i=0;i<it->second.elements.size();i++){
-                if (it->second.elements[i].weight<=0){
-                    std::cout<<"problem in bucket "<<it->second.id<<std::endl;
-                    printABucket(it->second);
-                }
-                if(it->second.elements.size()==0){
-                    std::cout<<"checkAllBuckets found that the bucket "<<it->second.id<<" is empty"<<std::endl;
-                }
-            }
-        }
-    }
+    // void checkAllBuckets(){
+    //     for(auto it=bucket_map.begin();it!=bucket_map.end();it++){
+    //         for(int i=0;i<it->second.elements.size();i++){
+    //             if (it->second.elements[i].weight<=0){
+    //                 std::cout<<"problem in bucket "<<it->second.id<<std::endl;
+    //                 printABucket(it->second);
+    //             }
+    //             if(it->second.elements.size()==0){
+    //                 std::cout<<"checkAllBuckets found that the bucket "<<it->second.id<<" is empty"<<std::endl;
+    //             }
+    //         }
+    //     }
+    // }
 
-    void checkForBucketMismatch(Bucket cur_bucket,std::string message){
-        auto bucketCheck = bucket_map.find(cur_bucket.id);
-        if(bucketCheck==bucket_map.end()){
-            std::cout<<"cur_bucket not in bucket map"<<std::endl;
-        }
-        else if(bucketCheck->second.elements !=cur_bucket.elements){
-            std::cout<<"there's a mismatch in bucket "<<cur_bucket.id<<" between the current bucket and the one in the bucket map     message is: "<<message<<std::endl;
-            std::cout<<"current bucket: ";
-            printABucketNoException(cur_bucket);
-            std::cout<<"bucket map bucket: ";
-            printABucketNoException(bucketCheck->second);
-            throw std::runtime_error("bucket map mismatch");
-        }
+    // void checkForBucketMismatch(Bucket cur_bucket,std::string message){
+    //     auto bucketCheck = bucket_map.find(cur_bucket.id);
+    //     if(bucketCheck==bucket_map.end()){
+    //         std::cout<<"cur_bucket not in bucket map"<<std::endl;
+    //     }
+    //     else if(bucketCheck->second.elements !=cur_bucket.elements){
+    //         std::cout<<"there's a mismatch in bucket "<<cur_bucket.id<<" between the current bucket and the one in the bucket map     message is: "<<message<<std::endl;
+    //         std::cout<<"current bucket: ";
+    //         printABucketNoException(cur_bucket);
+    //         std::cout<<"bucket map bucket: ";
+    //         printABucketNoException(bucketCheck->second);
+    //         throw std::runtime_error("bucket map mismatch");
+    //     }
 
-    }
+    // }
 
-    void printABucket(Bucket toPrint){
-        bool except=false;
-        std::cout<<"printing bucket "<<toPrint.id<<": ";
-        for(int i=0;i<toPrint.elements.size();i++){
-            std::cout<<toPrint.elements[i].weight<<", ";
-            if (toPrint.elements[i].weight<=0){
-                except=true;
-            }
-        }
-        std::cout<<std::endl;
-        if (except==true){
-            throw std::runtime_error("element in bucket <=0");
-        }
-    }
+    // void printABucket(Bucket toPrint){
+    //     bool except=false;
+    //     std::cout<<"printing bucket "<<toPrint.id<<": ";
+    //     for(int i=0;i<toPrint.elements.size();i++){
+    //         std::cout<<toPrint.elements[i].weight<<", ";
+    //         if (toPrint.elements[i].weight<=0){
+    //             except=true;
+    //         }
+    //     }
+    //     std::cout<<std::endl;
+    //     if (except==true){
+    //         throw std::runtime_error("element in bucket <=0");
+    //     }
+    // }
 
-    void printABucketNoException(Bucket toPrint){
-        std::cout<<"printing bucket"<<toPrint.id<< " with size "<<toPrint.elements.size()<<": ";
-        for(int i=0;i<toPrint.elements.size();i++){
-            std::cout<<toPrint.elements[i].weight<<", ";
-        }
-        std::cout<<std::endl;
-    }
+    // void printABucketNoException(Bucket toPrint){
+    //     std::cout<<"printing bucket"<<toPrint.id<< " with size "<<toPrint.elements.size()<<": ";
+    //     for(int i=0;i<toPrint.elements.size();i++){
+    //         std::cout<<toPrint.elements[i].weight<<", ";
+    //     }
+    //     std::cout<<std::endl;
+    // }
 
 
 
@@ -442,12 +442,12 @@ public:
         clean_largest_bucket_id = 0;
         prepare_alias = 0;
         clean_bucket_list = 0;
-        checkAllBuckets();
+        //checkAllBuckets();
         return;
     }
 
     void update_weight(int upd_key, Element new_ele) {
-        throw std::runtime_error("wrong update weight called");
+        //throw std::runtime_error("wrong update weight called");
         double new_weight = new_ele.weight;
         int new_bucket_id = find_bucket(new_weight);
         int old_bucket_id = position_map[upd_key].first;

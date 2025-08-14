@@ -15,7 +15,7 @@
 #include <bit>
 #include <random>
 
-#include "completetree.hpp"
+#include "completetreeFLOAT.hpp"
 
 
 namespace dense {
@@ -262,12 +262,12 @@ namespace stochastic {
         update_weight(BaseTree::entry_count(),v);
       }
 
-        Real weight_of(node_type n) {
-            auto val = this->value_of(n);
-            for (auto i = BaseTree::left_of(n); i <this->size(); i=BaseTree::right_of(i)) {
-              val -= this->value_of(i);
-            }
-            return val;
+      Real weight_of(node_type n) {
+        auto val = this->value_of(n);
+        for (auto i = BaseTree::left_of(n); i <this->size(); i=BaseTree::right_of(i)) {
+          val -= this->value_of(i);
+        }
+        return val;
 	    }
 
       const Real& weight_of(node_type n) const {

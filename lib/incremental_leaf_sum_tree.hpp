@@ -1,6 +1,6 @@
 #ifndef INCREMENTAL_LEAF_SUM_TREE
 #define INCREMENTAL_LEAF_SUM_TREE
-#include "completetree.hpp"
+#include "completetreeFLOAT.hpp"
 #include <limits>
 #include <random>
 #include <cassert>
@@ -159,9 +159,9 @@ public:
 ////CHARACTERISTICS////
 
   //Returns a list of the probabilities of landing on each of the indexes
-  std::vector<double> probabilities(){
-    std::vector<double> probabilities(leaf_end_);
-    double total_weight = this->total_weight();
+  std::vector<Real> probabilities(){
+    std::vector<Real> probabilities(leaf_end_);
+    Real total_weight = this->total_weight();
     for (size_t i = leaf_end_, j = 0; i < BaseTree::size() && j < probabilities.size(); ++i, ++j){
       probabilities[j] = BaseTree::value_of(i)/total_weight;
     }
@@ -419,7 +419,7 @@ private:
       return is;
     }
 
-    std::vector<double> weights(n);
+    std::vector<Real> weights(n);
     for (size_t i = 0; i < n; ++i) {
       is >> weights[i];
       if (!is) {

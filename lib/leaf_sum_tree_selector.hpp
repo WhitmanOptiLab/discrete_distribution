@@ -58,11 +58,17 @@ class leaf_sum_tree : protected complete_tree<IntType, Real> {
   void update_weight(PosType i, Real new_weight) {
     i=node_of(i);
     Real weight_diff = new_weight - weightsum_of(i);
-    while (i >= BaseTree::root()) {
-      weightsum_of(i) += weight_diff;
+  
+    weightsum_of(i) = new_weight;
+    while (i > BaseTree::root()) {
       i = BaseTree::parent_of(i);
+      weightsum_of(i) += weight_diff;
     }
-    weightsum_of(i) += weight_diff;
+    // while (i >= BaseTree::root()) {
+    //   weightsum_of(i) += weight_diff;
+    //   i = BaseTree::parent_of(i);
+    // }
+    //weightsum_of(i) += weight_diff;
     //_total_weight += weight_diff;
   }
 

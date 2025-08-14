@@ -1,7 +1,9 @@
 //#include "../lib/new_modifiable_heap_random_selector.hpp"
 //#include"../lib/no_weight_storage_modifiable_heap_random_selector.hpp"
 //#include "../lib/sideways_fenwick_selector.hpp"
-#include "../lib/bucket_alias.hpp"
+//#include "../lib/bucket_alias.hpp"
+//#include "../lib/wrsLessStorage.hpp"
+#include "../lib/leaf_sum_tree_selector.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -18,7 +20,7 @@ int main(){
  
 
     //Generating a normally distributed vector of weights
-    std::default_random_engine generator(5);
+    std::default_random_engine generator(100);
     std::normal_distribution<double> distribution(5.0,2.0);
     std::uniform_real_distribution<float> d(1,10);
     std::uniform_real_distribution<double> uniformDistribution(percentWeightMin,percentWeightMax);
@@ -28,7 +30,7 @@ int main(){
     //outputFile<<"starting distribution from 1 to "<<numWeights+1<<": ";
     for (int i=0;i<numWeights;i++){
         //double num = distribution(generator);
-        weights.push_back(i+1/*distribution(generator)*/);
+        weights.push_back(i/*distribution(generator)*/);
 
         //outputFile<<weights[i]<<", "; //outputing the initial weights
     }
@@ -37,7 +39,7 @@ int main(){
     //WOULD START TIMING HERE
     //Constructing the heap random selector
     std::cout<<"about to construct"<<std::endl;
-    BucketMethod selector(weights.begin(), weights.end());
+    dense::stochastic::leaf_sum_tree selector(weights.begin(), weights.end());
     std::cout<<"constructed"<<std::endl;
 
     for(int i=0; i<5;i++){
@@ -52,9 +54,7 @@ int main(){
     // outputFile<<std::endl;
 
     for(int i=0;i<100000;i++){
-        std::cout<<"about to select"<<std::endl;
         outputFile<<selector(generator)<<std::endl;
-        std::cout<<"selected"<<std::endl;
     }
 
     // //selecting weights

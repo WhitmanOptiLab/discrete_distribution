@@ -18,6 +18,7 @@ class weightsum_tree {
 
   void compute_weights() {
     _total_weight = sum_weights(_tree().root());
+    //std::cout<<"total weight is "<<_total_weight<<std::endl;
   }
 
   void swap_with_child(PosType parent, PosType child) {
@@ -103,7 +104,7 @@ class weightsum_tree {
     return false;
   }
 
-  Real _total_weight;
+  Real _total_weight=0;
 };
 
 }
