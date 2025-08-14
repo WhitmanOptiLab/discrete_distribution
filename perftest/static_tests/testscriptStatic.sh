@@ -7,40 +7,52 @@
 echo "Number of tests: $1"
 echo "Weightnum: $2"
 
-echo "normal_static_wrs, normal_static_heap, normal_static_discrete, normal_static_fenwick, normal_static_leafsum, normal_static_leaf_sum_split, normal_static_sideways_fenwick, normal_static_weightsum, uniform_static_wrs, uniform_static_heap, uniform_static_discrete, uniform_static_fenwick, uniform_static_leafsum, uniform_static_leaf_sum_split, uniform_static_sideways_fenwick, uniform_static_weightsum, weibull_static_wrs, weibull_static_heap, weibull_static_discrete, weibull_static_fenwick, weibull_static_leafsum, weibull_static_leaf_sum_split, weibull_static_sideways_fenwick, weibull_static_weightsum" > results_$2.csv
+
+echo "normal_static_SF_bitcast, normal_static_incremental_LS, normal_static_leafsum, normal_static_leaf_sum_split, normal_static_sf_jump, normal_static_sf_intrinsics, normal_proposal_array, normal_proposal_array_star, uniform_static_SF_bitcast, uniform_static_incremental_LS, uniform_static_leafsum, uniform_static_leaf_sum_split, uniform_static_sf_jump, uniform_static_sf_intrinsics, uniform_proposal_array, uniform_proposal_array_star, weibull_static_SF_bitcast, weibull_static_incremental_LS, weibull_static_leafsum, weibull_static_leaf_sum_split, weibull_static_SF_jump, weibull_static_sf_intrinsics, weibull_proposal_array, weibull_proposal_array_star" > results_$2.csv
+
+
 
 # Normal distribution static weight tests
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>"       "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=fast_random_selector<>"             "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=std::discrete_distribution<>"       "-DWEIGHTNUM=$2" -o test2 normal_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>" "-DWEIGHTNUM=$2" -o test3 normal_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test4 normal_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test5 normal_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test6 normal_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=low_storage_selector<>" "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
-#g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=low_storage_selector<>" "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector_bitcast<>"       "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=incremental_leaf_sum_tree<>"             "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test2 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test3 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=old_sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test4 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test5 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sampling::DynamicProposalArray"                "-DWEIGHTNUM=$2" -o test6 normal_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sampling::DynamicProposalArrayStar"                "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
+
+
+#g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test7 normal_static.cpp
 
 #g++ -std=c++20 -I/home/nfs/burnsa/Documents/GitHub/discrete_distribution/lib -O3 ... 
 
 # Uniform distribution static weight tests
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>"       "-DWEIGHTNUM=$2" -o test8 uniform_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=fast_random_selector<>"             "-DWEIGHTNUM=$2" -o test9 uniform_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=std::discrete_distribution<>"       "-DWEIGHTNUM=$2" -o test10 uniform_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>" "-DWEIGHTNUM=$2" -o test11 uniform_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test12 uniform_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test13 uniform_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test14 uniform_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=low_storage_selector<>"                "-DWEIGHTNUM=$2" -o test15 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector_bitcast<>"       "-DWEIGHTNUM=$2" -o test8 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=incremental_leaf_sum_tree<>"             "-DWEIGHTNUM=$2" -o test9 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test10 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test11 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=old_sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test12 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>"                "-DWEIGHTNUM=$2" -o test13 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sampling::DynamicProposalArray"                "-DWEIGHTNUM=$2" -o test14 uniform_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sampling::DynamicProposalArrayStar"                "-DWEIGHTNUM=$2" -o test15 uniform_static.cpp
+
+
 
 # Weibull distribution static weight tests
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>"       "-DWEIGHTNUM=$2" -o test16 weibull_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=fast_random_selector<>"             "-DWEIGHTNUM=$2" -o test17 weibull_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=std::discrete_distribution<>"       "-DWEIGHTNUM=$2" -o test18 weibull_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=nonuniform_int_distribution<>" "-DWEIGHTNUM=$2" -o test19 weibull_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test20 weibull_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test21 weibull_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test22 weibull_static.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=low_storage_selector<>"                "-DWEIGHTNUM=$2" -o test23 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector_bitcast<>"       "-DWEIGHTNUM=$2" -o test16 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=incremental_leaf_sum_tree<>"             "-DWEIGHTNUM=$2" -o test17 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" -o test18 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree_split<>"    "-DWEIGHTNUM=$2" -o test19 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=old_sideways_fenwick_selector<>" "-DWEIGHTNUM=$2" -o test20 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sideways_fenwick_selector<>"                "-DWEIGHTNUM=$2" -o test21 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sampling::DynamicProposalArray"                "-DWEIGHTNUM=$2" -o test22 weibull_static.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=sampling::DynamicProposalArrayStar"                "-DWEIGHTNUM=$2" -o test23 weibull_static.cpp
+
+
+
+
+
 
 # Initialize sums
 sum0=0
@@ -69,6 +81,7 @@ sum22=0
 sum23=0
 
 
+
 for ((i=1; i<=$1; i++)); do
     result0=$(./test0)
     result1=$(./test1)
@@ -93,7 +106,7 @@ for ((i=1; i<=$1; i++)); do
     result20=$(./test20)
     result21=$(./test21)
     result22=$(./test22)
-    result23=$(./test23)
+    result23=$(./test23) 
 
     echo "$result0, $result1, $result2, $result3, $result4, $result5, $result6, $result7, $result8, $result9, $result10, $result11, $result12, $result13, $result14, $result15, $result16, $result17, $result18, $result19, $result20, $result21, $result22, $result23" >> results_$2.csv
 
@@ -148,7 +161,8 @@ average21=$(awk "BEGIN { printf \"%.6f\", $sum21 / $1 }")
 average22=$(awk "BEGIN { printf \"%.6f\", $sum22 / $1 }")
 average23=$(awk "BEGIN { printf \"%.6f\", $sum23 / $1 }")
 
+
 echo " " >> results_$2.csv
 echo "$average0, $average1, $average2, $average3, $average4, $average5, $average6, $average7, $average8, $average9, $average10, $average11, $average12, $average13, $average14, $average15, $average16, $average17, $average18, $average19, $average20, $average21, $average22, $average23" >> results_$2.csv
-    
+echo "Test completed. Results saved in results_$2.csv"
 

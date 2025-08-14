@@ -14,6 +14,8 @@
 #include "sideways_fenwick_selector_bitcast.hpp"
 #include "old_sideways_fenwick_selector.hpp"
 #include "incremental_leaf_sum_tree.hpp"
+#include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArray.hpp"
+#include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArrayStar.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
@@ -30,13 +32,9 @@ int main() {
   std::vector<float> weights = {};
   
   for(int i = 0; i < WEIGHTNUM; i++){
-    weights.push_back(d(generator));
+    weights.push_back(std::max<float>(0.0, d(generator)));
   }	      
-
-  float minweight = *std::min_element(weights.begin(), weights.end());
-  for(int i = 0; i < WEIGHTNUM; i++){
-    weights[i] -= minweight;
-  }	      
+    
 
   //start time
   struct timeval start, end;
@@ -45,7 +43,7 @@ int main() {
   
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
-    selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
+    selector.update_weight(index, std::max<float>(0.0, d(generator)));
     for(int j = 0; j < 4; j++){
       selector.update_weight(randomIndex(generator), std::max<float>(0.0, d(generator)));
     }

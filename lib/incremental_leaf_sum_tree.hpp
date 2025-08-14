@@ -203,6 +203,8 @@ public:
     weightsum_of(i) += weight_diff;
   }
 
+  
+
     //Set a given leaf's weight to any positive real value
   void update_weight_internal(PosType i, Real new_weight) {
     assert(new_weight >= 0);

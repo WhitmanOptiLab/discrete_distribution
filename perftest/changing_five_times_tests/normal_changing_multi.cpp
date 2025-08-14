@@ -14,6 +14,8 @@
 #include "sideways_fenwick_selector_bitcast.hpp"
 #include "old_sideways_fenwick_selector.hpp"
 #include "incremental_leaf_sum_tree.hpp"
+#include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArray.hpp"
+#include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArrayStar.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>

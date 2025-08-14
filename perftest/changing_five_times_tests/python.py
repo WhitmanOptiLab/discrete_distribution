@@ -22,11 +22,14 @@ for file in files:
 
 # Define families and marker styles
 family_colors_rgb = {
-    "jump": mcolors.to_rgb("red"),
-    "leafsum": mcolors.to_rgb("green"),
-    "leaf_sum_split": mcolors.to_rgb("blue"),
-    "itercount": mcolors.to_rgb("orange"),
-    "bitcast": mcolors.to_rgb("purple"),
+    "incremental": mcolors.to_rgb("red"),
+    "uniform_leafsum": mcolors.to_rgb("gray"),
+    "4" : mcolors.to_rgb("green"),
+    "8": mcolors.to_rgb("blue"),
+    "16": mcolors.to_rgb("orange"),
+    "32": mcolors.to_rgb("purple"),
+    "64": mcolors.to_rgb("gold"),
+    "128": mcolors.to_rgb("cyan"),
 }
 families = list(family_colors_rgb.keys())
 family_to_tests = {fam: [] for fam in families}

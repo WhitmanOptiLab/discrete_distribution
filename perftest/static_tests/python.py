@@ -22,11 +22,14 @@ for file in files:
 
 # Define families and marker styles
 family_colors_rgb = {
-    "fenwick": mcolors.to_rgb("red"),
-    "discrete": mcolors.to_rgb("blue"),
-    "leafsum": mcolors.to_rgb("green"),
-    "wrs": mcolors.to_rgb("orange"),
-    "heap": mcolors.to_rgb("purple"),
+    "incremental": mcolors.to_rgb("red"),
+    "uniform_leafsum": mcolors.to_rgb("gray"),
+    "4" : mcolors.to_rgb("green"),
+    "8": mcolors.to_rgb("blue"),
+    "16": mcolors.to_rgb("orange"),
+    "32": mcolors.to_rgb("purple"),
+    "64": mcolors.to_rgb("gold"),
+    "128": mcolors.to_rgb("cyan"),
 }
 families = list(family_colors_rgb.keys())
 family_to_tests = {fam: [] for fam in families}
@@ -115,7 +118,7 @@ labels, lines, colors = zip(*line_objects)
 # Create CheckButtons
 check = CheckButtons(ax_legend, labels, [True] * len(labels))
 
-# Style labels with colors
+# Style labels with colorsAstronomy
 for label_text, color in zip(check.labels, colors):
     label_text.set_color(color)
     label_text.set_fontsize(9)
@@ -133,9 +136,10 @@ check.on_clicked(func)
 # Final formatting
 ax_main.set_xlabel("Number of Weights (Level)")
 ax_main.set_ylabel("Average Time (seconds)")
-ax_main.set_title("Performance of Weighted Random Selection Methods")
+ax_main.set_title("Performance of Weighted Random Selection Methods: 15:1")
 ax_main.grid(True)
 ax_main.set_xscale("log")
 
 plt.tight_layout()
 plt.show()
+print("Plotting complete.")

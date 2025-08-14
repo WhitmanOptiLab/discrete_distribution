@@ -14,15 +14,20 @@
 #include "old_sideways_fenwick_selector.hpp"
 #include "sideways_fenwick_selector_bitcast.hpp"
 #include "incremental_leaf_sum_tree.hpp"
+#include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArray.hpp"
+#include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArrayStar.hpp"
 #include <sys/time.h>
 #include <iostream>
 #include <random>
 #include <vector>
 #include <algorithm>
+
 using namespace dense::stochastic;
 
 int main() {
   std::weibull_distribution<float> d(0.5); 
+  std::uniform_int_distribution<int> randomIndex(0, WEIGHTNUM - 1);
+
   std::default_random_engine generator;
   std::vector<float> weights = {};
   
@@ -43,6 +48,7 @@ int main() {
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
     selector.update_weight(index, std::max<float>(0.0, d(generator)-minweight));
+    
   }
   
   // end time
