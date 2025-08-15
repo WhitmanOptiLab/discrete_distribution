@@ -146,27 +146,32 @@ namespace stochastic {
 
       }
 
-      void update_weight(index_type i, Real new_weight) {
-        update_weight_of_node(node_of(i),new_weight);
-        // std::cout<<"________________updating weight_____________"<<std::endl;
-        // auto node = node_of(i);
-        // Real weightDifference =  new_weight - this->weight_of(node);
-        // total_weight+=weightDifference;
-        // std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
-        // while(node>BaseTree::root()){
-        //     this->value_of(node)+=weightDifference;
-        //     //std::cout<<"about to change node ";
-        //     //this->PrintTree();
-        //     node = nextNode(node);
-        //     //std::cout<<"just changed node ";
-        //     //this->PrintTree();
+      void update_weight(index_type i, Real delta) {
+        //std::cout<<"________________updating weight_____________"<<std::endl;
+        auto node = node_of(i);
+        total_weight += delta;
+        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
 
-        //     //std::cout<<"new node is "<<node<<std::endl;
+        // auto iterCount = ~node;
+        // iterCount = std::popcount(iterCount << std::countl_one(iterCount));
+
+
+
+        // // for(int i = 0; i < iterCount; i++) {
+        // //     this->value_of(node)+=weightDifference; // SKIP VERSION
+        // //     node = nextNode(node); //SKIP VERSION
+        // // }
+
+        
+
+        while(node>=BaseTree::root()){
             
-        // }
-        // this->value_of(node)+=weightDifference;
-        // //std::cout<<"ending tree is ";
-        // //this->PrintTree();
+            this->value_of(node) += delta; // SKIP VERSION
+            node = nextNode(node); //SKIP VERSION
+        }
+        //this->value_of(node)+=weightDifference;
+        //std::cout<<"ending tree is ";
+        //this->PrintTree();
       }
 
       Real get_weight(index_type i) {
@@ -178,15 +183,15 @@ namespace stochastic {
       void push_back(const entry_type& e) {
         value_type v = e;
         BaseTree::add_entry(0);
-        update_weight_of_node(BaseTree::last(),v);
+        update_weight_internal(BaseTree::last(),v);
       }
       void push_back(const entry_type&& e) {
         value_type v = e;
         BaseTree::add_entry(0);
-        update_weight_of_node(BaseTree::last(),v);
+        update_weight_internal(BaseTree::last(),v);
       }
       void pop_back() {
-        update_weight_of_node(BaseTree::last(),0);
+        update_weight_internal(BaseTree::last(),0);
         BaseTree::pop_back();
       }
 
@@ -211,36 +216,31 @@ namespace stochastic {
         return const_cast<This*>(this)->weightsum_of(n);
       }
 
-      
+      void update_weight_internal(node_type n, Real new_weight) {
+        auto weightDifference = new_weight - this->value_of(n);
+        update_weight(index_type(n), weightDifference);
+        // std::cout<<"________________updating weight_____________"<<std::endl;
+        // auto node = node_of(i);
+        // Real weightDifference =  new_weight - this->weight_of(node);
+        // total_weight+=weightDifference;
+        // std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+        // while(node>BaseTree::root()){
+        //     this->value_of(node)+=weightDifference;
+        //     //std::cout<<"about to change node ";
+        //     //this->PrintTree();
+        //     node = nextNode(node);
+        //     //std::cout<<"just changed node ";
+        //     //this->PrintTree();
 
-      void update_weight_of_node(node_type givenNode, Real new_weight) {
-        //std::cout<<"________________updating weight_____________"<<std::endl;
-        auto node = givenNode;
-        Real weightDifference =  new_weight - this->weight_of(node);
-        total_weight+=weightDifference;
-        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
-
-        // auto iterCount = ~node;
-        // iterCount = std::popcount(iterCount << std::countl_one(iterCount));
-
-
-
-        // // for(int i = 0; i < iterCount; i++) {
-        // //     this->value_of(node)+=weightDifference; // SKIP VERSION
-        // //     node = nextNode(node); //SKIP VERSION
-        // // }
-
-        
-
-        while(node>=BaseTree::root()){
+        //     //std::cout<<"new node is "<<node<<std::endl;
             
-            this->value_of(node)+=weightDifference; // SKIP VERSION
-            node = nextNode(node); //SKIP VERSION
-        }
-        //this->value_of(node)+=weightDifference;
-        //std::cout<<"ending tree is ";
-        //this->PrintTree();
+        // }
+        // this->value_of(node)+=weightDifference;
+        // //std::cout<<"ending tree is ";
+        // //this->PrintTree();
       }
+
+      
 
       
 

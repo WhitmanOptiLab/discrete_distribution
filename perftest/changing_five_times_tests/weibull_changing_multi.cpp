@@ -14,6 +14,7 @@
 #include "sideways_fenwick_selector_bitcast.hpp"
 #include "old_sideways_fenwick_selector.hpp"
 #include "incremental_leaf_sum_tree.hpp"
+#include "wrsLessStorage.hpp"
 #include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArray.hpp"
 #include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArrayStar.hpp"
 #include <sys/time.h>
@@ -25,7 +26,8 @@
 using namespace dense::stochastic;
 
 int main() {
-  std::weibull_distribution<float> d(0.5); 
+  std::weibull_distribution<float> d(0.5);
+  std::uniform_real_distribution<float> increment((-.1, .1)); 
   std::uniform_int_distribution<int> randomIndex(0, WEIGHTNUM - 1);
 
   std::default_random_engine generator;
@@ -35,6 +37,7 @@ int main() {
     weights.push_back(std::max<float>(0.0, d(generator)));
   }	      
     
+  int sum = 0;
 
   //start time
   struct timeval start, end;
@@ -43,9 +46,21 @@ int main() {
   
   for (int i = 0; i < 1000000; i++) {
     int index = selector(generator);
-    selector.update_weight(index, std::max<float>(0.0, d(generator)));
+    double delta = increment(generator);
+    while(delta + weights[index] < 0.0){
+      delta = increment(generator);
+    }
+    selector.update_weight(index, delta);
+    weights[index] += delta;
+    
     for(int j = 0; j < 4; j++){
-      selector.update_weight(randomIndex(generator), std::max<float>(0.0, d(generator)));
+      int index = randomIndex(generator);
+      double delta = increment(generator);
+      while(delta + weights[index] < 0.0){
+        delta = increment(generator);
+      }
+      selector.update_weight(index, delta);
+      weights[index] += delta;
     }
   }
   

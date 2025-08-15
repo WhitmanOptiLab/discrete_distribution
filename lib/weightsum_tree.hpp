@@ -45,7 +45,7 @@ class weightsum_tree {
 
   Real total_weight() const { return _total_weight; }
 
-   void add_to_total_weight(Real add){
+  void add_to_total_weight(Real add){
     _total_weight+=add;
   }
 
@@ -103,7 +103,7 @@ class weightsum_tree {
     return false;
   }
 
-  Real _total_weight;
+  Real _total_weight = 0;
 };
 
 }

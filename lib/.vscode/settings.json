@@ -43,6 +43,8 @@
         "streambuf": "cpp",
         "string_view": "cpp",
         "system_error": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "span": "cpp",
+        "chrono": "cpp"
     }
 }

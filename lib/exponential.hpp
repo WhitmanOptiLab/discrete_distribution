@@ -182,7 +182,7 @@ leaf_start_ = leaf_start;
 
     // Copy weights to leaves, pad with zeros
     InputIt it = first;
-    for (size_t i = 0; i < leaf_start_; ++i) {
+    for (size_t i = 0; i < n; ++i) {
       if (i < n) {
         weightsum_of(leaf_start_ + i) = std::max(Real(*it), Real(0));
         ++it;

@@ -192,15 +192,13 @@ public:
 ////NON-MEMBER FUNCTIONS////
 
   //Set a given leaf's weight to any positive real value
-  void update_weight(PosType i, Real new_weight) {
-    assert(new_weight >= 0);
+  void update_weight(PosType i, Real delta) {
     i=node_of(i);
-    Real weight_diff = new_weight - weightsum_of(i);
     while (i != BaseTree::root()) {
-      weightsum_of(i) += weight_diff;
+      weightsum_of(i) += delta;
       i = BaseTree::parent_of(i);
     }
-    weightsum_of(i) += weight_diff;
+    weightsum_of(i) += delta;
   }
 
   
