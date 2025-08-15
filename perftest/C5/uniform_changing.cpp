@@ -12,8 +12,8 @@
 #include "leaf_sum_tree_split.hpp"
 #include "sideways_fenwick_selector.hpp"
 #include "sideways_fenwick_selector_bitcast.hpp"
-#include "old_sideways_fenwick_selector.hpp"
-#include "incremental_leaf_sum_tree.hpp"
+//#include "old_sideways_fenwick_selector.hpp"
+//#include "incremental_leaf_sum_tree.hpp"
 #include "bucket_alias.hpp"
 #include "wrsLessStorage.hpp"
 
