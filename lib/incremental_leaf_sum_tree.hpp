@@ -90,7 +90,7 @@ public:
     //copy weights to leaves
     InputIt it = first;
     for (size_t i = 0; it != last; ++it, ++i) {
-      BaseTree::value_of(node_of(i)) = std::max(Real(*it),0.0);
+      BaseTree::value_of(node_of(i)) = std::max(Real(*it),(Real)0.0);
     }
 
     //build sums from leaves up

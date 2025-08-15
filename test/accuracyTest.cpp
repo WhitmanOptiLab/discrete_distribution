@@ -2,8 +2,8 @@
 //#include"../lib/no_weight_storage_modifiable_heap_random_selector.hpp"
 //#include "../lib/sideways_fenwick_selector.hpp"
 //#include "../lib/bucket_alias.hpp"
-//#include "../lib/wrsLessStorage.hpp"
-#include "../lib/leaf_sum_tree_selector.hpp"
+#include "../lib/wrsLessStorage.hpp"
+//#include "../lib/old_sideways_fenwick_selector.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -11,7 +11,7 @@
 //using namespace dense::stochastic;
 
 int main(){
-    int numWeights = 12;
+    int numWeights = 32;
     int numOperations=10;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
@@ -39,11 +39,15 @@ int main(){
     //WOULD START TIMING HERE
     //Constructing the heap random selector
     std::cout<<"about to construct"<<std::endl;
-    dense::stochastic::leaf_sum_tree selector(weights.begin(), weights.end());
+    dense::stochastic::wrsLessStorage selector(weights.begin(), weights.end());
     std::cout<<"constructed"<<std::endl;
 
     for(int i=0; i<5;i++){
-        selector.update_weight(i,5);
+        selector.update_weight(numWeights-1-i,5);
+    }
+
+    for(int i=0;i<numWeights;i++){
+        selector.update_weight(i,i);
     }
 
     //outputFile<<"distribution after construction: ";
