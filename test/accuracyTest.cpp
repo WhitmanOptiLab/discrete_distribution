@@ -2,8 +2,8 @@
 //#include"../lib/no_weight_storage_modifiable_heap_random_selector.hpp"
 //#include "../lib/sideways_fenwick_selector.hpp"
 //#include "../lib/bucket_alias.hpp"
-#include "../lib/wrsLessStorage.hpp"
-//#include "../lib/old_sideways_fenwick_selector.hpp"
+//#include "../lib/wrsLessStorage.hpp"
+#include "../lib/old_sideways_fenwick_selector.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -20,7 +20,7 @@ int main(){
  
 
     //Generating a normally distributed vector of weights
-    std::default_random_engine generator(100);
+    std::default_random_engine generator(10);
     std::normal_distribution<double> distribution(5.0,2.0);
     std::uniform_real_distribution<float> d(1,10);
     std::uniform_real_distribution<double> uniformDistribution(percentWeightMin,percentWeightMax);
@@ -39,7 +39,7 @@ int main(){
     //WOULD START TIMING HERE
     //Constructing the heap random selector
     std::cout<<"about to construct"<<std::endl;
-    dense::stochastic::wrsLessStorage selector(weights.begin(), weights.end());
+    dense::stochastic::old_sideways_fenwick_selector selector(weights.begin(), weights.end());
     std::cout<<"constructed"<<std::endl;
 
     for(int i=0; i<5;i++){

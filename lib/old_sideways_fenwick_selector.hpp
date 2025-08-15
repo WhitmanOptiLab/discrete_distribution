@@ -14,6 +14,7 @@
 #include <limits>
 #include <bit>
 #include <random>
+#include <bitset>
 
 #include "completetreeFLOAT.hpp"
 
@@ -114,13 +115,28 @@ namespace stochastic {
         node_type lastNonLeaf = BaseTree::entry_count()/2;
         //std::cout<<"last non leaf is "<<lastNonLeaf<< " target is "<<target<<std::endl;
         while(node<lastNonLeaf){
-          if (target<(this->value_of(node))){
-            node = BaseTree::left_of(node);
-          }
-          else{
+          double dif = this->value_of(node)-target;
+          if (dif==0){
             target -=this->value_of(node);
             node=BaseTree::right_of(node);
+            //std::cout<<"They're equal!! node is "<<node;
           }
+          else{
+            uint64_t firstBit = std::bit_cast<uint64_t>(dif);
+            firstBit=firstBit>>63;
+            //std::cout<<"first bit is "<<firstBit;
+            target=target-(firstBit*this->value_of(node));
+            node=(node<<1)+firstBit;
+                      
+          }
+          
+          // if (target<(this->value_of(node))){
+          //   node = BaseTree::left_of(node);
+          // }
+          // else{
+          //   target -=this->value_of(node);
+          //   node=BaseTree::right_of(node);
+          // }
         }
         //this is to make sure that there is a right child (if I did this in the loop it would check that there is a right child every time which is unecessary)
         if (node==lastNonLeaf){
@@ -135,6 +151,8 @@ namespace stochastic {
             //std::cout<<"went right node is "<<node<<" and target is "<<target<<std::endl;
           }
         }
+        // std::cout<<"node is "<<node<<std::endl;
+        // std::cout<<"target is "<<target<<std::endl;
         if (target<(this->value_of(node))){
             return id_of(node);
           }
@@ -266,6 +284,10 @@ namespace stochastic {
         auto val = this->value_of(n);
         for (auto i = BaseTree::left_of(n); i <this->size(); i=BaseTree::right_of(i)) {
           val -= this->value_of(i);
+          i = BaseTree::right_of(i);
+          if (i < this->size()) {
+            val -= this->value_of(i);
+          }
         }
         return val;
 	    }

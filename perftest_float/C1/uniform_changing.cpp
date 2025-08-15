@@ -26,9 +26,12 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 using namespace dense::stochastic;
 
 int main() {
+  std::ofstream outputFile;
+  //outputFile.open("uniformC1Output.txt");
   std::uniform_real_distribution<double> d(1,10); 
   std::default_random_engine generator; 
   std::vector<double> weights = {};
@@ -47,10 +50,13 @@ int main() {
   WRSLIB selector(weights.begin(), weights.end());
   gettimeofday(&start, NULL);
   
-  for (int i = 0; i < 1000000; i++) {
+  for (int i = 0; i < 500000; i++) {
     int index = selector(generator);
+    //outputFile<<index<<std::endl;
     selector.update_weight(index, std::max<double>(0.00001,d(generator)));
   }
+
+  //outputFile.close();
   
   // end time
   gettimeofday(&end, NULL);
