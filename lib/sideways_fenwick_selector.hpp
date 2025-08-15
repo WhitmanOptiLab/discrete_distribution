@@ -220,6 +220,7 @@ namespace stochastic {
 
       
       
+
       void update_weight_of_node(node_type givenNode, Real new_weight) {
         size_t node = givenNode;
         __m128d weightDifference =  _mm_set_pd(new_weight - weight_of(node), 0.0);
@@ -232,20 +233,27 @@ namespace stochastic {
         // node = ~node;
         // //std::cout << "Node after flipping: " << std::bitset<64>(node) << std::endl;
 
-        // node=node << depthDiff;
-        // //std::cout << "Node afrer shifting: " << std::bitset<64>(node) << std::endl;
+      //   // node=node << depthDiff;
+      //   // //std::cout << "Node afrer shifting: " << std::bitset<64>(node) << std::endl;
 
-        // node=~node;
+      //   // node=~node;
         
-        // //std::cout << "Node after: " << std::bitset<64>(node) << std::endl;
+      //   // //std::cout << "Node after: " << std::bitset<64>(node) << std::endl;
 
-        // //std::cout << "node is " << node << "and entry count is " << BaseTree::entry_count() << std::endl;
-        // // if(node > BaseTree::entry_count()) {
-        // //   node = BaseTree::parent_of(node);
-        // // }
-        // //std::cout << "node is " << node << "and entry count is " << BaseTree::entry_count() << std::endl;
-        // node = node >> (node > BaseTree::entry_count());
+      //   // //std::cout << "node is " << node << "and entry count is " << BaseTree::entry_count() << std::endl;
+      //   // // if(node > BaseTree::entry_count()) {
+      //   // //   node = BaseTree::parent_of(node);
+      //   // // }
+      //   // //std::cout << "node is " << node << "and entry count is " << BaseTree::entry_count() << std::endl;
+      //   // node = node >> (node > BaseTree::entry_count());
         
+
+      //   while(node>=BaseTree::root()){
+      //       //auto oldval = this->value_of(node);
+      //       __m128d masked_real;
+      //       masked_real = _mm_and_pd(weightDifference, fromLeft);
+      //       //masked_real = reinterpret_cast<int64_t&>(weightDifference) & fromLeft;
+
 
         while(node>=BaseTree::root()){
             //auto oldval = this->value_of(node);
@@ -261,6 +269,9 @@ namespace stochastic {
             
         }
       }
+            
+      //   }
+       
       
      ///*
 
@@ -322,6 +333,7 @@ namespace stochastic {
               val -= this->value_of(i);
             }
             return val;
+            //return 10;
 	    }
 
       const Real& weight_of(node_type n) const {
