@@ -17,26 +17,28 @@ public:
     // Compute minimal complete k-ary tree size to store exactly n leaves
     // without needing bounds checks during selection.
     static std::pair<size_t, size_t> minimal_tree_shape(size_t n) {
-    // returns {total_nodes, leaf_start_index}
-    if (n == 0) return {1, 0};
+    // Returns {total_nodes_excluding_root, leaf_start_index}
+    if (n == 0) return {0, 0}; // no internal nodes, no leaves
 
     size_t leaves = n;
     size_t total_nodes = n;  // count leaves
     std::vector<size_t> level_counts;
     level_counts.push_back(n);
 
-    // Climb up until we reach the root
+    // climb until 1 parent left (the root)
     while (leaves > 1) {
         size_t parents = (leaves + fanout - 1) / fanout; // ceil
+        if (parents == 1) break; // root not counted
         total_nodes += parents;
         level_counts.push_back(parents);
         leaves = parents;
     }
 
-    // leaf_start is total_nodes - n (since leaves are last in array)
+    // leaf_start: internal nodes come first, then leaves
     size_t leaf_start = total_nodes - n;
     return {total_nodes, leaf_start};
 }
+
 
     static_assert((fanout & (fanout - 1)) == 0, "fanout must be power of two");
 
@@ -84,11 +86,11 @@ public:
 
     position_type parent_of(position_type i) const {
         assert(i > 0);
-        return (i - 1) >> log2_fanout;
+        return (i >> log2_fanout) - 1;
     }
 
     position_type first_child_of(position_type i) const {
-        return (i << log2_fanout) + 1;
+        return (i + 1) << log2_fanout;
     }
 
     position_type child_index(position_type parent, size_t child_num) const {
@@ -112,7 +114,7 @@ private:
     size_t leaf_start_;
     size_t leaf_count_;
 
-    size_t log2_fanout = [] {
+    static constexpr size_t log2_fanout = [] {
         size_t v = fanout;
         size_t r = 0;
         while (v > 1) {
@@ -176,41 +178,41 @@ public:
     size_t n = std::distance(first, last);
     leaf_end_ = n;
 
+    // Round up leaves to nearest full complete k-ary tree level (power of fanout)
     auto [total_nodes, leaf_start] = BaseTree::minimal_tree_shape(n);
-BaseTree::resize(n); // will now use minimal_tree_shape internally
-leaf_start_ = leaf_start;
+    BaseTree::resize(n); // will now use minimal_tree_shape internally
+    //std::cout << total_nodes << std::endl;
+    //std::cout << leaf_start << std::endl;
+    leaf_start_ = leaf_start;
 
     // Copy weights to leaves, pad with zeros
     InputIt it = first;
-    for (size_t i = 0; i < leaf_start_; ++i) {
-      if (i < n) {
+    for (size_t i = 0; i < n; ++i) {
         weightsum_of(leaf_start_ + i) = std::max(Real(*it), Real(0));
         ++it;
-        }
     }
 
-    // Build sums bottom-up from leaves to root
-    for (PosType i = leaf_start_; i > 0; --i) {
-      Real sum = Real(0);
-      PosType first_child = BaseTree::first_child_of(i - 1); // parent's children start
-      for (size_t c = 0; c < fanout; ++c) {
+    // Build sums bottom-up from leaves to root (excluding root)
+for (ptrdiff_t i = leaf_start_ - 1; i >= 0; --i) {
+    Real sum = 0;
+    PosType first_child = (i + 1) * fanout; // -1-index adjustment
+    for (size_t c = 0; c < fanout; ++c) {
         PosType child = first_child + c;
         if (child >= total_nodes) break;
         sum += weightsum_of(child);
-      }
-      weightsum_of(i - 1) = sum;
     }
-    // Compute root separately (i=0)
-    {
-      Real sum = Real(0);
-      PosType first_child = BaseTree::first_child_of(0);
-      for (size_t c = 0; c < fanout; ++c) {
-        PosType child = first_child + c;
-        if (child >= total_nodes) break;
-        sum += weightsum_of(child);
-      }
-      weightsum_of(0) = sum;
-    }
+    weightsum_of(i) = sum;
+}
+
+// Compute root separately
+Real sum = 0;
+PosType first_child = 0 * fanout; // root's first child in array
+for (size_t c = 0; c < fanout; ++c) {
+    PosType child = first_child + c;
+    if (child >= total_nodes) break;
+    sum += weightsum_of(child);
+}
+total_weight_ = sum;
   }
 
   // No-op reset
@@ -224,43 +226,55 @@ leaf_start_ = leaf_start;
     return !(*this == other);
   }
 
-  // Select weighted random leaf index
-  template<class URNG>
-  result_type operator()(URNG& g) const {
+  // Select weighted random leaf index, fully uniform, no special root
+template<class URNG>
+result_type operator()(URNG& g) const {
     Real total = total_weight();
     if (total <= Real(0)) return 0;
 
     Real target = std::generate_canonical<Real, precision, URNG>(g) * total;
     if (target == Real(0)) return 0;
+    PosType first_child = 0;
 
-    PosType node = 0; // root index
+    // Start at the top internal node (index 0)
+    PosType node = 0;
 
-    while (node < leaf_start_) {
-      PosType first_child = BaseTree::first_child_of(node);
-      Real cumulative = Real(0);
+    while (true) {  // while node is an internal
+        Real cumulative = 0;
+        //std::cout << target << std::endl;
 
-      size_t chosen_child = fanout; // invalid by default
-      for (size_t c = 0; c < fanout; ++c) {
-        PosType child = first_child + c;
-        if (child >= BaseTree::size()) break;
-        Real w = weightsum_of(child);
-        if (target < cumulative + w) {
-          target -= cumulative;
-          node = child;
-          chosen_child = c;
-          break;
+        size_t chosen_child = fanout; // sentinel
+        for (size_t c = 0; c < fanout; ++c) {
+            PosType child = first_child + c;
+            if (child >= BaseTree::size()) break;
+            //std::cout << "Cumulative: " << cumulative << std::endl;
+            //std::cout << child << " value: " << weightsum_of(child) << std::endl;
+            Real w = weightsum_of(child);
+            if (target < cumulative + w) {
+              //std::cout << "Scueses!!" << std::endl;
+                target -= cumulative;
+                node = child;          // move to next node at end of loop
+                chosen_child = c;
+                break;
+            }
+            cumulative += w;
         }
-        cumulative += w;
-      }
-      if (chosen_child == fanout) {
-        // All children zero or no suitable child found
-        break;
-      }
+
+
+        if (chosen_child == fanout) {
+            // all children zero or none fit, stop at current node
+            break;
+        }
+        first_child = BaseTree::first_child_of(node); // first child in array
+        if (first_child >= BaseTree::size()) break;
+
+        // otherwise, node has been updated to chosen_child
     }
 
-    // node is leaf, return index relative to leaf_start_
+    // node is now a leaf
     return static_cast<result_type>(node - leaf_start_);
-  }
+}
+
 
   template<class URNG>
   result_type operator()(URNG& g, const Param& param) const {
@@ -302,9 +316,11 @@ leaf_start_ = leaf_start;
     i = leaf_start_ + i;
     Real diff = new_weight - weightsum_of(i);
     weightsum_of(i) = new_weight;
+    total_weight_ += diff;
 
-    while (i > 0) {
+    while (i > fanout) {
       i = BaseTree::parent_of(i);
+      //std::cout << i << std::endl;
       weightsum_of(i) += diff;
     }
   }
@@ -318,45 +334,48 @@ leaf_start_ = leaf_start;
 
   Real total_weight() const noexcept {
     if (BaseTree::size() == 0) return Real(0);
-    return weightsum_of(0);
+    return total_weight_;
   }
 
-  // Print tree for debugging
-  void print_tree(std::ostream& os = std::cout) const {
+// Print tree for debugging (-1-indexed)
+void print_tree(std::ostream& os = std::cout) const {
     size_t total_nodes = BaseTree::size();
 
     if (total_nodes == 0) {
-      os << "(empty tree)\n";
-      return;
+        os << "(empty tree)\n";
+        return;
     }
 
-    std::queue<PosType> q;
-    q.push(0); // root
+    std::queue<ptrdiff_t> q; // use signed for -1 root
+    q.push(-1); // -1 represents the root stored separately
 
     size_t level = 0;
 
     while (!q.empty()) {
-      size_t level_size = q.size();
-      os << "Level " << level << ": ";
+        size_t level_size = q.size();
+        os << "Level " << level << ": ";
 
-      for (size_t i = 0; i < level_size; ++i) {
-        PosType node = q.front();
-        q.pop();
+        for (size_t i = 0; i < level_size; ++i) {
+            ptrdiff_t node = q.front();
+            q.pop();
 
-        os << "[" << node << "]=" << weightsum_of(node) << "  ";
+            Real w = (node == -1) ? total_weight_ : weightsum_of(static_cast<PosType>(node));
+            os << "[" << node << "]=" << w << "  ";
 
-        PosType first_child = BaseTree::first_child_of(node);
-        for (size_t c = 0; c < fanout; ++c) {
-          PosType child = first_child + c;
-          if (child >= total_nodes) break;
-          q.push(child);
+            // enqueue children
+            PosType first_child = (node + 1) * fanout; // -1-index adjustment
+            for (size_t c = 0; c < fanout; ++c) {
+                PosType child = first_child + c;
+                if (child >= total_nodes) break;
+                q.push(child);
+            }
         }
-      }
 
-      os << "\n";
-      ++level;
+        os << "\n";
+        ++level;
     }
-  }
+}
+
 
 private:
   Real& weightsum_of(PosType p) { return BaseTree::value_of(p); }
@@ -364,6 +383,7 @@ private:
 
   size_t leaf_end_;   // number of leaves requested by user
   size_t leaf_start_; // index of first leaf in data_
+  double total_weight_ = 0;
 };
 }
 }
