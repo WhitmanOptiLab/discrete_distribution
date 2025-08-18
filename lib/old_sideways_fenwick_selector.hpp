@@ -104,10 +104,7 @@ namespace stochastic {
 
       ~old_sideways_fenwick_selector() = default;
 
-
-      // //Methods of WeightSum we want to make available
-      
-      template<class URNG>
+       template<class URNG>
       index_type operator()(URNG& g) {
         Real target =  std::generate_canonical<Real, precision, URNG>(g)*total_weight;
 
@@ -115,11 +112,13 @@ namespace stochastic {
         node_type lastNonLeaf = BaseTree::entry_count()/2;
         //std::cout<<"last non leaf is "<<lastNonLeaf<< " target is "<<target<<std::endl;
         while(node<lastNonLeaf){
-          double dif = this->value_of(node)-target;
-          int64_t firstBit = std::bit_cast<int64_t>(dif);
-          firstBit=firstBit>>63;
-          target=target-std::bit_cast<double>((firstBit& std::bit_cast<int64_t>(this->value_of(node))));
-          node=(node<<1)-firstBit;
+          if (target<(this->value_of(node))){
+            node = BaseTree::left_of(node);
+          }
+          else{
+            target -=this->value_of(node);
+            node=BaseTree::right_of(node);
+          }
         }
         //this is to make sure that there is a right child (if I did this in the loop it would check that there is a right child every time which is unecessary)
         if (node==lastNonLeaf){
@@ -134,8 +133,6 @@ namespace stochastic {
             //std::cout<<"went right node is "<<node<<" and target is "<<target<<std::endl;
           }
         }
-        // std::cout<<"node is "<<node<<std::endl;
-        // std::cout<<"target is "<<target<<std::endl;
         if (target<(this->value_of(node))){
             return id_of(node);
           }
@@ -146,6 +143,48 @@ namespace stochastic {
 
 
       }
+
+      // //Methods of WeightSum we want to make available
+      
+      // template<class URNG>
+      // index_type operator()(URNG& g) {
+      //   Real target =  std::generate_canonical<Real, precision, URNG>(g)*total_weight;
+
+      //   node_type node = this->root();
+      //   node_type lastNonLeaf = BaseTree::entry_count()/2;
+      //   //std::cout<<"last non leaf is "<<lastNonLeaf<< " target is "<<target<<std::endl;
+      //   while(node<lastNonLeaf){
+      //     double dif = this->value_of(node)-target;
+      //     int64_t firstBit = std::bit_cast<int64_t>(dif);
+      //     firstBit=firstBit>>63;
+      //     target=target-std::bit_cast<double>((firstBit& std::bit_cast<int64_t>(this->value_of(node))));
+      //     node=(node<<1)-firstBit;
+      //   }
+      //   //this is to make sure that there is a right child (if I did this in the loop it would check that there is a right child every time which is unecessary)
+      //   if (node==lastNonLeaf){
+      //     //std::cout<<"node is last non leaf"<<std::endl;
+      //     if (target<(this->value_of(node))){
+      //       node = BaseTree::left_of(node);
+      //     }
+      //     else if(BaseTree::right_of(node)<BaseTree::size()){
+      //       //std::cout<<"going right from last non leaf"<<std::endl;
+      //       target -=this->value_of(node);
+      //       node=BaseTree::right_of(node);
+      //       //std::cout<<"went right node is "<<node<<" and target is "<<target<<std::endl;
+      //     }
+      //   }
+      //   // std::cout<<"node is "<<node<<std::endl;
+      //   // std::cout<<"target is "<<target<<std::endl;
+      //   if (target<(this->value_of(node))){
+      //       return id_of(node);
+      //     }
+      //   else{
+      //     return id_of(nextNode(node));
+          
+      //   }
+
+
+      // }
 
       void update_weight(index_type i, Real new_weight) {
         update_weight_of_node(node_of(i),new_weight);
@@ -214,19 +253,19 @@ namespace stochastic {
 
       
 
-      // void update_weight_of_node(node_type givenNode, Real new_weight) {
+      void update_weight_of_node(node_type givenNode, Real new_weight) {
 
-      //   auto node = givenNode;
-      //   Real weightDifference =  new_weight - this->weight_of(node);
-      //   total_weight+=weightDifference;
+        auto node = givenNode;
+        Real weightDifference =  new_weight - this->weight_of(node);
+        total_weight+=weightDifference;
 
-      //   while(node>=BaseTree::root()){
+        while(node>=BaseTree::root()){
             
-      //       this->value_of(node)+=weightDifference; // SKIP VERSION
-      //       node = nextNode(node); //SKIP VERSION
-      //   }
+            this->value_of(node)+=weightDifference; // SKIP VERSION
+            node = nextNode(node); //SKIP VERSION
+        }
 
-      // }
+      }
 
       
 
