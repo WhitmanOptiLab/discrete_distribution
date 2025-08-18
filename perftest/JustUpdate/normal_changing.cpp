@@ -1,0 +1,59 @@
+//HOW TO USE COMPILATION FLAGS:
+//Enter the library you want to test after 'DWRSLIB=' and the number of weights after 'DWEIGHTNUM='.
+
+//Ex:
+//g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 normal_changing.cpp
+//g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 normal_changing.cpp
+
+#include "../perftest/include.hpp"
+
+//#include "XoshiroCpp.hpp"
+
+// #include <sys/time.h>
+// #include <iostream>
+// #include <random>
+// #include <vector>
+// #include <algorithm>
+using namespace dense::stochastic;
+
+int main() {
+  std::normal_distribution<double> d(5,2); 
+  std::uniform_int_distribution<int> randomIndex(0,WEIGHTNUM-1);
+  //std::default_random_engine generator; 
+  std::vector<double> weights = {};
+
+
+  
+  for(int i = 0; i < WEIGHTNUM; i++){
+    weights.push_back(std::max<double>(0.00001,d(generator)));
+  }	      
+
+  // double minweight = *std::min_element(weights.begin(), weights.end());
+  // for(int i = 0; i < WEIGHTNUM; i++){
+  //   weights[i] -= minweight;
+  // }	
+  
+  // vector<Element> elements{};
+  // for(int i=0;i<weights.size();i++){
+  //   elements.emplace_back(i,i,weights[i]);
+  // }
+
+  //start time
+  struct timeval start, end;
+  WRSLIB selector(weights.begin(), weights.end());
+  //WRSLIB selector(elements.size(),elements);
+  gettimeofday(&start, NULL);
+  
+  for (int i = 0; i < 1000000; i++) {
+    //int index = selector(generator);
+    selector.update_weight(randomIndex(generator), std::max<double>(0.00001, d(generator)));
+  }
+
+  
+  // end time
+  gettimeofday(&end, NULL);
+  double elapsedtime_sec = double(end.tv_sec - start.tv_sec) + 
+    double(end.tv_usec - start.tv_usec)/1000000.0;
+  std::cout << elapsedtime_sec << std::endl;
+  
+}

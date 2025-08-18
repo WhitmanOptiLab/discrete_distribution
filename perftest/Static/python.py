@@ -9,7 +9,7 @@ import numpy as np
 
 # Load data as before
 
-files = glob.glob("resultsC1_*.csv")
+files = glob.glob("resultsS_*.csv")
 contents=[]
 names=[]
 weightnums=[]
@@ -62,6 +62,10 @@ for name, y_values in zip(names, averages):
 ax_legend = plt.axes([.75, 0.8, 0.23, 0.2])  # x, y, width, height
 labels, lines = zip(*line_objects)
 check = CheckButtons(ax_legend, labels, [True]*len(labels))
+
+# Make labels the same color as their lines
+for label_text, line in zip(check.labels, lines):
+    label_text.set_color(line.get_color())
 
 # Toggle function
 def toggle_line(label):

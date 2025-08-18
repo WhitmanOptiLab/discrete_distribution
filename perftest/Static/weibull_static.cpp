@@ -6,17 +6,21 @@
 //g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 weibull_static.cpp
 //g++ -I../lib -O3 "-DWRSLIB=std::discrete_distribution<int>" "-DWEIGHTNUM=100" -o test2 weibull_static.cpp
 
-#include "random_selector.hpp"
-#include "modifiable_heap_random_selector.hpp"
-#include "no_weight_storage_modifiable_heap_random_selector.hpp"
-#include "leaf_sum_tree_selector.hpp"
-#include "leaf_sum_tree_split.hpp"
-#include "sideways_fenwick_selector.hpp"
-//#include "old_sideways_fenwick_selector.hpp"
-#include "sideways_fenwick_selector_bitcast.hpp"
-//#include "incremental_leaf_sum_tree.hpp"
-#include "bucket_alias.hpp"
-#include "wrsLessStorage.hpp"
+// #include "random_selector.hpp"
+// #include "modifiable_heap_random_selector.hpp"
+// #include "no_weight_storage_modifiable_heap_random_selector.hpp"
+// #include "leaf_sum_tree_selector.hpp"
+// #include "leaf_sum_tree_split.hpp"
+// #include "sideways_fenwick_selector.hpp"
+// #include "old_sideways_fenwick_selector.hpp"
+// #include "sideways_fenwick_selector_bitcast.hpp"
+// #include "incremental_leaf_sum_tree.hpp"
+// #include "bucket_alias.hpp"
+// #include "wrsLessStorage.hpp"
+// #include "exponential_leafsum.hpp"
+// #include "SF_jump_bad_branches.hpp"
+
+#include "../perftest/include.hpp"
 
 
 #include <sys/time.h>

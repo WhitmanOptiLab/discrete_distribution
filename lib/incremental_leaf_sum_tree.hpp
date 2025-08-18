@@ -1,6 +1,6 @@
 #ifndef INCREMENTAL_LEAF_SUM_TREE
 #define INCREMENTAL_LEAF_SUM_TREE
-#include "completetreeFLOAT.hpp"
+#include "completetree.hpp"
 #include <limits>
 #include <random>
 #include <cassert>

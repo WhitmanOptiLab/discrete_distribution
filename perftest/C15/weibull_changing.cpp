@@ -5,27 +5,34 @@
 //g++ -I../lib -O3 "-DWRSLIB=nonuniform_int_distribution<int>" "-DWEIGHTNUM=10000000" -o test0 weibull_changing.cpp
 //g++ -I../lib -O3 "-DWRSLIB=heap_random_selector<int>" "-DWEIGHTNUM=100000" -o test1 weibull_changing.cpp
 
-#include "random_selector.hpp"
-#include "modifiable_heap_random_selector.hpp"
-#include "no_weight_storage_modifiable_heap_random_selector.hpp"
-#include "leaf_sum_tree_selector.hpp"
-#include "leaf_sum_tree_split.hpp"
-#include "sideways_fenwick_selector.hpp"
-//#include "old_sideways_fenwick_selector.hpp"
-#include "sideways_fenwick_selector_bitcast.hpp"
-//#include "incremental_leaf_sum_tree.hpp"
-#include "bucket_alias.hpp"
-#include "wrsLessStorage.hpp"
+// #include "random_selector.hpp"
+// #include "modifiable_heap_random_selector.hpp"
+// #include "no_weight_storage_modifiable_heap_random_selector.hpp"
+// #include "leaf_sum_tree_selector.hpp"
+// #include "leaf_sum_tree_split.hpp"
+// #include "sideways_fenwick_selector.hpp"
+// #include "old_sideways_fenwick_selector.hpp"
+// #include "sideways_fenwick_selector_bitcast.hpp"
+// #include "incremental_leaf_sum_tree.hpp"
+// #include "bucket_alias.hpp"
+// #include "wrsLessStorage.hpp"
+// #include "exponential_leafsum.hpp"
+// #include "SF_jump_bad_branches.hpp"
+
+#include "../perftest/include.hpp"
+
+
+
 
 //#include "XoshiroCpp.hpp"
 
 
 
-#include <sys/time.h>
-#include <iostream>
-#include <random>
-#include <vector>
-#include <algorithm>
+// #include <sys/time.h>
+// #include <iostream>
+// #include <random>
+// #include <vector>
+// #include <algorithm>
 
 using namespace dense::stochastic;
 
@@ -33,7 +40,7 @@ int main() {
   std::weibull_distribution<double> d(0.5); 
   std::uniform_int_distribution<int> randomIndex(0, WEIGHTNUM - 1);
 
-  std::default_random_engine generator; 
+  //std::default_random_engine generator; 
   std::vector<double> weights = {};
   
   for(int i = 0; i < WEIGHTNUM; i++){

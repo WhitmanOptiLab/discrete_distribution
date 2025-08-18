@@ -46,7 +46,7 @@ done
 
 echo " " >> resultsC1_$3.csv
 for j in "${!weightNums[@]}";do
-    echo -n "${average[$j]} ,">> resultsC1_$3.csv
+    echo -n "${average[$j]}, ">> resultsC1_$3.csv
 done
 echo "Test completed. Results saved in resultsC1_$3.csv"
 

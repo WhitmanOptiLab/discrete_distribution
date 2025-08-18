@@ -46,9 +46,9 @@ int main(){
         selector.update_weight(numWeights-1-i,5);
     }
 
-    for(int i=0;i<numWeights;i++){
-        selector.update_weight(i,i);
-    }
+    // for(int i=0;i<numWeights;i++){
+    //     selector.update_weight(i,i);
+    // }
 
     //outputFile<<"distribution after construction: ";
 

@@ -16,7 +16,7 @@
 #include <random>
 #include <bitset>
 
-#include "completetreeFLOAT.hpp"
+#include "completetree.hpp"
 
 
 namespace dense {
@@ -116,27 +116,10 @@ namespace stochastic {
         //std::cout<<"last non leaf is "<<lastNonLeaf<< " target is "<<target<<std::endl;
         while(node<lastNonLeaf){
           double dif = this->value_of(node)-target;
-          if (dif==0){
-            target -=this->value_of(node);
-            node=BaseTree::right_of(node);
-            //std::cout<<"They're equal!! node is "<<node;
-          }
-          else{
-            uint64_t firstBit = std::bit_cast<uint64_t>(dif);
-            firstBit=firstBit>>63;
-            //std::cout<<"first bit is "<<firstBit;
-            target=target-(firstBit*this->value_of(node));
-            node=(node<<1)+firstBit;
-                      
-          }
-          
-          // if (target<(this->value_of(node))){
-          //   node = BaseTree::left_of(node);
-          // }
-          // else{
-          //   target -=this->value_of(node);
-          //   node=BaseTree::right_of(node);
-          // }
+          int64_t firstBit = std::bit_cast<int64_t>(dif);
+          firstBit=firstBit>>63;
+          target=target-std::bit_cast<double>((firstBit& std::bit_cast<int64_t>(this->value_of(node))));
+          node=(node<<1)-firstBit;
         }
         //this is to make sure that there is a right child (if I did this in the loop it would check that there is a right child every time which is unecessary)
         if (node==lastNonLeaf){
@@ -231,34 +214,19 @@ namespace stochastic {
 
       
 
-      void update_weight_of_node(node_type givenNode, Real new_weight) {
-        //std::cout<<"________________updating weight_____________"<<std::endl;
-        auto node = givenNode;
-        Real weightDifference =  new_weight - this->weight_of(node);
-        total_weight+=weightDifference;
-        //std::cout<<"updating node "<<node<<" to contain "<<new_weight<<" instead of "<<this->weight_of(node)<<" which is a difference of "<<weightDifference<<std::endl;
+      // void update_weight_of_node(node_type givenNode, Real new_weight) {
 
-        // auto iterCount = ~node;
-        // iterCount = std::popcount(iterCount << std::countl_one(iterCount));
+      //   auto node = givenNode;
+      //   Real weightDifference =  new_weight - this->weight_of(node);
+      //   total_weight+=weightDifference;
 
-
-
-        // // for(int i = 0; i < iterCount; i++) {
-        // //     this->value_of(node)+=weightDifference; // SKIP VERSION
-        // //     node = nextNode(node); //SKIP VERSION
-        // // }
-
-
-
-        while(node>=BaseTree::root()){
+      //   while(node>=BaseTree::root()){
             
-            this->value_of(node)+=weightDifference; // SKIP VERSION
-            node = nextNode(node); //SKIP VERSION
-        }
-        //this->value_of(node)+=weightDifference;
-        //std::cout<<"ending tree is ";
-        //this->PrintTree();
-      }
+      //       this->value_of(node)+=weightDifference; // SKIP VERSION
+      //       node = nextNode(node); //SKIP VERSION
+      //   }
+
+      // }
 
       
 

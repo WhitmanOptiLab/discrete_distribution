@@ -50,8 +50,8 @@ class wrsLessStorage : protected complete_tree<IntType, Real >,
     }
     WeightSum::add_to_total_weight(this->value_of(BaseTree::root()));
 
-    std::cout<<"total weight is "<<this->total_weight()<<std::endl;
-    std::cout<<"root weight is "<<this->value_of(BaseTree::root());
+    // std::cout<<"total weight is "<<this->total_weight()<<std::endl;
+    // std::cout<<"root weight is "<<this->value_of(BaseTree::root());
   }
 
   Real weight_of(PosType p) {
