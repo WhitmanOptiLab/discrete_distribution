@@ -321,17 +321,14 @@ result_type operator()(URNG& g) const {
     weightsum_of(i) = new_weight;
     total_weight_ += diff;
 
-   	// Compute parent once
 	size_t parent = BaseTree::parent_of(i);
 
-	// Compute mask
-	bool over = i >= last_layer_start_ && i >= fanout;
+	bool over = (i >= last_layer_start_) & (i >= fanout);
 
-	// Select index to update: either parent (if over) or nothing (skip)
-	size_t update_index = over ? parent : i; // i here is okay, will be used only if over=false
+	size_t m = -(size_t)over;
+	size_t update_index = (i & ~m) | (parent & m);
 
-	// Only add diff if over=true
-	weightsum_of(update_index) += over ? diff : Real(0);
+    weightsum_of(update_index) += diff * Real(over);
 	i = update_index;
     while (i >= fanout) {
       //std::cout << "Just updated " << i << std::endl;
@@ -340,6 +337,7 @@ result_type operator()(URNG& g) const {
       //std::cout << "Move to: " << i << std::endl;
       //std::cout << i << std::endl;
     }
+    //std::cout << rounds << std::endl;
   }
 
   Real get_weight(PosType i) const {
