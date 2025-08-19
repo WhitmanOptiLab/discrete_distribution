@@ -325,7 +325,7 @@ result_type operator()(URNG& g) const {
 	size_t parent = BaseTree::parent_of(i);
 
 	// Compute mask
-	bool over = i > last_layer_start_ && i >= fanout;
+	bool over = i >= last_layer_start_ && i >= fanout;
 
 	// Select index to update: either parent (if over) or nothing (skip)
 	size_t update_index = over ? parent : i; // i here is okay, will be used only if over=false
@@ -333,7 +333,6 @@ result_type operator()(URNG& g) const {
 	// Only add diff if over=true
 	weightsum_of(update_index) += over ? diff : Real(0);
 	i = update_index;
-
     while (i >= fanout) {
       //std::cout << "Just updated " << i << std::endl;
       i = BaseTree::parent_of(i);
