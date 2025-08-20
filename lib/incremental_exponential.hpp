@@ -245,7 +245,7 @@ public:
     if (total <= Real(0)) return 0;
 
     Real target = std::generate_canonical<Real, precision, URNG>(g) * total;
-    if (target == Real(0)) return 0;
+    //if (target == Real(0)) return 0;
 
     //std::cout<<"total weight is "<<total<< " target is "<<target<<std::endl;
 
@@ -257,8 +257,8 @@ public:
       size_t chosen_child = fanout; // invalid by default
       //std::cout<<"num children is "<<BaseTree::num_children(node)<<std::endl;;
 
-      //for (size_t c = 0; c <fanout; c++) {
-      for (size_t c = 0; c < BaseTree::num_children(node); c++) {
+      for (size_t c = 0; c <fanout; c++) {
+      //for (size_t c = 0; c < BaseTree::num_children(node); c++) {
         Real w = weightsum_of(child);
         //std::cout<<"target is "<<target<<" cummulative is "<<cumulative<<" child index is "<<child.second<<std::endl;
         if (target < cumulative + w) {
