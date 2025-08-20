@@ -40,12 +40,16 @@ int main(){
     //WOULD START TIMING HERE
     //Constructing the heap random selector
     std::cout<<"about to construct"<<std::endl;
-    dense::stochastic::incremental_exponential selector(weights.begin(), weights.end());
+    dense::stochastic::incremental_exponential<> selector(weights.begin(), weights.end());
     std::cout<<"constructed"<<std::endl;
 
-    for(int i=0; i<5;i++){
-        selector.update_weight(numWeights-1-i,5);
+    for(int i=5; i<numWeights;i++){
+        selector.pop_back();
     }
+
+    // for(int i=0; i<5;i++){
+    //     selector.update_weight(numWeights-1-i,5);
+    // }
 
     // for(int i=0;i<numWeights;i++){
     //     selector.update_weight(i,i);
