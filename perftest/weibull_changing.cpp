@@ -11,6 +11,8 @@
 #include "leaf_sum_tree_selector.hpp"
 #include "leaf_sum_tree_split.hpp"
 #include "ternary_tree_selector.hpp"
+#include "XoshiroCpp.hpp"
+
 
 #include <sys/time.h>
 #include <iostream>
@@ -33,10 +35,10 @@ double generate_weibull_between(double shape, double scale, double min, double m
 }
 
 int main() {
-  std::weibull_distribution<float> d(0.5); 
-  std::default_random_engine generator;
-  std::vector<float> weights = {};
-  std::uniform_real_distribution<float> d2(0.99, 1.01);
+  std::weibull_distribution<double> d(0.5); 
+  XoshiroCpp::Xoshiro256Plus generator;
+  std::vector<double> weights = {};
+  std::uniform_real_distribution<double> d2(0.99, 1.01);
   std::uniform_int_distribution<int> randomIndex(0,WEIGHTNUM-1);
 
   
@@ -51,9 +53,9 @@ int main() {
   
   for (int i = 0; i < 1000000; i++) {
     size_t index = selector(generator);
-    selector.update_weight(index, std::max<float>(0.0, d(generator)));
+    selector.update_weight(index, std::max<double>(0.0, d(generator)));
     for(int i = 0;i<14;i++){
-      selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
+      selector.update_weight(randomIndex(generator),std::max<double>(0.0, d(generator)));
     }
   }
   

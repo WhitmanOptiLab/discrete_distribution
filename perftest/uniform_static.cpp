@@ -15,6 +15,8 @@
 #include "old_leaf_sum.hpp"
 #include "exponential.hpp"
 #include "low_storage.hpp"
+#include "XoshiroCpp.hpp"
+
 
 #include <sys/time.h>
 #include <iostream>
@@ -25,9 +27,9 @@
 using namespace dense::stochastic;
 
 int main() {
-  std::uniform_real_distribution<float> d(1,10); 
-  std::default_random_engine generator;
-  std::vector<float> weights = {};
+  std::uniform_real_distribution<double> d(1,10); 
+  XoshiroCpp::Xoshiro256Plus generator;
+  std::vector<double> weights = {};
   size_t sum = 1;
   
   for(int i = 0; i < WEIGHTNUM; i++){

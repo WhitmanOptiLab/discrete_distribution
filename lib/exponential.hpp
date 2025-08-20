@@ -134,7 +134,7 @@ private:
 template <
   class int_type = size_t,
   class Real = double,
-  size_t fanout = 8,
+  size_t fanout = 16,
   size_t precision = std::numeric_limits<Real>::digits
 >
 class exponential_leaf_sum_tree : protected kary_complete_tree<int_type, Real, fanout> {
@@ -315,7 +315,6 @@ result_type operator()(URNG& g) const {
   // Update a leaf weight and propagate change upward
   void update_weight(size_t i, Real new_weight) {
     assert(new_weight >= Real(0));
-    //std::cout << "Update node: " << i << std::endl;
     i = leaf_start_ + i;
     Real diff = new_weight - weightsum_of(i);
     weightsum_of(i) = new_weight;
@@ -331,13 +330,9 @@ result_type operator()(URNG& g) const {
     weightsum_of(update_index) += diff * Real(over);
 	i = update_index;
     while (i >= fanout) {
-      //std::cout << "Just updated " << i << std::endl;
       i = BaseTree::parent_of(i);
       weightsum_of(i) += diff;
-      //std::cout << "Move to: " << i << std::endl;
-      //std::cout << i << std::endl;
     }
-    //std::cout << rounds << std::endl;
   }
 
   Real get_weight(PosType i) const {

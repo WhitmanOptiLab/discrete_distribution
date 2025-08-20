@@ -14,6 +14,8 @@
 #include "ternary_tree_selector.hpp"
 #include "exponential.hpp"
 #include "low_storage.hpp"
+#include "XoshiroCpp.hpp"
+
 
 
 #include <sys/time.h>
@@ -26,13 +28,13 @@
 using namespace dense::stochastic;
 
 int main() {
-  std::normal_distribution<float> d(5,2); 
-  std::default_random_engine generator;
-  std::vector<float> weights = {};
+  std::normal_distribution<double> d(5,2); 
+  XoshiroCpp::Xoshiro256Plus generator;
+  std::vector<double> weights = {};
   size_t sum = 1;
   
   for(int i = 0; i < WEIGHTNUM; i++){
-    weights.push_back(std::max<float>(0.0, d(generator)));
+    weights.push_back(std::max<double>(0.0, d(generator)));
   }
 
   //start time

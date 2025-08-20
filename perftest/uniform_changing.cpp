@@ -14,6 +14,7 @@
 #include "exponential.hpp"
 #include "low_storage.hpp"
 #include "old_leaf_sum.hpp"
+#include "XoshiroCpp.hpp"
 
 #include <sys/time.h>
 #include <iostream>
@@ -24,11 +25,12 @@
 using namespace dense::stochastic;
 
 int main() {
-  std::uniform_real_distribution<float> d(1,10);
-  std::default_random_engine generator;
-  std::vector<float> weights = {};
-  std::uniform_real_distribution<float> d2(0.99, 1.01);
+  std::uniform_real_distribution<double> d(1,10);
+  //std::default_random_engine generator;
+  std::vector<double> weights = {};
+  std::uniform_real_distribution<double> d2(0.99, 1.01);
   std::uniform_int_distribution<int> randomIndex(0,WEIGHTNUM-1);
+  XoshiroCpp::Xoshiro256Plus generator;
 
   
   for(int i = 0; i < WEIGHTNUM; i++){
@@ -43,11 +45,12 @@ int main() {
   
   for (int i = 0; i < 1000000; i++) {
     size_t index = selector(generator);
-    selector.update_weight(index, std::max<float>(0.0, d(generator)));
+    selector.update_weight(index, std::max<double>(0.0, d(generator)));
     for(int i = 0;i<14;i++){
-      selector.update_weight(randomIndex(generator),std::max<float>(0.0, d(generator)));
+      selector.update_weight(randomIndex(generator),std::max<double>(0.0, d(generator)));
     }
   }
+
   //std::cout << selector.size() << std::endl;
   
   // end time

@@ -10,44 +10,44 @@
 
 echo "Number of tests: $1" # first argument is num of tests
 echo "Weightnum: $2" # second argument is number of weights in data structure
-echo "normal_static_leafsum, normal_static_exponential_leaf_sum_8, normal_static_exponential_leaf_sum_32, normal_changing_leafsum, normal_changing_exponential_leaf_sum_8, normal_changing_exponential_leaf_sum_32, uniform_static_leafsum, uniform_static_exponential_leaf_sum_8, uniform_static_exponential_leaf_sum_32, uniform_changing_leafsum, uniform_changing_exponential_leaf_sum_8, uniform_changing_exponential_leaf_sum_32, weibull_static_leafsum, weibull_static_exponential_leaf_sum_8, weibull_static_exponential_leaf_sum_32, weibull_changing_leafsum, weibull_changing_exponential_leaf_sum_8, weibull_changing_exponential_leaf_sum_32"  > results_$2.csv
+echo "normal_static_exponential_leaf_sum_16, normal_static_exponential_leaf_sum_8, normal_static_exponential_leaf_sum_32, normal_changing_exponential_leaf_sum_16, normal_changing_exponential_leaf_sum_8, normal_changing_exponential_leaf_sum_32, uniform_static_exponential_leaf_sum_16, uniform_static_exponential_leaf_sum_8, uniform_static_exponential_leaf_sum_32, uniform_changing_exponential_leaf_sum_16, uniform_changing_exponential_leaf_sum_8, uniform_changing_exponential_leaf_sum_32, weibull_static_exponential_leaf_sum_16, weibull_static_exponential_leaf_sum_8, weibull_static_exponential_leaf_sum_32, weibull_changing_exponential_leaf_sum_16, weibull_changing_exponential_leaf_sum_8, weibull_changing_exponential_leaf_sum_32"  > results_$2.csv
 
 # Normal distribution static weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test2 normal_static.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,16>" "-DWEIGHTNUM=$2" -o test0 normal_static.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test1 normal_static.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test2 normal_static.cpp
 
 
 
 
 # Normal distribution changing weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test3 normal_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test4 normal_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test5 normal_changing.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,16>" "-DWEIGHTNUM=$2" -o test3 normal_changing.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test4 normal_changing.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test5 normal_changing.cpp
 
 
 # Uniform distribution static weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test6 uniform_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test7 uniform_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test8 uniform_static.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,16>" "-DWEIGHTNUM=$2" -o test6 uniform_static.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test7 uniform_static.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test8 uniform_static.cpp
 
 
 # Uniform distribution changing weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test9 uniform_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test10 uniform_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test11 uniform_changing.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,16>" "-DWEIGHTNUM=$2" -o test9 uniform_changing.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test10 uniform_changing.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test11 uniform_changing.cpp
 
 
 # Weibull distribution static weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test12 weibull_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test13 weibull_static.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test14 weibull_static.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,16>" "-DWEIGHTNUM=$2" -o test12 weibull_static.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test13 weibull_static.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test14 weibull_static.cpp
 
 
 # Weibull distribution changing weight tests
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test15 weibull_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test16 weibull_changing.cpp
-g++ -std=c++20 -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test17 weibull_changing.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,16>" "-DWEIGHTNUM=$2" -o test15 weibull_changing.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>" "-DWEIGHTNUM=$2" -o test16 weibull_changing.cpp
+g++ -std=c++20 -march=native -I../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t,double,32>" "-DWEIGHTNUM=$2" -o test17 weibull_changing.cpp
 
 
 sum0=0
@@ -164,22 +164,22 @@ echo " " >> results.csv
 echo "$average0, $average1, $average2, $average3, $average4, $average5, $average6, $average7, $average8, $average9, $average10, $average11, $average12, $average13, $average14, $average15, $average16, $average17" >> results_$2.csv
 
 # Print the average
-echo "normal_static_leafsum: $average0"
+echo "normal_static_exponential_leaf_sum_16: $average0"
 echo "normal_static_exponential_leaf_sum_8: $average1"
 echo "normal_static_exponential_leaf_sum_32: $average2"
-echo "normal_changing_leafsum: $average3"
+echo "normal_changing_exponential_leaf_sum_16: $average3"
 echo "normal_changing_exponential_leaf_sum_8: $average4"
 echo "normal_changing_exponential_leaf_sum_32: $average5"
-echo "uniform_static_leafsum: $average6"
+echo "uniform_static_exponential_leaf_sum_16: $average6"
 echo "uniform_static_exponential_leaf_sum_8: $average7"
 echo "uniform_static_exponential_leaf_sum_32: $average8"
-echo "uniform_changing_leafsum: $average9"
+echo "uniform_changing_exponential_leaf_sum_16: $average9"
 echo "uniform_changing_exponential_leaf_sum_8: $average10"
 echo "uniform_changing_exponential_leaf_sum_32: $average11"
-echo "weibull_static_leafsum: $average12"
+echo "weibull_static_exponential_leaf_sum_16: $average12"
 echo "weibull_static_exponential_leaf_sum_8: $average13"
 echo "weibull_static_exponential_leaf_sum_32: $average14"
-echo "weibull_changing_leafsum: $average15"
+echo "weibull_changing_exponential_leaf_sum_16: $average15"
 echo "weibull_changing_exponential_leaf_sum_8: $average16"
 echo "weibull_changing_exponential_leaf_sum_32: $average17" 
 
