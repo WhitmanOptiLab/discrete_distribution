@@ -110,6 +110,10 @@ public:
         return leaf_count_;
     }
 
+    std::vector<Real>& data(){
+      return data_;
+    }
+
 private:
     std::vector<Real> data_;
     size_t leaf_start_;
@@ -176,47 +180,8 @@ public:
   exponential_leaf_sum_tree(InputIt first, InputIt last)
     : BaseTree()
   {
-    size_t n = std::distance(first, last);
-    leaf_end_ = n;
-
-    // Round up leaves to nearest full complete k-ary tree level (power of fanout)
-    auto [total_nodes, leaf_start] = BaseTree::minimal_tree_shape(n);
-    BaseTree::resize(n); // will now use minimal_tree_shape internally
-    //std::cout << total_nodes << std::endl;
-    //std::cout << leaf_start << std::endl;
-    leaf_start_ = leaf_start;
-    last_layer_start_ = last_layer_start();
-
-    // Copy weights to leaves, pad with zeros
-    InputIt it = first;
-    for (size_t i = 0; i < n; ++i) {
-        weightsum_of(leaf_start_ + i) = std::max(Real(*it), Real(0));
-        ++it;
+    construct(first, last,std::distance(first, last));
     }
-
-    // Build sums bottom-up from leaves to root (excluding root)
-for (ptrdiff_t i = leaf_start_ - 1; i >= 0; --i) {
-    Real sum = 0;
-    PosType first_child = (i + 1) * fanout; // -1-index adjustment
-    for (size_t c = 0; c < fanout; ++c) {
-        PosType child = first_child + c;
-        if (child >= total_nodes) break;
-        sum += weightsum_of(child);
-    }
-    weightsum_of(i) = sum;
-}
-
-// Compute root separately
-Real sum = 0;
-PosType first_child = 0 * fanout; // root's first child in array
-for (size_t c = 0; c < fanout; ++c) {
-    PosType child = first_child + c;
-    if (child >= total_nodes) break;
-    sum += weightsum_of(child);
-}
-total_weight_ = sum;
-  }
-
   // No-op reset
   void reset() {}
 
@@ -333,6 +298,25 @@ result_type operator()(URNG& g) const {
       i = BaseTree::parent_of(i);
       weightsum_of(i) += diff;
     }
+  }
+
+  void push_back(Real new_weight) {
+    new_weight = std::max(new_weight, Real(0));
+    if (leaf_start_ + leaf_end_ < BaseTree::size()) {
+      update_weight(leaf_end_, new_weight);
+      leaf_end_++;
+    }
+    else{
+      std::vector<Real> weights(BaseTree::data().begin()+leaf_start_,BaseTree::data().begin()+(leaf_start_+leaf_end_));
+      construct(weights.begin(), weights.end(), leaf_end_ * 2);
+      update_weight(leaf_end_, new_weight);
+      leaf_end_++;
+    }
+  }
+
+  void pop_back() {
+    leaf_end_--;
+    update_weight(leaf_end_,Real(0));
   }
 
   Real get_weight(PosType i) const {
@@ -454,6 +438,49 @@ std::size_t last_layer_start() const noexcept {
 
     return L + shallower_leaves;
 }
+
+  template<class InputIt>
+  void construct (InputIt first, InputIt last, size_t size){
+    size_t n = std::distance(first, last);
+    leaf_end_ = n;
+
+    // Round up leaves to nearest full complete k-ary tree level (power of fanout)
+    auto [total_nodes, leaf_start] = BaseTree::minimal_tree_shape(size);
+    BaseTree::resize(size); // will now use minimal_tree_shape internally
+    //std::cout << total_nodes << std::endl;
+    //std::cout << leaf_start << std::endl;
+    leaf_start_ = leaf_start;
+    last_layer_start_ = last_layer_start();
+
+    // Copy weights to leaves, pad with zeros
+    InputIt it = first;
+    for (size_t i = 0; i < n; ++i) {
+        weightsum_of(leaf_start_ + i) = std::max(Real(*it), Real(0));
+        ++it;
+    }
+
+    // Build sums bottom-up from leaves to root (excluding root)
+for (ptrdiff_t i = leaf_start_ - 1; i >= 0; --i) {
+    Real sum = 0;
+    PosType first_child = (i + 1) * fanout; // -1-index adjustment
+    for (size_t c = 0; c < fanout; ++c) {
+        PosType child = first_child + c;
+        if (child >= total_nodes) break;
+        sum += weightsum_of(child);
+    }
+    weightsum_of(i) = sum;
+}
+
+// Compute root separately
+Real sum = 0;
+PosType first_child = 0 * fanout; // root's first child in array
+for (size_t c = 0; c < fanout; ++c) {
+    PosType child = first_child + c;
+    if (child >= total_nodes) break;
+    sum += weightsum_of(child);
+}
+total_weight_ = sum;
+  }
 
 
 
