@@ -10,6 +10,7 @@
 #include "bucket_alias.hpp"
 #include "wrsLessStorage.hpp"
 #include "exponential_leafsum.hpp"
+#include "incremental_exponential.hpp"
 
 
 #include "XoshiroCpp.hpp"

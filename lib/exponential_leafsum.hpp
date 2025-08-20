@@ -6,11 +6,12 @@
 #include <cassert>
 #include <iostream>
 #include <queue>
+#include <array>
 
 namespace dense {
 namespace stochastic {
 
-  template <class int_type = size_t, class Real = double, size_t fanout = 16>
+  template <class int_type = size_t, class Real = double, size_t fanout = 8>
 class kary_complete_tree {
 public:
 
@@ -85,7 +86,7 @@ public:
     }
 
     position_type parent_of(position_type i) const {
-        assert(i > 0);
+        assert(i >= 0);
         return (i >> log2_fanout) - 1;
     }
 
@@ -184,6 +185,7 @@ public:
     //std::cout << total_nodes << std::endl;
     //std::cout << leaf_start << std::endl;
     leaf_start_ = leaf_start;
+    last_layer_start_ = last_layer_start();
 
     // Copy weights to leaves, pad with zeros
     InputIt it = first;
@@ -311,16 +313,24 @@ result_type operator()(URNG& g) const {
   result_type max() const { return leaf_end_ == 0 ? 0 : leaf_end_ - 1; }
 
   // Update a leaf weight and propagate change upward
-  void update_weight(PosType i, Real new_weight) {
+  void update_weight(size_t i, Real new_weight) {
     assert(new_weight >= Real(0));
     i = leaf_start_ + i;
     Real diff = new_weight - weightsum_of(i);
     weightsum_of(i) = new_weight;
     total_weight_ += diff;
 
-    while (i > fanout) {
+	size_t parent = BaseTree::parent_of(i);
+
+	bool over = (i >= last_layer_start_) & (i >= fanout);
+
+	size_t m = -(size_t)over;
+	size_t update_index = (i & ~m) | (parent & m);
+
+    weightsum_of(update_index) += diff * Real(over);
+	i = update_index;
+    while (i >= fanout) {
       i = BaseTree::parent_of(i);
-      //std::cout << i << std::endl;
       weightsum_of(i) += diff;
     }
   }
@@ -340,6 +350,7 @@ result_type operator()(URNG& g) const {
 // Print tree for debugging (-1-indexed)
 void print_tree(std::ostream& os = std::cout) const {
     size_t total_nodes = BaseTree::size();
+    os << "First last layer node: " << last_layer_start() << std::endl;
 
     if (total_nodes == 0) {
         os << "(empty tree)\n";
@@ -381,8 +392,74 @@ private:
   Real& weightsum_of(PosType p) { return BaseTree::value_of(p); }
   const Real& weightsum_of(PosType p) const { return BaseTree::value_of(p); }
 
+  // Returns the first index (into data_) of the deepest layer of leaves.
+// If there are no leaves, returns leaf_start_
+std::size_t last_layer_start() const noexcept {
+    const std::size_t T = BaseTree::size();      // total nodes excluding the conceptual root
+    const std::size_t L = leaf_start_;           // number of internal nodes (and first leaf index)
+    if (leaf_end_ == 0) return L;                // no leaves
+
+    // We'll walk depth by depth, counting how many *present* nodes exist at each depth,
+    // and how many of those are internal vs leaves. Leaves fill "after" internal nodes
+    // at each depth (because of your contiguous layout).
+    std::size_t remaining_internal = L;
+    std::size_t remaining_slots    = T;
+
+    // Depth 0 (children of root): present nodes are the first min(fanout, T) slots.
+    const std::size_t top_present  = std::min<std::size_t>(fanout, remaining_slots);
+    const std::size_t d0_internal  = std::min(remaining_internal, top_present);
+    const std::size_t d0_leaves    = top_present - d0_internal;
+
+    remaining_internal -= d0_internal;
+    remaining_slots    -= top_present;
+
+    // Collect the number of leaves at each depth
+    // Depth 0:
+    std::array<size_t, 64> leaves_at_depth{};
+    std::size_t dcount = 0;
+    leaves_at_depth[dcount++] = d0_leaves;
+
+    // Depth >= 1:
+    std::size_t parents = d0_internal;
+    while (remaining_slots > 0 && dcount < leaves_at_depth.size()) {
+        std::size_t present;
+        if (parents == 0) {
+            present = 0;
+        } else if (parents > remaining_slots / fanout) {
+            present = remaining_slots;
+        } else {
+            present = std::min<std::size_t>(remaining_slots, parents * fanout);
+        }
+
+        const std::size_t internal_here = std::min(remaining_internal, present);
+        const std::size_t leaves_here   = present - internal_here;
+
+        leaves_at_depth[dcount++] = leaves_here;
+
+        remaining_internal -= internal_here;
+        remaining_slots    -= present;
+        parents             = internal_here;
+
+        if (present == 0 || parents == 0) break;
+    }
+
+    // Find the deepest depth that actually has leaves, then sum all *earlier* leaves.
+    std::size_t last_with_leaves = 0;
+    for (std::size_t i = 0; i < dcount; ++i)
+        if (leaves_at_depth[i] > 0) last_with_leaves = i;
+
+    std::size_t shallower_leaves = 0;
+    for (std::size_t i = 0; i < last_with_leaves; ++i)
+        shallower_leaves += leaves_at_depth[i];
+
+    return L + shallower_leaves;
+}
+
+
+
   size_t leaf_end_;   // number of leaves requested by user
   size_t leaf_start_; // index of first leaf in data_
+  size_t last_layer_start_;
   double total_weight_ = 0;
 };
 }
