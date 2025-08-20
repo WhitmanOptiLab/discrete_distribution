@@ -3,7 +3,8 @@
 //#include "../lib/sideways_fenwick_selector.hpp"
 //#include "../lib/bucket_alias.hpp"
 //#include "../lib/wrsLessStorage.hpp"
-#include "../lib/old_sideways_fenwick_selector.hpp"
+//#include "../lib/old_sideways_fenwick_selector.hpp"
+#include "lib/incremental_exponential.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -39,7 +40,7 @@ int main(){
     //WOULD START TIMING HERE
     //Constructing the heap random selector
     std::cout<<"about to construct"<<std::endl;
-    dense::stochastic::old_sideways_fenwick_selector selector(weights.begin(), weights.end());
+    dense::stochastic::incremental_exponential selector(weights.begin(), weights.end());
     std::cout<<"constructed"<<std::endl;
 
     for(int i=0; i<5;i++){
