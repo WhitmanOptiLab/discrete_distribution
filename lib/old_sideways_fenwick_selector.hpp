@@ -15,7 +15,7 @@
 #include <bit>
 #include <random>
 
-#include "completetreeFLOAT.hpp"
+#include "completetree.hpp"
 
 
 namespace dense {

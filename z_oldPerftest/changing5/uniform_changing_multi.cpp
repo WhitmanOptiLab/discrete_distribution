@@ -17,6 +17,8 @@
 #include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArray.hpp"
 #include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArrayStar.hpp"
 #include "exponential.hpp"
+#include "XoshiroCpp.hpp"
+
 #include <sys/time.h>
 #include <iostream>
 #include <random>
@@ -27,8 +29,8 @@ using namespace dense::stochastic;
 int main() {
   std::uniform_real_distribution<float> d(1,10); 
   std::uniform_int_distribution<int> randomIndex(0, WEIGHTNUM - 1);
-
-  std::default_random_engine generator;
+  XoshiroCpp::Xoshiro128Plus generator;
+  //std::default_random_engine generator;
   std::vector<float> weights = {};
   
   for(int i = 0; i < WEIGHTNUM; i++){

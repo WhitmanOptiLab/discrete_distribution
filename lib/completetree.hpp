@@ -1,5 +1,5 @@
-#ifndef COMPLETE_TREE_FLOAT
-#define COMPLETE_TREE_FLOAT
+#ifndef COMPLETE_TREE
+#define COMPLETE_TREE
 
 #include <utility>
 #include <vector>

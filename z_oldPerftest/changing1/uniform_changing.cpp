@@ -16,6 +16,8 @@
 #include "incremental_leaf_sum_tree.hpp"
 #include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArray.hpp"
 #include "../../DynamicDiscreteSamplersComparisons/proposal_array/include/sampling/DynamicProposalArrayStar.hpp"
+#include "XoshiroCpp.hpp"
+
 #include "exponential.hpp"
 #include <sys/time.h>
 #include <iostream>
@@ -26,7 +28,8 @@ using namespace dense::stochastic;
 
 int main() {
   std::uniform_real_distribution<float> d(1,10); 
-  std::default_random_engine generator;
+  XoshiroCpp::Xoroshiro128Plus generator;
+  //std::default_random_engine generator;
   std::vector<float> weights = {};
   
   for(int i = 0; i < WEIGHTNUM; i++){

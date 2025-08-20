@@ -8,7 +8,7 @@ from matplotlib.widgets import CheckButtons
 import numpy as np
 
 # Load data as before
-files = sorted(glob.glob("resultsAddRemove_*.csv"), key=lambda x: int(x.split("_")[1].split(".")[0]))
+files = sorted(glob.glob("resultsSmall_*.csv"), key=lambda x: int(x.split("_")[1].split(".")[0]))
 levels = []
 data_by_test = {}
 
@@ -26,7 +26,7 @@ family_colors_rgb = {
     "LS": mcolors.to_rgb("green"),
     "split": mcolors.to_rgb("blue"),
     "incremental": mcolors.to_rgb("orange"),
-    "bitcast": mcolors.to_rgb("purple"),
+    "exponential": mcolors.to_rgb("purple"),
 }
 families = list(family_colors_rgb.keys())
 family_to_tests = {fam: [] for fam in families}

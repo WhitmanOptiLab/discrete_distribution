@@ -13,14 +13,14 @@ echo "uniform_4_child_leafsum, uniform_8_child_leafsum, uniform_16_child_leafsum
 
 
 # uniform distribution changing weight tests
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=4" -o test0 uniform_changing.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=8" -o test1 uniform_changing.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=16" -o test2 uniform_changing.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=32" -o test3 uniform_changing.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=64" -o test4 uniform_changing.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=128" -o test5 uniform_changing.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=incremental_leaf_sum_tree<>"             "-DWEIGHTNUM=$2" "-DCHILDNUM=0" -o test6 uniform_changing.cpp
-g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" "-DCHILDNUM=0" -o test7 uniform_changing.cpp
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t, double, 4>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=4" -o test0 uniform_changing.cpp -march=native
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t, double, 8>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=8" -o test1 uniform_changing.cpp -march=native
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t, double, 16>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=16" -o test2 uniform_changing.cpp -march=native
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t, double, 32>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=32" -o test3 uniform_changing.cpp -march=native
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t, double, 64>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=64" -o test4 uniform_changing.cpp -march=native
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=exponential_leaf_sum_tree<size_t, double, 128>"       "-DWEIGHTNUM=$2" "-DCHILDNUM=128" -o test5 uniform_changing.cpp -march=native
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=incremental_leaf_sum_tree<>"             "-DWEIGHTNUM=$2" "-DCHILDNUM=0" -o test6 uniform_changing.cpp -march=native
+g++ -std=c++20 -I../../lib -O3 "-DWRSLIB=leaf_sum_tree<>"          "-DWEIGHTNUM=$2" "-DCHILDNUM=0" -o test7 uniform_changing.cpp -march=native
 
 
 

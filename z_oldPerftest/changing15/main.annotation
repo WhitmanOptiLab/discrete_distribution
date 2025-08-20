@@ -1,0 +1,436 @@
+main() /home/nfs/burnsa/Documents/GitHub/discrete_distribution/z_oldPerftest/changing15/512
+Event: branch-misses
+
+Samples        
+               
+               
+             Disassembly of section .text:
+               
+             0000000000001290 <main>:
+               endbr64        
+               push     %r15  
+               pxor     %xmm0,%xmm0
+               xor      %r15d,%r15d
+               push     %r14  
+               push     %r13  
+               xor      %r13d,%r13d
+               push     %r12  
+               push     %rbp  
+               mov      $0x200,%ebp
+               push     %rbx  
+               sub      $0xd8,%rsp
+               mov      %fs:0x28,%rax
+               mov      %rax,0xc8(%rsp)
+               xor      %eax,%eax
+               mov      _IO_stdin_used+0x1a8,%rax
+               movb     $0x0,0x3c(%rsp)
+               lea      0x28(%rsp),%rbx
+               movl     $0x0,0x38(%rsp)
+               lea      0x30(%rsp),%r12
+               mov      %rax,0x30(%rsp)
+               movq     $0x1,0x28(%rsp)
+               movq     $0x0,0x70(%rsp)
+               movq     $0x0,0x8(%rsp)
+               movaps   %xmm0,0x60(%rsp)
+             ↓ jmp      9d    
+               nop            
+         80:   movss    (%rsp),%xmm6
+               add      $0x4,%r15
+               movss    %xmm6,-0x4(%r15)
+               mov      %r15,0x68(%rsp)
+               sub      $0x1,%ebp
+             ↓ je       166   
+         9d:   movss    _IO_stdin_used+0x1ac,%xmm1
+               movss    _IO_stdin_used+0x1a8,%xmm0
+               mov      %rbx,%rsi
+               mov      %r12,%rdi
+             → call     float std::normal_distribution<float>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<float>::param_typ
+               pxor     %xmm5,%xmm5
+               comiss   %xmm5,%xmm0
+               movss    %xmm0,(%rsp)
+             ↓ ja       cd    
+               movl     $0x0,(%rsp)
+         cd:   cmp      %r13,%r15
+             ↑ jne      80    
+               movabs   $0x1fffffffffffffff,%rcx
+               mov      0x8(%rsp),%rax
+               sub      %rax,%r15
+               mov      %r15,%rax
+               mov      %r15,%r14
+               sar      $0x2,%rax
+               cmp      %rcx,%rax
+             ↓ je       739   
+               mov      0x8(%rsp),%rcx
+               cmp      %rcx,%r13
+             ↓ je       57a   
+               lea      (%rax,%rax,1),%rdx
+               cmp      %rax,%rdx
+             ↓ jb       5ad   
+               test     %rdx,%rdx
+             ↓ jne      6a9   
+               xor      %r9d,%r9d
+               xor      %r8d,%r8d
+        121:   movss    (%rsp),%xmm7
+               lea      0x4(%r8,%r14,1),%r15
+               movss    %xmm7,(%r8,%r14,1)
+               test     %r14,%r14
+             ↓ jg       538   
+               cmpq     $0x0,0x8(%rsp)
+             ↓ jne      553   
+        146:   mov      %r8,0x60(%rsp)
+               mov      %r9,%r13
+               mov      %r15,0x68(%rsp)
+               mov      %r9,0x70(%rsp)
+               mov      %r8,0x8(%rsp)
+               sub      $0x1,%ebp
+             ↑ jne      9d    
+        166:   mov      0x8(%rsp),%rsi
+               lea      0x80(%rsp),%rdi
+               mov      %r15,%rdx
+             → call     dense::stochastic::exponential_leaf_sum_tree<unsigned long, double, 128ul, 53ul>::exponential_leaf_sum_tree<__gnu_cxx::__normal_iterator<float*, std::vector<float, std::allocator<float> > > >(__gnu_cxx::__normal_iterator<float*, std::vector<float
+               lea      0x40(%rsp),%rdi
+               xor      %esi,%esi
+             → call     gettimeofday@plt
+               mov      0x88(%rsp),%rax
+               mov      0x80(%rsp),%rbp
+               movl     $0xf4240,0x1c(%rsp)
+               mov      0xb0(%rsp),%r15
+               mov      %rax,0x10(%rsp)
+               sub      %rbp,%rax
+               mov      %rax,%rcx
+               sar      $0x3,%rcx
+               mov      %rcx,%r14
+        1b9:   mov      0x10(%rsp),%rax
+               cmp      %rax,%rbp
+             ↓ je       659   
+               movsd    0xc0(%rsp),%xmm1
+               pxor     %xmm0,%xmm0
+               comisd   %xmm1,%xmm0
+             ↓ jae      659   
+     1         imul     $0x41a7,0x28(%rsp),%rsi
+               movabs   $0x200000005,%rax
+               mul      %rsi  
+    32         mov      %rsi,%rax
+               sub      %rdx,%rax
+               shr      $1,%rax
+               add      %rdx,%rax
+    23         shr      $0x1e,%rax
+               mov      %rax,%rdx
+               shl      $0x1f,%rdx
+               sub      %rax,%rdx
+     2         mov      %rsi,%rax
+               sub      %rdx,%rax
+     2         mov      %rax,%rdx
+               sub      $0x1,%rdx
+             ↓ js       63b   
+               pxor     %xmm2,%xmm2
+     5         cvtsi2sd %rdx,%xmm2
+    14  22a:   imul     $0x41a7,%rax,%rsi
+               pxor     %xmm0,%xmm0
+               movabs   $0x200000005,%rax
+               addsd    %xmm0,%xmm2
+    16         mul      %rsi  
+               mov      %rsi,%rax
+               sub      %rdx,%rax
+               shr      $1,%rax
+               add      %rdx,%rax
+               shr      $0x1e,%rax
+               mov      %rax,%rdx
+               shl      $0x1f,%rdx
+               sub      %rax,%rdx
+               mov      %rsi,%rax
+               sub      %rdx,%rax
+               mov      %rax,0x28(%rsp)
+               sub      $0x1,%rax
+             ↓ js       61d   
+               pxor     %xmm0,%xmm0
+               cvtsi2sd %rax,%xmm0
+    26  27e:   mulsd    _IO_stdin_used+0x1b0,%xmm0
+    29         addsd    %xmm2,%xmm0
+    30         divsd    _IO_stdin_used+0x1b8,%xmm0
+    13         comisd   0x1c96(%rip),%xmm0        # 31c0 <_IO_stdin_used+0x1c0>
+     4       ↓ jae      680   
+     8  2a0:   mulsd    %xmm0,%xmm1
+     8         pxor     %xmm0,%xmm0
+               ucomisd  %xmm0,%xmm1
+    24       ↓ jp       2b4   
+     1       ↓ je       659   
+     4  2b4:   xor      %edi,%edi
+               xor      %esi,%esi
+               nop            
+        2c0:   cmp      %r14,%rsi
+             ↓ jae      310   
+    14         lea      0x7f(%rsi),%rdx
+               mov      %rsi,%rax
+               pxor     %xmm0,%xmm0
+             ↓ jmp      2e6   
+               nop            
+        2d8:   cmp      %rdx,%rax
+             ↓ je       310   
+     1         add      $0x1,%rax
+               cmp      %rax,%r14
+             ↓ je       310   
+    11  2e6:   movapd   %xmm0,%xmm2
+    10         addsd    0x0(%rbp,%rax,8),%xmm0
+   123         comisd   %xmm1,%xmm0
+     1       ↑ jbe      2d8   
+               lea      0x1(%rax),%rsi
+               subsd    %xmm2,%xmm1
+    40         mov      %rax,%rdi
+               shl      $0x7,%rsi
+               cmp      %r14,%rsi
+             ↑ jb       2c0   
+               nop            
+   112  310:   sub      %r15,%rdi
+               movslq   %edi,%r13
+               add      %r15,%r13
+        319:   movss    _IO_stdin_used+0x1ac,%xmm1
+    41         movss    _IO_stdin_used+0x1a8,%xmm0
+               mov      %rbx,%rsi
+               mov      %r12,%rdi
+             → call     float std::normal_distribution<float>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<float>::param_typ
+               pxor     %xmm1,%xmm1
+               comiss   %xmm1,%xmm0
+     1       ↓ ja       5fa   
+               pxor     %xmm0,%xmm0
+        345:   cmp      %r14,%r13
+             ↓ jae      661   
+               lea      0x0(%rbp,%r13,8),%rax
+               movapd   %xmm0,%xmm1
+               pxor     %xmm2,%xmm2
+               movsd    0xc0(%rsp),%xmm7
+               subsd    (%rax),%xmm1
+               mov      $0x7f,%edx
+               movsd    %xmm0,(%rax)
+               mov      0xb8(%rsp),%rcx
+               cmp      %rdx,%rcx
+               addsd    %xmm1,%xmm7
+               cmovae   %rcx,%rdx
+               mov      %rdx,0x8(%rsp)
+               movsd    %xmm7,(%rsp)
+               movsd    %xmm7,0xc0(%rsp)
+               cmp      %r13,%rdx
+             ↓ jb       603   
+        3a0:   addsd    %xmm0,%xmm2
+               movsd    %xmm2,(%rax)
+               cmp      $0x7f,%r13
+             ↓ jbe      3e8   
+               shr      $0x7,%r13
+               lea      -0x1(%r13),%rax
+               cmp      %r14,%rax
+             ↓ jb       3d1   
+             ↓ jmp      661   
+        3c0:   shr      $0x7,%rax
+               sub      $0x1,%rax
+               cmp      %r14,%rax
+             ↓ jae      661   
+        3d1:   lea      0x0(%rbp,%rax,8),%rdx
+               movsd    (%rdx),%xmm0
+               addsd    %xmm1,%xmm0
+               movsd    %xmm0,(%rdx)
+               cmp      $0x7f,%rax
+             ↑ ja       3c0   
+        3e8:   mov      $0xe,%r13d
+               xchg     %ax,%ax
+        3f0:   movss    _IO_stdin_used+0x1ac,%xmm1
+               movss    _IO_stdin_used+0x1a8,%xmm0
+               mov      %rbx,%rsi
+               mov      %r12,%rdi
+             → call     float std::normal_distribution<float>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::normal_distribution<float>::param_typ
+               pxor     %xmm1,%xmm1
+               comiss   %xmm1,%xmm0
+    74       ↓ ja       5c0   
+               mov      $0x1ff,%edx
+               xor      %esi,%esi
+               pxor     %xmm0,%xmm0
+               mov      %rbx,%rdi
+             → call     int std::uniform_int_distribution<int>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::uniform_int_distribution<int>::param
+               cltq           
+        42d:   add      %r15,%rax
+               cmp      %r14,%rax
+             ↓ jae      661   
+               lea      0x0(%rbp,%rax,8),%rdx
+               movapd   %xmm0,%xmm1
+               movsd    (%rsp),%xmm3
+               pxor     %xmm2,%xmm2
+               subsd    (%rdx),%xmm1
+               movsd    %xmm0,(%rdx)
+               addsd    %xmm1,%xmm3
+               movsd    %xmm3,(%rsp)
+               movsd    %xmm3,0xc0(%rsp)
+               cmp      %rax,0x8(%rsp)
+             ↓ jb       5e0   
+        470:   addsd    %xmm2,%xmm0
+               movsd    %xmm0,(%rdx)
+               cmp      $0x7f,%rax
+             ↓ jbe      4a8   
+               xchg     %ax,%ax
+        480:   shr      $0x7,%rax
+     1         sub      $0x1,%rax
+               cmp      %r14,%rax
+             ↓ jae      661   
+               lea      0x0(%rbp,%rax,8),%rdx
+               movsd    (%rdx),%xmm0
+     5         addsd    %xmm1,%xmm0
+               movsd    %xmm0,(%rdx)
+               cmp      $0x7f,%rax
+             ↑ ja       480   
+        4a8:   sub      $0x1,%r13d
+             ↑ jne      3f0   
+               subl     $0x1,0x1c(%rsp)
+    55       ↑ jne      1b9   
+               lea      0x50(%rsp),%rdi
+               xor      %esi,%esi
+             → call     gettimeofday@plt
+               mov      0x58(%rsp),%rax
+               pxor     %xmm0,%xmm0
+               sub      0x48(%rsp),%rax
+               cvtsi2sd %rax,%xmm0
+               pxor     %xmm1,%xmm1
+               mov      0x50(%rsp),%rax
+               sub      0x40(%rsp),%rax
+               cvtsi2sd %rax,%xmm1
+               divsd    _IO_stdin_used+0x1c8,%xmm0
+               lea      std::cout@GLIBCXX_3.4,%rdi
+               addsd    %xmm1,%xmm0
+             → call     std::ostream& std::ostream::_M_insert<double>(double)@plt
+               mov      %rax,%r12
+               mov      (%rax),%rax
+               mov      -0x18(%rax),%rax
+               mov      0xf0(%r12,%rax,1),%rbx
+               test     %rbx,%rbx
+             ↓ je       68d   
+               cmpb     $0x0,0x38(%rbx)
+             ↓ je       6c7   
+               movzbl   0x43(%rbx),%eax
+             ↓ jmp      6dd   
+               nop            
+        538:   mov      0x8(%rsp),%rsi
+               mov      %r8,%rdi
+               mov      %r14,%rdx
+               mov      %r9,(%rsp)
+             → call     memmove@plt
+               mov      (%rsp),%r9
+               mov      %rax,%r8
+        553:   mov      0x8(%rsp),%rdi
+               mov      %r13,%rsi
+               mov      %r8,0x10(%rsp)
+               mov      %r9,(%rsp)
+               sub      %rdi,%rsi
+             → call     operator delete(void*, unsigned long)@plt
+               mov      0x10(%rsp),%r8
+               mov      (%rsp),%r9
+             ↑ jmp      146   
+        57a:   add      $0x1,%rax
+             ↓ jb       5ad   
+               movabs   $0x1fffffffffffffff,%rdx
+               cmp      %rdx,%rax
+               cmova    %rdx,%rax
+               lea      0x0(,%rax,4),%r15
+        599:   mov      %r15,%rdi
+             → call     operator new(unsigned long)@plt
+               mov      %rax,%r8
+               lea      (%rax,%r15,1),%r9
+             ↑ jmp      121   
+        5ad:   movabs   $0x7ffffffffffffffc,%r15
+             ↑ jmp      599   
+               nop            
+        5c0:   mov      $0x1ff,%edx
+               xor      %esi,%esi
+               mov      %rbx,%rdi
+               cvtss2sd %xmm0,%xmm0
+     1       → call     int std::uniform_int_distribution<int>::operator()<std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul> >(std::linear_congruential_engine<unsigned long, 16807ul, 0ul, 2147483647ul>&, std::uniform_int_distribution<int>::param
+               cltq           
+             ↑ jmp      42d   
+               nop            
+        5e0:   shr      $0x7,%rax
+               movapd   %xmm1,%xmm2
+               sub      $0x1,%rax
+               lea      0x0(%rbp,%rax,8),%rdx
+               movsd    (%rdx),%xmm0
+             ↑ jmp      470   
+        5fa:   cvtss2sd %xmm0,%xmm0
+             ↑ jmp      345   
+        603:   shr      $0x7,%r13
+               movapd   %xmm1,%xmm2
+               sub      $0x1,%r13
+               lea      0x0(%rbp,%r13,8),%rax
+               movsd    (%rax),%xmm0
+             ↑ jmp      3a0   
+        61d:   mov      %rax,%rdx
+               and      $0x1,%eax
+               pxor     %xmm0,%xmm0
+               shr      $1,%rdx
+               or       %rax,%rdx
+               cvtsi2sd %rdx,%xmm0
+               addsd    %xmm0,%xmm0
+             ↑ jmp      27e   
+        63b:   mov      %rdx,%rsi
+               and      $0x1,%edx
+               pxor     %xmm2,%xmm2
+               shr      $1,%rsi
+               or       %rdx,%rsi
+               cvtsi2sd %rsi,%xmm2
+               addsd    %xmm2,%xmm2
+             ↑ jmp      22a   
+        659:   mov      %r15,%r13
+             ↑ jmp      319   
+        661:   lea      _IO_stdin_used+0x98,%rcx
+               mov      $0x4a,%edx
+               lea      _IO_stdin_used+0x32,%rsi
+               lea      _IO_stdin_used+0x4c,%rdi
+             → call     __assert_fail@plt
+        680:   movsd    _IO_stdin_used+0x1a0,%xmm0
+             ↑ jmp      2a0   
+        68d:   mov      0xc8(%rsp),%rax
+               sub      %fs:0x28,%rax
+             ↓ jne      758   
+             → call     std::__throw_bad_cast()@plt
+        6a9:   movabs   $0x1fffffffffffffff,%rax
+               cmp      %rax,%rdx
+               cmova    %rax,%rdx
+               lea      0x0(,%rdx,4),%r15
+             ↑ jmp      599   
+        6c7:   mov      %rbx,%rdi
+             → call     std::ctype<char>::_M_widen_init() const@plt
+               mov      (%rbx),%rax
+               mov      $0xa,%esi
+               mov      %rbx,%rdi
+             → call     *0x30(%rax)
+        6dd:   movsbl   %al,%esi
+               mov      %r12,%rdi
+             → call     std::ostream::put(char)@plt
+               mov      %rax,%rdi
+             → call     std::ostream::flush()@plt
+               test     %rbp,%rbp
+             ↓ je       708   
+               mov      0x90(%rsp),%rsi
+               mov      %rbp,%rdi
+               sub      %rbp,%rsi
+             → call     operator delete(void*, unsigned long)@plt
+        708:   lea      0x60(%rsp),%rdi
+             → call     std::vector<float, std::allocator<float> >::~vector()
+               mov      0xc8(%rsp),%rax
+               sub      %fs:0x28,%rax
+             ↓ jne      758   
+               add      $0xd8,%rsp
+               xor      %eax,%eax
+               pop      %rbx  
+               pop      %rbp  
+               pop      %r12  
+               pop      %r13  
+               pop      %r14  
+               pop      %r15  
+             ← ret            
+        739:   mov      0xc8(%rsp),%rax
+               sub      %fs:0x28,%rax
+             ↓ jne      758   
+               lea      _IO_stdin_used+0x18,%rdi
+             → call     std::__throw_length_error(char const*)@plt
+        758: → call     __stack_chk_fail@plt
+               endbr64        
+               mov      %rax,%rbx
+             → jmp      1240 <main.cold>
+               endbr64        
+               mov      %rax,%rbx
+             → jmp      1258 <main.cold+0x18>
