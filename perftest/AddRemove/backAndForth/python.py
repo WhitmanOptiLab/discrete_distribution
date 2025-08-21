@@ -77,6 +77,8 @@ check.on_clicked(toggle_line)
 
 # Labels, title, grid
 ax.set_xscale("log")
+ax.set_yscale("log")
+
 ax.set_xlabel("weightnum")
 ax.set_ylabel("time")
 ax.set_title("back and forth add and remove")

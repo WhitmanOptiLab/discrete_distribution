@@ -1,23 +1,24 @@
-#ifndef EXPONENTIAL_LEAF_SUM_TREE
-#define EXPONENTIAL_LEAF_SUM_TREE
+#ifndef exponential_leaf_sum_tree_alex_ADD_REMOVE
+#define exponential_leaf_sum_tree_alex_ADD_REMOVE
 #include <vector>
 #include <limits>
 #include <random>
 #include <cassert>
 #include <iostream>
 #include <queue>
-#include <array>
+#include <cmath>
+#include <stdexcept>
 
 namespace dense {
 namespace stochastic {
 
-  template <class int_type = size_t, class Real = double, size_t fanout = 8>
-class kary_complete_tree {
+  template <class int_type = size_t, class Real = double, size_t fanout = 16>
+class kary_complete_tree_alex {
 public:
 
-    // Compute minimal complete k-ary tree size to store exactly n leaves
-    // without needing bounds checks during selection.
-    static std::pair<size_t, size_t> minimal_tree_shape(size_t n) {
+  // Compute minimal complete k-ary tree size to store exactly n leaves
+  // without needing bounds checks during selection.
+  static std::pair<size_t, size_t> minimal_tree_shape(size_t n) {
     // Returns {total_nodes_excluding_root, leaf_start_index}
     if (n == 0) return {0, 0}; // no internal nodes, no leaves
 
@@ -35,21 +36,25 @@ public:
         leaves = parents;
     }
 
+    size_t total_nodes2 = ((n - 1) / (fanout - 1)) + n;
+    size_t leaf_start2 = total_nodes2 - n;
+    //std::cout << "Total nodes: " << total_nodes2 << ", REAL total nodes: " << total_nodes << std::endl;
+
     // leaf_start: internal nodes come first, then leaves
     size_t leaf_start = total_nodes - n;
     return {total_nodes, leaf_start};
-}
+  }
 
 
-    static_assert((fanout & (fanout - 1)) == 0, "fanout must be power of two");
+  static_assert((fanout & (fanout - 1)) == 0, "fanout must be power of two");
 
-    using position_type = int_type;
+  using position_type = int_type;
 
-    kary_complete_tree() : data_(1, Real(0)), leaf_start_(0), leaf_count_(0) {}
+  kary_complete_tree_alex() : data_(1, Real(0)), leaf_start_(0), leaf_count_(0) {}
 
-    explicit kary_complete_tree(size_t leaf_count) {
-        resize(leaf_count);
-    }
+  explicit kary_complete_tree_alex(size_t leaf_count) {
+      resize(leaf_count);
+  }
 
     // Resize to accommodate at least n leaves
     void resize(size_t n) {
@@ -61,9 +66,21 @@ public:
         }
 
         auto [total_nodes, leaf_start] = minimal_tree_shape(n);
-        data_.assign(total_nodes, Real(0));
+        max_leaf_ = std::pow(fanout, std::ceil(std::log(n) / std::log(fanout))); //highest possible # of leaves in this tree structure
+
+        data_.assign(n, Real(0));
         leaf_count_ = n;
         leaf_start_ = leaf_start;
+        //std::cout << "base tree leafstart: " << leaf_start_ << std::endl;
+    }
+
+    void expand(size_t n) {
+      size_t old_size = data_.size();
+      if (n <= old_size) return; // no need to expand
+      data_.resize(n, Real(0));
+      for(int i = old_size; i < old_size + (old_size - leaf_start_); i++) {
+          data_[i] = data_[leaf_start_ + i - old_size]; // initialize new layer to what it should be
+      }
     }
 
     size_t size() const {
@@ -71,7 +88,10 @@ public:
     }
 
     Real& value_of(position_type p) {
-        assert(p < data_.size());
+        if(p > data_.size()) {
+          throw std::runtime_error("trying to access position " + std::to_string(p) + " in tree of size " + std::to_string(data_.size()));
+        }
+
         return data_[p];
     }
 
@@ -86,7 +106,7 @@ public:
     }
 
     position_type parent_of(position_type i) const {
-        assert(i >= 0);
+        assert(i > 0);
         return (i >> log2_fanout) - 1;
     }
 
@@ -110,14 +130,11 @@ public:
         return leaf_count_;
     }
 
-    std::vector<Real>& data(){
-      return data_;
-    }
-
 private:
     std::vector<Real> data_;
     size_t leaf_start_;
     size_t leaf_count_;
+    size_t max_leaf_;
 
     static constexpr size_t log2_fanout = [] {
         size_t v = fanout;
@@ -141,9 +158,9 @@ template <
   size_t fanout = 16,
   size_t precision = std::numeric_limits<Real>::digits
 >
-class exponential_leaf_sum_tree : protected kary_complete_tree<int_type, Real, fanout> {
-  using This = exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
-  using BaseTree = kary_complete_tree<int_type, Real, fanout>;
+class exponential_leaf_sum_tree_alex : protected kary_complete_tree_alex<int_type, Real, fanout> {
+  using This = exponential_leaf_sum_tree_alex<int_type, Real, fanout, precision>;
+  using BaseTree = kary_complete_tree_alex<int_type, Real, fanout>;
   using PosType = typename BaseTree::position_type;
 
 public:
@@ -161,44 +178,85 @@ public:
 
   private:
     std::vector<Real> weights_;
-    friend class exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
+    friend class exponential_leaf_sum_tree_alex<int_type, Real, fanout, precision>;
   };
 
   // Default constructor
-  exponential_leaf_sum_tree() : BaseTree(1), leaf_end_(0), leaf_start_(0) {}
+  exponential_leaf_sum_tree_alex() : BaseTree(1), leaf_end_(0), leaf_start_(0) {}
 
   // Construct from vector
-  explicit exponential_leaf_sum_tree(const std::vector<Real>& weights)
-    : exponential_leaf_sum_tree(weights.begin(), weights.end()) {}
+  explicit exponential_leaf_sum_tree_alex(const std::vector<Real>& weights)
+    : exponential_leaf_sum_tree_alex(weights.begin(), weights.end()) {}
 
   // Construct from initializer list
-  exponential_leaf_sum_tree(const std::initializer_list<Real>& il)
-    : exponential_leaf_sum_tree(il.begin(), il.end()) {}
+  exponential_leaf_sum_tree_alex(const std::initializer_list<Real>& il)
+    : exponential_leaf_sum_tree_alex(il.begin(), il.end()) {}
 
   // Construct from iterator pair
   template<class InputIt>
-  exponential_leaf_sum_tree(InputIt first, InputIt last)
+  exponential_leaf_sum_tree_alex(InputIt first, InputIt last)
     : BaseTree()
   {
-    construct(first, last,std::distance(first, last));
+    size_t n = std::distance(first, last);
+
+    // Round up leaves to nearest full complete k-ary tree level (power of fanout)
+    max_leaf_ = std::pow(fanout, std::ceil(std::log(n) / std::log(fanout))); //highest possible # of leaves in this tree structure
+    leaf_start_ = BaseTree::minimal_tree_shape(max_leaf_).second;
+    BaseTree::resize(max_leaf_ + leaf_start_);
+    leaf_end_ = n;
+
+    // Copy weights to leaves, pad with zeros
+    InputIt it = first;
+    for (size_t i = leaf_start_; i < leaf_start_ + n; ++i) {
+        weightsum_of(i) = std::max(Real(*it), Real(0));
+        //std::cout << i << std::endl;
+        ++it;
     }
+    //fill the rest of the unused leaves with 0
+    for(size_t i = leaf_start_ + n; i < BaseTree::size() - 1; ++i) {
+        weightsum_of(i) = Real(0);
+    }
+  
+
+    // Build sums bottom-up from leaves to root (excluding root)
+    for (ptrdiff_t i = leaf_start_ - 1; i >= 0; --i) {
+        Real sum = 0;
+        PosType first_child = (i + 1) * fanout; // -1-index adjustment
+        for (size_t c = 0; c < fanout; ++c) {
+            PosType child = first_child + c;
+            if (child >= max_leaf_) break;
+            sum += weightsum_of(child);
+        }
+        weightsum_of(i) = sum;
+    }
+
+    // Compute root separately
+    Real sum = 0;
+    PosType first_child = 0 * fanout; // root's first child in array
+    for (size_t c = 0; c < fanout; ++c) {
+        PosType child = first_child + c;
+        if (child >= max_leaf_) break;
+        sum += weightsum_of(child);
+    }
+    total_weight_ = sum;
+}
+
   // No-op reset
-  void reset() {}
+void reset() {}
 
-  bool operator==(const This& other) const {
+bool operator==(const This& other) const {
     return this->param() == other.param();
-  }
+}
 
-  bool operator!=(const This& other) const {
+bool operator!=(const This& other) const {
     return !(*this == other);
-  }
+}
 
   // Select weighted random leaf index, fully uniform, no special root
 template<class URNG>
 result_type operator()(URNG& g) const {
     Real total = total_weight();
     if (total <= Real(0)) return 0;
-
     Real target = std::generate_canonical<Real, precision, URNG>(g) * total;
     if (target == Real(0)) return 0;
     PosType first_child = 0;
@@ -245,7 +303,7 @@ result_type operator()(URNG& g) const {
 
   template<class URNG>
   result_type operator()(URNG& g, const Param& param) const {
-    exponential_leaf_sum_tree temp(param.weights_);
+    exponential_leaf_sum_tree_alex temp(param.weights_);
     return temp(g);
   }
 
@@ -263,14 +321,14 @@ result_type operator()(URNG& g) const {
 
   Param param() const {
     std::vector<Real> weights(leaf_end_);
-    for (size_t i = 0; i < leaf_end_; ++i) {
+    for (size_t i = leaf_start_; i < leaf_end_; ++i) {
       weights[i] = get_weight(i);
     }
     return Param(weights);
   }
 
   void param(const Param& p) {
-    *this = exponential_leaf_sum_tree(p.weights_);
+    *this = exponential_leaf_sum_tree_alex(p.weights_);
   }
 
   static constexpr result_type min() { return 0; }
@@ -278,46 +336,24 @@ result_type operator()(URNG& g) const {
   result_type max() const { return leaf_end_ == 0 ? 0 : leaf_end_ - 1; }
 
   // Update a leaf weight and propagate change upward
-  void update_weight(size_t i, Real new_weight) {
+  void update_weight(PosType i, Real new_weight) {
     assert(new_weight >= Real(0));
     i = leaf_start_ + i;
     Real diff = new_weight - weightsum_of(i);
     weightsum_of(i) = new_weight;
     total_weight_ += diff;
 
-	size_t parent = BaseTree::parent_of(i);
-
-	bool over = (i >= last_layer_start_) & (i >= fanout);
-
-	size_t m = -(size_t)over;
-	size_t update_index = (i & ~m) | (parent & m);
-
-    weightsum_of(update_index) += diff * Real(over);
-	i = update_index;
-    while (i >= fanout) {
+    while (i > fanout) { 
       i = BaseTree::parent_of(i);
+      //std::cout << i << std::endl;
       weightsum_of(i) += diff;
     }
   }
 
-  void push_back(Real new_weight) {
-    new_weight = std::max(new_weight, Real(0));
-    if (leaf_start_ + leaf_end_ < BaseTree::size()) {
-      update_weight(leaf_end_, new_weight);
-      leaf_end_++;
-    }
-    else{
-      std::vector<Real> weights(BaseTree::data().begin()+leaf_start_,BaseTree::data().begin()+(leaf_start_+leaf_end_));
-      construct(weights.begin(), weights.end(), leaf_end_ * 2);
-      update_weight(leaf_end_, new_weight);
-      leaf_end_++;
-    }
+  size_t get_max() const {
+    return max_leaf_;
   }
 
-  void pop_back() {
-    leaf_end_--;
-    update_weight(leaf_end_,Real(0));
-  }
 
   Real get_weight(PosType i) const {
     assert(i < leaf_end_);
@@ -331,10 +367,38 @@ result_type operator()(URNG& g) const {
     return total_weight_;
   }
 
+  void push_back(Real weight) {
+    if(leaf_end_ >= max_leaf_) {
+      max_leaf_ *= fanout;
+      leaf_start_ = BaseTree::minimal_tree_shape(max_leaf_).second;
+      BaseTree::expand(max_leaf_ + leaf_start_);
+      for (ptrdiff_t i = leaf_start_ - 1; i >= 0; --i) {
+        Real sum = 0;
+        PosType first_child = (i + 1) * fanout; // -1-index adjustment
+        for (size_t c = 0; c < fanout; ++c) {
+            PosType child = first_child + c;
+            if (child >= max_leaf_) break;
+            sum += weightsum_of(child);
+        }
+        weightsum_of(i) = sum;
+        //std::cout << "updated node " << i << " with sum " << sum << std::endl;
+    }
+    }
+    assert(leaf_end_ < max_leaf_);
+    update_weight(leaf_end_, weight);
+    leaf_end_++;
+  }
+
+  void pop_back() {
+    assert(leaf_end_ > 0);
+    leaf_end_--;
+    update_weight(leaf_end_, Real(0));
+    
+  }
+
 // Print tree for debugging (-1-indexed)
-void print_tree(std::ostream& os = std::cout) const {
+  void print_tree(std::ostream& os = std::cout) const {
     size_t total_nodes = BaseTree::size();
-    os << "First last layer node: " << last_layer_start() << std::endl;
 
     if (total_nodes == 0) {
         os << "(empty tree)\n";
@@ -369,124 +433,15 @@ void print_tree(std::ostream& os = std::cout) const {
         os << "\n";
         ++level;
     }
-}
+  } 
 
 
 private:
   Real& weightsum_of(PosType p) { return BaseTree::value_of(p); }
   const Real& weightsum_of(PosType p) const { return BaseTree::value_of(p); }
-
-  // Returns the first index (into data_) of the deepest layer of leaves.
-// If there are no leaves, returns leaf_start_
-std::size_t last_layer_start() const noexcept {
-    const std::size_t T = BaseTree::size();      // total nodes excluding the conceptual root
-    const std::size_t L = leaf_start_;           // number of internal nodes (and first leaf index)
-    if (leaf_end_ == 0) return L;                // no leaves
-
-    // We'll walk depth by depth, counting how many *present* nodes exist at each depth,
-    // and how many of those are internal vs leaves. Leaves fill "after" internal nodes
-    // at each depth (because of your contiguous layout).
-    std::size_t remaining_internal = L;
-    std::size_t remaining_slots    = T;
-
-    // Depth 0 (children of root): present nodes are the first min(fanout, T) slots.
-    const std::size_t top_present  = std::min<std::size_t>(fanout, remaining_slots);
-    const std::size_t d0_internal  = std::min(remaining_internal, top_present);
-    const std::size_t d0_leaves    = top_present - d0_internal;
-
-    remaining_internal -= d0_internal;
-    remaining_slots    -= top_present;
-
-    // Collect the number of leaves at each depth
-    // Depth 0:
-    std::array<size_t, 64> leaves_at_depth{};
-    std::size_t dcount = 0;
-    leaves_at_depth[dcount++] = d0_leaves;
-
-    // Depth >= 1:
-    std::size_t parents = d0_internal;
-    while (remaining_slots > 0 && dcount < leaves_at_depth.size()) {
-        std::size_t present;
-        if (parents == 0) {
-            present = 0;
-        } else if (parents > remaining_slots / fanout) {
-            present = remaining_slots;
-        } else {
-            present = std::min<std::size_t>(remaining_slots, parents * fanout);
-        }
-
-        const std::size_t internal_here = std::min(remaining_internal, present);
-        const std::size_t leaves_here   = present - internal_here;
-
-        leaves_at_depth[dcount++] = leaves_here;
-
-        remaining_internal -= internal_here;
-        remaining_slots    -= present;
-        parents             = internal_here;
-
-        if (present == 0 || parents == 0) break;
-    }
-
-    // Find the deepest depth that actually has leaves, then sum all *earlier* leaves.
-    std::size_t last_with_leaves = 0;
-    for (std::size_t i = 0; i < dcount; ++i)
-        if (leaves_at_depth[i] > 0) last_with_leaves = i;
-
-    std::size_t shallower_leaves = 0;
-    for (std::size_t i = 0; i < last_with_leaves; ++i)
-        shallower_leaves += leaves_at_depth[i];
-
-    return L + shallower_leaves;
-}
-
-  template<class InputIt>
-  void construct (InputIt first, InputIt last, size_t size){
-    size_t n = std::distance(first, last);
-    leaf_end_ = n;
-
-    // Round up leaves to nearest full complete k-ary tree level (power of fanout)
-    auto [total_nodes, leaf_start] = BaseTree::minimal_tree_shape(size);
-    BaseTree::resize(size); // will now use minimal_tree_shape internally
-    //std::cout << total_nodes << std::endl;
-    //std::cout << leaf_start << std::endl;
-    leaf_start_ = leaf_start;
-    last_layer_start_ = last_layer_start();
-
-    // Copy weights to leaves, pad with zeros
-    InputIt it = first;
-    for (size_t i = 0; i < n; ++i) {
-        weightsum_of(leaf_start_ + i) = std::max(Real(*it), Real(0));
-        ++it;
-    }
-
-    // Build sums bottom-up from leaves to root (excluding root)
-for (ptrdiff_t i = leaf_start_ - 1; i >= 0; --i) {
-    Real sum = 0;
-    PosType first_child = (i + 1) * fanout; // -1-index adjustment
-    for (size_t c = 0; c < fanout; ++c) {
-        PosType child = first_child + c;
-        if (child >= total_nodes) break;
-        sum += weightsum_of(child);
-    }
-    weightsum_of(i) = sum;
-}
-
-// Compute root separately
-Real sum = 0;
-PosType first_child = 0 * fanout; // root's first child in array
-for (size_t c = 0; c < fanout; ++c) {
-    PosType child = first_child + c;
-    if (child >= total_nodes) break;
-    sum += weightsum_of(child);
-}
-total_weight_ = sum;
-  }
-
-
-
+  size_t max_leaf_;
   size_t leaf_end_;   // number of leaves requested by user
   size_t leaf_start_; // index of first leaf in data_
-  size_t last_layer_start_;
   double total_weight_ = 0;
 };
 }

@@ -11,6 +11,7 @@
 #include "wrsLessStorage.hpp"
 #include "exponential_leafsum.hpp"
 #include "incremental_exponential.hpp"
+#include "exponentialAddRemove.hpp"
 
 
 #include "XoshiroCpp.hpp"

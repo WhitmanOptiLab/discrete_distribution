@@ -77,8 +77,8 @@ public:
     }
 
     void removeLastNode(){
-      std::cout<<"REMOVE LAST NODE TREE: ";
-      printTree();
+      //std::cout<<"REMOVE LAST NODE TREE: ";
+      //printTree();
       position_type i(0,layers[0].size()-1);
       Real weight = value_of(i);
       layers[i.first].pop_back();
@@ -102,40 +102,37 @@ public:
     }
 
     void addNode(Real weight){
-      std::cout<<"add node called tree is ";
-      printTree();
+      //std::cout<<"add node called tree is ";
+      //printTree();
       int layer=0;
       int index=layers[layer].size();
-      
-      
-      
-        while(index>=layers[layer].size()){ //problem, when layer==layers.size() this condition is invalid
+        while(index>=layers[layer].size()){ 
         
         
         layers[layer].push_back(weight);
         index = index>>log2_fanout;
         layer++;
         if (layer==layers.size()){
-            std::cout<<"root expanded    layer is "<<layer<<" and layers.size is "<<layers.size();
+            //std::cout<<"root expanded    layer is "<<layer<<" and layers.size is "<<layers.size();
             std::vector<Real> newRootLayer;
             newRootLayer.push_back(layers[layers.size()-1][0]);
             layers.push_back(newRootLayer);
-            std::cout<<" new tree is ";
-            printTree();
+            //std::cout<<" new tree is ";
+            //printTree();
           }
-        std::cout<<"item appended. tree is ";
-        printTree();
+        //std::cout<<"item appended. tree is ";
+        //printTree();
         }
       
-      std::cout<<"all items appended. tree is ";
-      printTree();
+      //std::cout<<"all items appended. tree is ";
+      //printTree();
       while (layer<layers.size()){
         layers[layer][index]+=weight;
         index = index>>log2_fanout;
         layer++;
       }
-      std::cout<<"weights updated. tree is ";
-      printTree();
+      //std::cout<<"weights updated. tree is ";
+      //printTree();
     }
 
 
