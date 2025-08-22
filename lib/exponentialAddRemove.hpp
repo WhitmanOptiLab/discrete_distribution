@@ -457,13 +457,11 @@ void expand(size_t new_leaf_count) {
         while (true) {
             position = BaseTree::first_child_of(position);
             if (position >= old_total) break;
-            std::cout << position << std::endl;
             old_starts.push_back(sum);
             size_t level = position - sum;
             sum += level;
             old_levels.push_back(level);
         }
-        std::cout << sum << std::endl;
         old_starts.push_back(sum);
         old_levels.push_back(position-sum);
 
@@ -479,13 +477,11 @@ void expand(size_t new_leaf_count) {
         while (true) {
             position = BaseTree::first_child_of(position);
             if (position >= new_total_nodes) break;
-            std::cout << position << std::endl;
             new_starts.push_back(sum);
             size_t level = position - sum;
             sum += level;
             new_levels.push_back(level);
         }
-        std::cout << sum << std::endl;
         new_starts.push_back(sum);
             new_levels.push_back(new_leaf_count);
 
