@@ -452,22 +452,19 @@ std::size_t last_layer_start() const noexcept {
     leaf_start_ = leaf_start;
     last_layer_start_ = last_layer_start();
 
-    // Copy weights to leaves, pad with zeros
-    InputIt it = first;
-    for (size_t i = 0; i < n; ++i) {
-        weightsum_of(leaf_start_ + i) = std::max(Real(*it), Real(0));
-        ++it;
-    }
+    std::transform(first, last, BaseTree::data().begin() + leaf_start_,
+               [](Real v) { return std::max(v, Real(0)); });
+
 
     // Build sums bottom-up from leaves to root (excluding root)
 for (ptrdiff_t i = leaf_start_ - 1; i >= 0; --i) {
+    PosType first_child = (i + 1) * fanout;
+    PosType last_child  = std::min(first_child + fanout, total_nodes);
+
     Real sum = 0;
-    PosType first_child = (i + 1) * fanout; // -1-index adjustment
-    for (size_t c = 0; c < fanout; ++c) {
-        PosType child = first_child + c;
-        if (child >= total_nodes) break;
+    for (PosType child = first_child; child < last_child; ++child)
         sum += weightsum_of(child);
-    }
+
     weightsum_of(i) = sum;
 }
 
