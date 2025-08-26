@@ -93,7 +93,7 @@ public:
         
 
       }
-      while(i.first<=root().first){
+      while(i.first<num_layers()){
         value_of(i)-=weight;
         parent_of_inplace(i);
       }
@@ -104,6 +104,8 @@ public:
     void addNode(Real weight){
       //std::cout<<"add node called tree is ";
       //printTree();
+      // int searchFor =169;
+      // std::cout<<searchFor;
       int layer=0;
       int index=layers[layer].size();
         while(index>=layers[layer].size()){ 

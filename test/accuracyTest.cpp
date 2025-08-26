@@ -4,7 +4,7 @@
 //#include "../lib/bucket_alias.hpp"
 //#include "../lib/wrsLessStorage.hpp"
 //#include "../lib/old_sideways_fenwick_selector.hpp"
-#include "lib/incremental_exponential.hpp"
+#include "lib/incremental_exponential_noResize.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -12,7 +12,7 @@
 //using namespace dense::stochastic;
 
 int main(){
-    int numWeights = 32;
+    int numWeights = 3;
     int numOperations=10;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
@@ -40,12 +40,50 @@ int main(){
     //WOULD START TIMING HERE
     //Constructing the heap random selector
     std::cout<<"about to construct"<<std::endl;
-    dense::stochastic::incremental_exponential selector(weights.begin(), weights.end());
+    dense::stochastic::incremental_exponential_no_resize<size_t,double,4> selector(weights.begin(), weights.end());
     std::cout<<"constructed"<<std::endl;
 
-    for(int i=0; i<5;i++){
-        selector.update_weight(numWeights-1-i,5);
+    selector.printTree();
+
+    for(int i=numWeights; i<=numWeights+100;i++){
+        selector.push_back(i);
+        // std::cout<<"added some weights to tree   i="<<i<<std::endl;
+        // selector.printTree();
+        if(i==numWeights+1){
+            std::cout<<"added some weights to tree   i="<<i<<std::endl;
+            selector.printTree();
+        }
     }
+    std::cout<<"added weights to tree";
+    selector.printTree();
+
+
+    for(int i=numWeights+100; i>=numWeights;i--){
+        // std::cout<<"removed some weights from the tree  i="<<i<<std::endl;
+        // selector.printTree();
+        if(i==numWeights+1){
+            std::cout<<"removed some weights from the tree  i="<<i<<std::endl;
+            selector.printTree();
+        }
+        selector.pop_back();
+    }
+
+    std::cout<<"removed weights - should have original tree";
+    selector.printTree();
+
+
+        for(int i=numWeights; i<=numWeights+100;i++){
+        selector.push_back(i);
+        // std::cout<<"added some weights to tree   i="<<i<<std::endl;
+        //     selector.printTree();
+        
+        if(i==numWeights+1){
+            std::cout<<"added some weights to tree   i="<<i<<std::endl;
+            selector.printTree();
+        }
+        }
+    std::cout<<"added weights to tree";
+    selector.printTree();
 
     // for(int i=0;i<numWeights;i++){
     //     selector.update_weight(i,i);

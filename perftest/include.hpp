@@ -12,6 +12,10 @@
 #include "exponential_leafsum.hpp"
 #include "incremental_exponential.hpp"
 #include "exponentialAddRemove.hpp"
+#include "incremental_exponential_zero_weight.hpp"
+#include "incremental_exponential_noResize.hpp"
+#include "alexVersionBetterMemory.hpp"
+
 
 
 #include "XoshiroCpp.hpp"
