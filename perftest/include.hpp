@@ -15,6 +15,8 @@
 #include "incremental_exponential_zero_weight.hpp"
 #include "incremental_exponential_noResize.hpp"
 #include "alexVersionBetterMemory.hpp"
+#include "dynamicProposalArray.hpp"
+#include "dynamicProposalArrayAlex.hpp"
 
 
 
