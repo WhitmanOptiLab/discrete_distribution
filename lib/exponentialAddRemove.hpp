@@ -496,7 +496,6 @@ void expand(size_t new_leaf_count) {
     auto [old_total_nodes, old_leaf_start] = BaseTree::minimal_tree_shape(leaf_end_);
 
     // new shape
-    std::cout << "New leaf count: " << new_leaf_count << std::endl;
     auto [new_total_nodes, new_leaf_start] = BaseTree::minimal_tree_shape(new_leaf_count);
     leaf_start_ = new_leaf_start;
 
