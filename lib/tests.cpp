@@ -7,9 +7,9 @@
 #include <map>
 #include <iomanip>
 #include <sstream>
-#include "exponential.hpp"
+#include "exponentialAddRemove.hpp"
 
-using Tree = dense::stochastic::exponential_leaf_sum_tree<>;
+using Tree = dense::stochastic::complete_exponential_leaf_sum_tree<>;
 using Real = double;
 using Pos = size_t;
 
@@ -47,7 +47,7 @@ void test_large_uniform_weights() {
     std::cout << "Large uniform weights sampling passed.\n";
 }
 
-/*void test_push_pop_stress() {
+void test_push_pop_stress() {
     std::cout << "\nTest: Push and Pop Stress\n";
     Tree tree;
     std::mt19937 rng(42);
@@ -70,7 +70,7 @@ void test_large_uniform_weights() {
     }
 
     std::cout << "Push/pop stress test passed.\n";
-}*/
+}
 
 void test_update_weight_edge_cases() {
     std::cout << "\nTest: Update Weight Edge Cases\n";
@@ -185,7 +185,7 @@ void test_near_zero_weights() {
     std::cout << "✅ Near-zero weights sampling passed.\n";
 }
 
-/*void test_pop_to_zero_and_reuse() {
+void test_pop_to_zero_and_reuse() {
     std::cout << "\nTest: Pop to Zero and Reuse\n";
     Tree tree({1.0, 2.0});
     tree.pop_back(2);
@@ -199,7 +199,7 @@ void test_near_zero_weights() {
         assert(tree(rng) < 3);
 
     std::cout << "✅ Pop to zero and reuse passed.\n";
-}*/
+}
 
 /*void test_noop_update() {
     std::cout << "\nTest: No-op Update\n";
@@ -220,16 +220,16 @@ void test_near_zero_weights() {
 
 
 int main() {
-    //test_all_zero_weights();
-    //test_large_uniform_weights();
-    //test_push_pop_stress();
-    //test_update_weight_edge_cases();
+    test_all_zero_weights();
+    test_large_uniform_weights();
+    test_push_pop_stress();
+    test_update_weight_edge_cases();
     test_single_element_tree();
     //test_stream_operators();
     //test_empty_tree_stream();
     test_max_weight_handling();
     test_near_zero_weights();
-    //test_pop_to_zero_and_reuse();
+    test_pop_to_zero_and_reuse();
     //test_noop_update();
 
 

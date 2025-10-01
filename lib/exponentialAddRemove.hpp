@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <string>
 #include <bit>
+#include <algorithm>
 
 namespace dense {
 namespace stochastic {
@@ -197,7 +198,7 @@ public:
   };
 
   // Default constructor
-  complete_exponential_leaf_sum_tree() : BaseTree(1), leaf_end_(0), leaf_start_(0), max_leaf_(16) {}
+  complete_exponential_leaf_sum_tree() : BaseTree(1), leaf_end_(0), leaf_start_(0), max_leaf_(fanout) {}
 
   // Construct from vector
   explicit complete_exponential_leaf_sum_tree(const std::vector<Real>& weights)
@@ -437,6 +438,12 @@ result_type operator()(URNG& g) const {
     leaf_end_++;
   }
 
+  void pop_back(size_t count) {
+    for(size_t i = 0; i < count; ++i) {
+      pop_back();
+    }
+  }
+
   void pop_back() {
     assert(leaf_end_ > 0);
     leaf_end_--;
@@ -489,8 +496,9 @@ void expand(size_t new_leaf_count) {
     if (new_leaf_count <= leaf_end_) return; // nothing to do
     auto &data_ = BaseTree::data();
     size_t new_leaf_start = leaf_start_;
-    if (new_leaf_count >= max_leaf_) {
+    if (new_leaf_count > max_leaf_) {
       max_leaf_ *= fanout;
+      std::cout << "Expanding!" << std::endl;
 
     // old shape
     auto [old_total_nodes, old_leaf_start] = BaseTree::minimal_tree_shape(leaf_end_);
@@ -579,7 +587,8 @@ void expand(size_t new_leaf_count) {
             throw std::runtime_error("expand(): old level range out of bounds");
         }
         if (new_start + old_sz > new_data.size()) {
-          std::cout << "Writing to: " << new_start + old_sz << ", total size: " << new_data.size() << std::endl;
+			std::cout << new_starts.size() << ", reading from: " << new_level_index << std::endl;
+          std::cout << "Writing to: " << new_start <<" + " << old_sz << ", total size: " << new_data.size() << std::endl;
             throw std::runtime_error("expand(): new level destination out of bounds");
         }
 
@@ -613,7 +622,7 @@ void expand(size_t new_leaf_count) {
 
     }
     else if (new_leaf_count+leaf_start_ >= BaseTree::size()) {
-      BaseTree::resize(new_leaf_count*2);
+      BaseTree::resize(std::min(new_leaf_count*2,leaf_start_+max_leaf_));
     }
 }
 

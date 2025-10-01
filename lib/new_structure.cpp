@@ -32,7 +32,7 @@ void test_id(){
     //std::cout << "adding " << i << std::endl;
   }
   //std::reverse(weights.begin(),weights.end());
-  auto tree = Tree(weights.begin(),weights.end());
+  Tree tree; //= Tree(weights.begin(),weights.end());
   std::cout << "built!" << std::endl;
   tree.print_tree();
 //  for (int i = 1; i <20; ++i) {
@@ -54,7 +54,9 @@ void test_id(){
   std::cout << "Updating!" << std::endl;
 
   //tree.update_weight(0,100000);
-	tree.push_back(256);
+      std::vector<Real> weights2(1000, 1.0);
+
+	tree.push_back(weights2);
           tree.print_tree();
 
   //tree.update_weight(0,66);
