@@ -498,8 +498,6 @@ void expand(size_t new_leaf_count) {
     size_t new_leaf_start = leaf_start_;
     if (new_leaf_count > max_leaf_) {
       max_leaf_ *= fanout;
-      std::cout << "Expanding!" << std::endl;
-
     // old shape
     auto [old_total_nodes, old_leaf_start] = BaseTree::minimal_tree_shape(leaf_end_);
 
