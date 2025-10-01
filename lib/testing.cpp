@@ -6,9 +6,9 @@
 #include <cassert>
 #include <map>
 #include <iomanip>
-#include "exponent.hpp"
+#include "exponentialAddRemove.hpp"
 
-using Tree = dense::stochastic::exponential_leaf_sum_tree<>;
+using Tree = dense::stochastic::complete_exponential_leaf_sum_tree<>;
 using Real = double;
 using Pos = size_t;
 
@@ -56,22 +56,22 @@ void test_update_weight() {
     }
 }
 
-/*void test_push_and_pop() {
+void test_push_and_pop() {
     std::cout << "\nTest: Push and Pop\n";
     Tree tree;
     tree.push_back({0.0, 1.0, 2.0,3.0});
-    //tree.print_tree();
+    tree.print_tree();
     assert(tree.size() == 4);
 
     //tree.print_tree();
     tree.push_back(4.0);
-    //tree.print_tree();
+    tree.print_tree();
     assert(tree.size() == 5);
     tree.pop_back();
     assert(tree.size() == 4);
-    //tree.print_tree();
+    tree.print_tree();
     assert(tree.total_weight() == 6.0);
-}*/
+}
 
 //void test_param_sampling() {
 //    std::cout << "\nTest: Param Sampling\n";
@@ -129,7 +129,7 @@ void test_zero_weight_behavior() {
 int main() {
     test_sampling_distribution();
     test_update_weight();
-    //test_push_and_pop();
+    test_push_and_pop();
     //test_param_sampling();
     test_zero_weight_behavior();
     //test_probabilities_sum_to_one();
