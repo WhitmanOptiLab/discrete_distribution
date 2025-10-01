@@ -1,5 +1,5 @@
-#ifndef EXPONENTIAL_LEAF_SUM_TREE
-#define EXPONENTIAL_LEAF_SUM_TREE
+#ifndef COMPLETE_EXPONENTIAL_LEAF_SUM_TREE
+#define COMPLETE_EXPONENTIAL_LEAF_SUM_TREE
 #include <vector>
 #include <limits>
 #include <random>
@@ -15,7 +15,7 @@ namespace dense {
 namespace stochastic {
 
   template <class int_type = size_t, class Real = double, size_t fanout = 8>
-class kary_complete_tree {
+class complete_kary_complete_tree {
 public:
 
   // Compute minimal complete k-ary tree size to store exactly n leaves
@@ -24,8 +24,10 @@ public:
     // Returns {total_nodes_excluding_root, leaf_start_index}
     if (n == 0) return {0, 0}; // no internal nodes, no leaves
 
-    size_t k = std::countr_zero(fanout);
-    size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
+      size_t k = std::countr_zero(fanout);
+      size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
+      //std::cout << "Leaves: " << n << std::endl;
+      //std::cout << "max_leaf: " << max_leaf << std::endl;
 
     size_t leaf_start = 0;
     size_t level = 0;
@@ -36,18 +38,40 @@ public:
         leaf_start += level - leaf_start;
     }
 
-    int total_nodes = (-1*(0-leaf_start)+n);
+    int total_nodes = leaf_start+n;
     return {total_nodes, leaf_start};
   }
+
+      std::pair<size_t, size_t> minimal_tree_shape_expansion(size_t n) {
+      // Returns {total_nodes_excluding_root, leaf_start_index}
+      if (n == 0) return {0, 0}; // no internal nodes, no leaves
+
+      size_t k = std::countr_zero(fanout);
+      size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k)+1;
+      //std::cout << "max_leaf: " << max_leaf << std::endl;
+
+      size_t leaf_start = 0;
+      size_t level = 0;
+      //size_t max_leaf = std::pow(fanout, std::ceil(std::log(n) / std::log(fanout))); //highest possible # of leaves in this tree structure;
+      while (true) {
+          level = first_child_of(level);
+          if (level >= max_leaf) break;
+          leaf_start += level - leaf_start;
+      }
+
+      int total_nodes = (-1*(0-leaf_start)+n);
+      return {total_nodes, leaf_start};
+  }
+
 
 
   static_assert((fanout & (fanout - 1)) == 0, "fanout must be power of two");
 
   using position_type = int_type;
 
-  kary_complete_tree() : data_(1, Real(0)), leaf_start_(0), leaf_count_(0) {}
+  complete_kary_complete_tree() : data_(1, Real(0)), leaf_start_(0), leaf_count_(0) {}
 
-  explicit kary_complete_tree(size_t leaf_count) {
+  explicit complete_kary_complete_tree(size_t leaf_count) {
       resize(leaf_count);
   }
 
@@ -60,10 +84,14 @@ public:
             return;
         }
 
+        std::cout << "resize: " << n << std::endl;
+
         auto [total_nodes, leaf_start] = minimal_tree_shape(n);
+        std::cout << "total_nodes: " << total_nodes << std::endl;
 
         // allocate all internal nodes + leaves (root is kept separately by the derived class)
         data_.resize(total_nodes);
+        std::cout << "dead" << std::endl;
         leaf_count_ = n;
         leaf_start_ = leaf_start;
         //std::cout << "base tree leafstart: " << leaf_start_ << std::endl;
@@ -145,12 +173,12 @@ private:
 template <
   class int_type = size_t,
   class Real = double,
-  size_t fanout = 8,
+  size_t fanout = 16,
   size_t precision = std::numeric_limits<Real>::digits
 >
-class exponential_leaf_sum_tree : protected kary_complete_tree<int_type, Real, fanout> {
-  using This = exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
-  using BaseTree = kary_complete_tree<int_type, Real, fanout>;
+class complete_exponential_leaf_sum_tree : protected complete_kary_complete_tree<int_type, Real, fanout> {
+  using This = complete_exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
+  using BaseTree = complete_kary_complete_tree<int_type, Real, fanout>;
   using PosType = typename BaseTree::position_type;
 
 public:
@@ -168,32 +196,40 @@ public:
 
   private:
     std::vector<Real> weights_;
-    friend class exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
+    friend class complete_exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
   };
 
   // Default constructor
-  exponential_leaf_sum_tree() : BaseTree(1), leaf_end_(0), leaf_start_(0) {}
+  complete_exponential_leaf_sum_tree() : BaseTree(1), leaf_end_(0), leaf_start_(0) {}
 
   // Construct from vector
-  explicit exponential_leaf_sum_tree(const std::vector<Real>& weights)
-    : exponential_leaf_sum_tree(weights.begin(), weights.end()) {}
+  explicit complete_exponential_leaf_sum_tree(const std::vector<Real>& weights)
+    : complete_exponential_leaf_sum_tree(weights.begin(), weights.end()) {}
 
   // Construct from initializer list
-  exponential_leaf_sum_tree(const std::initializer_list<Real>& il)
-    : exponential_leaf_sum_tree(il.begin(), il.end()) {}
+  complete_exponential_leaf_sum_tree(const std::initializer_list<Real>& il)
+    : complete_exponential_leaf_sum_tree(il.begin(), il.end()) {}
 
   // Construct from iterator pair
   template<class InputIt>
-  exponential_leaf_sum_tree(InputIt first, InputIt last)
+  complete_exponential_leaf_sum_tree(InputIt first, InputIt last)
     : BaseTree()
   {
     size_t n = std::distance(first, last);
+    //n = 2;
 
     // Round up leaves to nearest full complete k-ary tree level (power of fanout)
-    size_t k = std::countr_zero(fanout);
+    if (n <= fanout){
+      max_leaf_ = fanout;
+    }
+    else{
+          size_t k = std::countr_zero(fanout);
     max_leaf_ = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
+    }
+
     leaf_start_ = BaseTree::minimal_tree_shape(n).second;
-    BaseTree::resize(n); // <-- FIX: pass leaves, not total nodes
+    //std::cout << "Constructor resize!" << std::endl;
+    BaseTree::resize(n);
     leaf_end_ = n;
 
     // Copy weights to leaves, pad with zeros
@@ -224,10 +260,19 @@ public:
     // Compute root separately
     Real sum = 0;
     PosType first_child = 0 * fanout; // root's first child in array
+    if (leaf_start_ == 0){
+      for (size_t c = 0; c < leaf_end_; ++c) {
+        PosType child = first_child + c;
+        if (child >= max_leaf_) break;
+        sum += weightsum_of(child);
+    }
+    }
+    else{
     for (size_t c = 0; c < fanout; ++c) {
         PosType child = first_child + c;
         if (child >= max_leaf_) break;
         sum += weightsum_of(child);
+    }
     }
     total_weight_ = sum;
 }
@@ -288,13 +333,14 @@ result_type operator()(URNG& g) const {
     }
 
     // node is now a leaf
+    //std::cout << leaf_start_<< std::endl;
     return static_cast<result_type>(node - leaf_start_);
 }
 
 
   template<class URNG>
   result_type operator()(URNG& g, const Param& param) const {
-    exponential_leaf_sum_tree temp(param.weights_);
+    complete_exponential_leaf_sum_tree temp(param.weights_);
     return temp(g);
   }
 
@@ -319,7 +365,7 @@ result_type operator()(URNG& g) const {
   }
 
   void param(const Param& p) {
-    *this = exponential_leaf_sum_tree(p.weights_);
+    *this = complete_exponential_leaf_sum_tree(p.weights_);
   }
 
   static constexpr result_type min() { return 0; }
@@ -328,13 +374,16 @@ result_type operator()(URNG& g) const {
 
   // Update a leaf weight and propagate change upward
   void update_weight(PosType i, Real new_weight) {
+
     assert(new_weight >= Real(0));
+    assert(i <= leaf_end_+leaf_start_);
+    std::cout << "updating weight: " << i << std::endl;
     i = leaf_start_ + i;
     Real diff = new_weight - weightsum_of(i);
     weightsum_of(i) = new_weight;
     total_weight_ += diff;
 
-    while (i > fanout) {                 // <-- FIX: propagate to the very top internal node
+    while (i >=fanout) {                 // <-- FIX: propagate to the very top internal node
       i = BaseTree::parent_of(i);
       //std::cout << i << std::endl;
       weightsum_of(i) += diff;
@@ -363,6 +412,8 @@ result_type operator()(URNG& g) const {
       //leaf_start_ = BaseTree::minimal_tree_shape(leaf_end_+1).second;
       expand(leaf_end_+1);   // <-- FIX: pass leaves, not total nodes
 
+
+
 //      // (Optional now, but if you want to keep it, the bound must be total_nodes:)
 //      for (ptrdiff_t i = leaf_start_ - 1; i >= 0; --i) {
 //        Real sum = 0;
@@ -380,6 +431,8 @@ result_type operator()(URNG& g) const {
     //}
     //assert(leaf_end_+leaf_start_ < BaseTree::size());
 
+      std::cout << "Trying to update " << leaf_end_ << std::endl;
+      std::cout << weightsum_of(leaf_end_) << std::endl;
     update_weight(leaf_end_, weight);
     leaf_end_++;
   }
@@ -435,60 +488,102 @@ result_type operator()(URNG& g) const {
 void expand(size_t new_leaf_count) {
     if (new_leaf_count <= leaf_end_) return; // nothing to do
     auto &data_ = BaseTree::data();
+    size_t new_leaf_start = leaf_start_;
+    std::cout << max_leaf_ << std::endl;
     if (new_leaf_count >= max_leaf_) {
       max_leaf_ *= fanout;
 
     // old shape
     auto [old_total_nodes, old_leaf_start] = BaseTree::minimal_tree_shape(leaf_end_);
-    size_t old_total = old_total_nodes;
 
     // new shape
+    std::cout << "New leaf count: " << new_leaf_count << std::endl;
     auto [new_total_nodes, new_leaf_start] = BaseTree::minimal_tree_shape(new_leaf_count);
     leaf_start_ = new_leaf_start;
 
-
-        // Creating the level lengths and level starts for the old size
         std::vector<size_t> old_starts;
         std::vector<size_t> old_levels;
-        old_starts.push_back(0);
-        size_t position = fanout;
-        size_t sum = fanout;
-        old_levels.push_back(fanout);
+
+        std::vector<size_t> new_starts;
+        std::vector<size_t> new_levels;
+
+        size_t position = 0;
+        size_t sum = 0;
+
+    if (old_total_nodes == 1 || old_total_nodes == 0) {
+    }
+    else{
+
+
+        // Creating the level lengths and level starts for the old size
+
+        //old_starts.push_back(0);
+
+        //old_levels.push_back(fanout);
+        //std::cout << old_levels[0] << std::endl;
         while (true) {
             position = BaseTree::first_child_of(position);
-            if (position >= old_total) break;
             old_starts.push_back(sum);
             size_t level = position - sum;
             sum += level;
             old_levels.push_back(level);
+            if (position >= old_total_nodes) break;
         }
-        old_starts.push_back(sum);
-        old_levels.push_back(position-sum);
+        //old_starts.push_back(sum);
+        //old_levels.push_back(position-sum);
+        }
+
+        for (int i : old_starts) {
+          std::cout << i << std::endl;
+        }
+
+        std::cout << std::endl;
+
+        for (int i : old_levels) {
+          std::cout << i << std::endl;
+        }
+        std::cout << std::endl;
+
+
 
 
 
         // Creating the level lengths and level starts for the new size
-        std::vector<size_t> new_starts;
-        std::vector<size_t> new_levels;
-        new_starts.push_back(0);
-        position = fanout;
-        sum = fanout;
-        new_levels.push_back(fanout);
+
+        //new_starts.push_back(0);
+        position = 0;
+        sum = 0;
         while (true) {
             position = BaseTree::first_child_of(position);
-            if (position >= new_total_nodes) break;
             new_starts.push_back(sum);
             size_t level = position - sum;
             sum += level;
             new_levels.push_back(level);
+			if (position >= new_total_nodes) break;
         }
-        new_starts.push_back(sum);
-            new_levels.push_back(new_leaf_count);
+
+        for (int i : new_starts) {
+          std::cout << i << std::endl;
+        }
+
+        std::cout << std::endl;
+
+        for (int i : new_levels) {
+          std::cout << i << std::endl;
+        }
+        std::cout << std::endl;
+        //new_starts.push_back(sum);
+        //    new_levels.push_back(new_leaf_count);
+
+//        for (auto it = new_levels.begin(); it != new_levels.end(); ++it) {
+//            std::cout << *it << std::endl;
+//        }
 
 
 
     // allocate new array (zero-initialized)
     std::vector<Real> new_data(new_total_nodes, Real(0));
+    std::cout << "Previous nodes: " << new_total_nodes << std::endl;
     //std::cout << new_data.size() << std::endl;
 
     // copy each old level block into the next-deeper level of the new layout.
@@ -499,6 +594,16 @@ void expand(size_t new_leaf_count) {
         size_t old_sz    = old_levels[i];
         size_t new_level_index = i + 1; // destination level index
         size_t new_start = new_starts[new_level_index];
+        // bounds check (should not happen for reasonable expansions)
+        if (old_start + old_sz > data_.size()) {
+            std::cout << "Reading from: " << old_start + old_sz << ", total size: " << data_.size() << std::endl;
+
+            throw std::runtime_error("expand(): old level range out of bounds");
+        }
+        if (new_start + old_sz > new_data.size()) {
+          std::cout << "Writing to: " << new_start + old_sz << ", total size: " << new_data.size() << std::endl;
+            throw std::runtime_error("expand(): new level destination out of bounds");
+        }
 
         std::copy_n(data_.begin() + old_start, old_sz, new_data.begin() + new_start);
     }
@@ -522,16 +627,19 @@ void expand(size_t new_leaf_count) {
     }
 
 
+
+
     // commit
     data_.swap(new_data);
     //std::cout << data_.size() << std::endl;
     }
     else if (new_leaf_count+leaf_start_ >= BaseTree::size()) {
+      std::cout << "beans" << std::endl;
       BaseTree::resize(new_leaf_count*2);
     }
 
     //leaf_end_ = new_leaf_count;
-    //leaf_start_ = new_leaf_start;
+    leaf_start_ = new_leaf_start;
 }
 
 
