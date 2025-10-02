@@ -9,14 +9,16 @@
 #include "sideways_fenwick.hpp"
 
 
+#include "sideways_fenwick.hpp"
+#include "dynamicProposalArray.hpp"
+#include "bucket_alias.hpp"
 #include "leaf_sum_tree_selector.hpp"
 #include "leaf_sum_tree_split.hpp"
 #include "ternary_tree_selector.hpp"
-#include "old_leaf_sum.hpp"
 #include "exponential.hpp"
-#include "low_storage.hpp"
 #include "XoshiroCpp.hpp"
 #include "incremental_exponential.hpp"
+#include "exponentialAddRemove.hpp"
 
 
 
