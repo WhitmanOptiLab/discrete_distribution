@@ -14,11 +14,13 @@
 ////#include "exponential.hpp"
 //#include "low_storage.hpp"
 //#include "old_leaf_sum.hpp"
-//#include "XoshiroCpp.hpp"
+#include "../lib/XoshiroCpp.hpp"
 //#include "incremental_exponential.hpp"
 //#include "exponentialAddRemove.hpp"
+#include "../lib/alexVersionBetterMemory.hpp"
 
-#include "../perftest/include.hpp"
+#include "../lib/exponentialAddRemove.hpp"
+#include "../lib/avx2_kary.hpp"
 
 #include <sys/time.h>
 #include <iostream>

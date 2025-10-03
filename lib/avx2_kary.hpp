@@ -1,5 +1,5 @@
-#ifndef COMPLETE_EXPONENTIAL_LEAF_SUM_TREE
-#define COMPLETE_EXPONENTIAL_LEAF_SUM_TREE
+#ifndef complete_avx2_exponential_leaf_sum_tree
+#define complete_avx2_exponential_leaf_sum_tree
 #include <vector>
 #include <limits>
 #include <random>
@@ -16,7 +16,7 @@ namespace dense {
 namespace stochastic {
 
   template <class int_type = size_t, class Real = double, size_t fanout = 16>
-class complete_kary_complete_tree {
+class AFX2_kary_complete_tree {
 public:
 
   // Compute minimal complete k-ary tree size to store exactly n leaves
@@ -70,9 +70,9 @@ public:
 
   using position_type = int_type;
 
-  complete_kary_complete_tree() : data_(1, Real(0)), leaf_start_(0), leaf_count_(0) {}
+  AFX2_kary_complete_tree() : data_(1, Real(0)), leaf_start_(0), leaf_count_(0) {}
 
-  explicit complete_kary_complete_tree(size_t leaf_count) {
+  explicit AFX2_kary_complete_tree(size_t leaf_count) {
       resize(leaf_count);
   }
 
@@ -146,8 +146,11 @@ public:
 
     std::vector<Real> &data() {return data_;}
 
+    const std::vector<Real>& data() const { return data_; }
+
+
 private:
-     std::vector<Real> data_;
+    alignas(32) std::vector<Real> data_;
     size_t leaf_start_;
     size_t leaf_count_;
     size_t max_leaf_;
@@ -169,14 +172,14 @@ private:
 //update while using about O(n) memory space.
 // Uses exponential tree with fixed fanout.
 template <
+  size_t fanout = 16,
   class int_type = size_t,
   class Real = double,
-  size_t fanout = 16,
   size_t precision = std::numeric_limits<Real>::digits
 >
-class complete_exponential_leaf_sum_tree : protected complete_kary_complete_tree<int_type, Real, fanout> {
-  using This = complete_exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
-  using BaseTree = complete_kary_complete_tree<int_type, Real, fanout>;
+class complete_AVX2_exponential_leaf_sum_tree : protected AFX2_kary_complete_tree<int_type, Real, fanout> {
+  using This = complete_AVX2_exponential_leaf_sum_tree<fanout, int_type, Real, precision>;
+  using BaseTree = AFX2_kary_complete_tree<int_type, Real, fanout>;
   using PosType = typename BaseTree::position_type;
 
 public:
@@ -194,23 +197,23 @@ public:
 
   private:
     std::vector<Real> weights_;
-    friend class complete_exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
+    friend class complete_AVX2_exponential_leaf_sum_tree<fanout, int_type, Real, precision>;
   };
 
   // Default constructor
-  complete_exponential_leaf_sum_tree() : BaseTree(1), leaf_end_(0), leaf_start_(0), max_leaf_(fanout) {}
+  complete_AVX2_exponential_leaf_sum_tree() : BaseTree(1), leaf_end_(0), leaf_start_(0), max_leaf_(fanout) {}
 
   // Construct from vector
-  explicit complete_exponential_leaf_sum_tree(const std::vector<Real>& weights)
-    : complete_exponential_leaf_sum_tree(weights.begin(), weights.end()) {}
+  explicit complete_AVX2_exponential_leaf_sum_tree(const std::vector<Real>& weights)
+    : complete_AVX2_exponential_leaf_sum_tree(weights.begin(), weights.end()) {}
 
   // Construct from initializer list
-  complete_exponential_leaf_sum_tree(const std::initializer_list<Real>& il)
-    : complete_exponential_leaf_sum_tree(il.begin(), il.end()) {}
+  complete_AVX2_exponential_leaf_sum_tree(const std::initializer_list<Real>& il)
+    : complete_AVX2_exponential_leaf_sum_tree(il.begin(), il.end()) {}
 
   // Construct from iterator pair
   template<class InputIt>
-  complete_exponential_leaf_sum_tree(InputIt first, InputIt last)
+  complete_AVX2_exponential_leaf_sum_tree(InputIt first, InputIt last)
     : BaseTree()
   {
     size_t n = std::distance(first, last);
@@ -293,10 +296,113 @@ result_type operator()(URNG& g) const {
     if (total <= Real(0)) return 0;
     Real target = std::generate_canonical<Real, precision, URNG>(g) * total;
     if (target == Real(0)) return 0;
+
+//    std::cerr << "=== NEW DRAW ===\n";
+//    std::cerr << "Total: " << total << "  Target: " << target << "\n";
+
+    const Real *data_ptr = BaseTree::data().data();
+    PosType node = 0;
+
+#if defined(__AVX2__)
+    alignas(32) double tmp[4];
+
+    if (BaseTree::is_leaf(node)) {
+    Real cum = 0;
+    for (PosType i = leaf_start_; i < leaf_start_ + leaf_end_; ++i) {
+        Real w = data_ptr[i];
+        if (target < cum + w)
+            return static_cast<result_type>(i - leaf_start_);
+        cum += w;
+    }
+    return static_cast<result_type>(leaf_end_ - 1); // fallback if numerical issues
+}
+    while (!BaseTree::is_leaf(node)) {
+        PosType child_base = BaseTree::first_child_of(node);
+        size_t available = (child_base < BaseTree::size())
+                         ? BaseTree::size() - child_base : 0;
+        if (available == 0) break;
+
+        size_t avail = available;//std::min<size_t>(available, fanout);
+        size_t block_count = (avail + 3) / 4;
+
+        Real cum_before_block = Real(0);
+        size_t found_block = block_count;
+        Real found_block_tmp[4];
+
+        for (size_t b = 0; b < block_count; ++b) {
+            size_t base = child_base + b * 4;
+            for (size_t i = 0; i < 4; ++i) {
+                size_t idx = base + i;
+                tmp[i] = (idx < child_base + avail) ? static_cast<double>(data_ptr[idx]) : 0.0;
+            }
+            Real blocksum = tmp[0] + tmp[1] + tmp[2] + tmp[3];
+
+//            std::cerr << " Node=" << node
+//                      << " Block=" << b
+//                      << " CumBefore=" << cum_before_block
+//                      << " BlockSum=" << blocksum
+//                      << " Target=" << target << "\n";
+
+            if (target < cum_before_block + blocksum) {
+                found_block = b;
+                for (int i = 0; i < 4; ++i) found_block_tmp[i] = tmp[i];
+                break;
+            }
+            cum_before_block += blocksum;
+        }
+
+        if (found_block == block_count) {
+            //std::cerr << " No block found, breaking.\n";
+            break;
+        }
+
+        // Inner scan
+        size_t base = child_base + found_block * 4;
+        size_t chosen_child = SIZE_MAX;
+        Real inner_cum = cum_before_block;
+        for (size_t i = 0; i < 4; ++i) {
+            size_t idx = base + i;
+			Real w = (i < avail) ? found_block_tmp[i] : 0.0;
+//            std::cerr << "  Inner idx=" << idx
+//                      << " InnerCum=" << inner_cum
+//                      << " W=" << w
+//                      << " Target=" << target << "\n";
+            if (target < inner_cum + w) {
+                chosen_child = idx - child_base;
+                target -= inner_cum;
+//                std::cerr << "   -> Chose child idx=" << idx
+//                          << " NewTarget=" << target << "\n";
+                break;
+            }
+            inner_cum += w;
+        }
+
+        if (chosen_child == SIZE_MAX) {
+//            std::cerr << " Inner scan failed, breaking.\n";
+            break;
+        }
+
+        node = static_cast<PosType>(child_base + chosen_child);
+//        std::cerr << " Descend to node=" << node << "\n";
+
+        PosType fc = BaseTree::first_child_of(node);
+        if (fc >= BaseTree::size()) break;
+    }
+
+    if (node < leaf_start_) {
+//        std::cerr << "Stopped at internal node " << node << " => returning 0\n";
+        return static_cast<result_type>(0);
+    }
+//    std::cerr << "Final leaf node=" << node
+//              << " (leaf_start=" << leaf_start_
+//              << ") => result=" << (node - leaf_start_) << "\n";
+    return static_cast<result_type>(node - leaf_start_);
+
+#else
+    // Fallback scalar version (your original structure, slightly tuned)
     PosType first_child = 0;
 
     // Start at the top internal node (index 0)
-    PosType node = 0;
 
     while (true) {  // while node is an internal
         Real cumulative = 0;
@@ -333,12 +439,13 @@ result_type operator()(URNG& g) const {
     // node is now a leaf
     //std::cout << leaf_start_<< std::endl;
     return static_cast<result_type>(node - leaf_start_);
+#endif
 }
 
 
   template<class URNG>
   result_type operator()(URNG& g, const Param& param) const {
-    complete_exponential_leaf_sum_tree temp(param.weights_);
+    complete_AVX2_exponential_leaf_sum_tree temp(param.weights_);
     return temp(g);
   }
 
@@ -363,7 +470,7 @@ result_type operator()(URNG& g) const {
   }
 
   void param(const Param& p) {
-    *this = complete_exponential_leaf_sum_tree(p.weights_);
+    *this = complete_AVX2_exponential_leaf_sum_tree(p.weights_);
   }
 
   static constexpr result_type min() { return 0; }

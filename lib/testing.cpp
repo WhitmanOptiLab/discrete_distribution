@@ -16,7 +16,7 @@ void test_sampling_distribution() {
     std::cout << "Test: Sampling Distribution\n";
     std::vector<Real> weights = {1.0, 3.0, 6.0};
     Tree tree(weights);
-    //tree.print_tree();
+    tree.print_tree();
 
     std::mt19937 rng(42);
     std::map<Pos, int> counts;
