@@ -19,7 +19,7 @@
 //#include "exponentialAddRemove.hpp"
 #include "../lib/alexVersionBetterMemory.hpp"
 
-#include "../lib/exponentialAddRemove.hpp"
+#include "../lib/TOPRESENTexponentialAddRemove.hpp"
 #include "../lib/avx2_kary.hpp"
 
 #include <sys/time.h>
