@@ -7,9 +7,9 @@
 #include <map>
 #include <iomanip>
 #include <sstream>
-#include "exponentialAddRemove.hpp"
+#include "avx2_kary.hpp"
 
-using Tree = dense::stochastic::complete_exponential_leaf_sum_tree<>;
+using Tree = dense::stochastic::complete_AVX2_exponential_leaf_sum_tree<>;
 using Real = double;
 using Pos = size_t;
 
@@ -42,6 +42,7 @@ void test_large_uniform_weights() {
     Real expected = 1.0 / N;
     for (const auto& [idx, count] : counts) {
         Real ratio = Real(count) / trials;
+        std::cout << idx << ": " << ratio <<", " << expected << std::endl;
         assert(std::abs(ratio - expected) < 0.01);
     }
     std::cout << "Large uniform weights sampling passed.\n";

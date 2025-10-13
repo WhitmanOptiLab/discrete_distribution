@@ -6,9 +6,9 @@
 #include <cassert>
 #include <map>
 #include <iomanip>
-#include "exponentialAddRemove.hpp"
+#include "avx2_kary.hpp"
 
-using Tree = dense::stochastic::complete_exponential_leaf_sum_tree<>;
+using Tree = dense::stochastic::complete_AVX2_exponential_leaf_sum_tree<>;
 using Real = double;
 using Pos = size_t;
 

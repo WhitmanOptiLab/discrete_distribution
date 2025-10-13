@@ -11,11 +11,14 @@
 #include <string>
 #include <bit>
 #include <algorithm>
+#include <immintrin.h>
+#include <type_traits>
+
 
 namespace dense {
 namespace stochastic {
 
-  template <class int_type = size_t, class Real = double, size_t fanout = 16>
+  template <class int_type = size_t, class Real = double, size_t fanout = 8>
 class AFX2_kary_complete_tree {
 public:
 
@@ -133,6 +136,7 @@ public:
     }
 
     bool is_leaf(position_type i) const {
+      if (i == -1) return false;
         return i >= leaf_start_;
     }
 
@@ -172,7 +176,7 @@ private:
 //update while using about O(n) memory space.
 // Uses exponential tree with fixed fanout.
 template <
-  size_t fanout = 16,
+  size_t fanout = 8,
   class int_type = size_t,
   class Real = double,
   size_t precision = std::numeric_limits<Real>::digits
@@ -301,108 +305,110 @@ result_type operator()(URNG& g) const {
 //    std::cerr << "Total: " << total << "  Target: " << target << "\n";
 
     const Real *data_ptr = BaseTree::data().data();
-    PosType node = 0;
+    PosType node = -1;
 
-#if defined(__AVX2__)
-    alignas(32) double tmp[4];
+#if defined(__AVX512F__)
 
+    //If the root is already a leaf, scan leaves linearly
     if (BaseTree::is_leaf(node)) {
-    Real cum = 0;
-    for (PosType i = leaf_start_; i < leaf_start_ + leaf_end_; ++i) {
-        Real w = data_ptr[i];
-        if (target < cum + w)
-            return static_cast<result_type>(i - leaf_start_);
-        cum += w;
+        Real cum = 0;
+        for (PosType i = leaf_start_; i < leaf_start_ + leaf_end_; ++i) {
+            Real w = data_ptr[i];
+            if (target < cum + w) return static_cast<result_type>(i - leaf_start_);
+            cum += w;
+        }
+        return static_cast<result_type>(leaf_end_ - 1);
     }
-    return static_cast<result_type>(leaf_end_ - 1); // fallback if numerical issues
-}
+
+    //Vector width in doubles (AVX-512 = 8 doubles)
+    const size_t VLEN = 8;
+    const size_t blocks_per_node = fanout / VLEN;
+
     while (!BaseTree::is_leaf(node)) {
         PosType child_base = BaseTree::first_child_of(node);
-        size_t available = (child_base < BaseTree::size())
-                         ? BaseTree::size() - child_base : 0;
-        if (available == 0) break;
 
-        size_t avail = available;//std::min<size_t>(available, fanout);
-        size_t block_count = (avail + 3) / 4;
-
+        size_t found_block = SIZE_MAX;
         Real cum_before_block = Real(0);
-        size_t found_block = block_count;
-        Real found_block_tmp[4];
 
-        for (size_t b = 0; b < block_count; ++b) {
-            size_t base = child_base + b * 4;
-            for (size_t i = 0; i < 4; ++i) {
-                size_t idx = base + i;
-                tmp[i] = (idx < child_base + avail) ? static_cast<double>(data_ptr[idx]) : 0.0;
-            }
-            Real blocksum = tmp[0] + tmp[1] + tmp[2] + tmp[3];
+        for (size_t b = 0; b < blocks_per_node; ++b) {
+            const size_t block_start = static_cast<size_t>(child_base) + b * VLEN;
+            alignas(64) double tmp[VLEN];
 
-//            std::cerr << " Node=" << node
-//                      << " Block=" << b
-//                      << " CumBefore=" << cum_before_block
-//                      << " BlockSum=" << blocksum
-//                      << " Target=" << target << "\n";
+            //AVX-512 unaligned (I can't figure out how to get alignment working quite yet) load of 8 doubles into tmp
+            __m512d v = _mm512_loadu_pd(&data_ptr[block_start]);
+            _mm512_storeu_pd(tmp, v);
 
-            if (target < cum_before_block + blocksum) {
+            //Prefix sum calculation - can be done in AVX, but for the tiny amount of memory access, it's just not worth it.
+            double w0 = tmp[0];
+            double w1 = w0 + tmp[1];
+            double w2 = w1 + tmp[2];
+            double w3 = w2 + tmp[3];
+            double w4 = w3 + tmp[4];
+            double w5 = w4 + tmp[5];
+            double w6 = w5 + tmp[6];
+            double w7 = w6 + tmp[7];
+
+            double blocksum = w7;
+
+            if (target < cum_before_block + static_cast<Real>(blocksum)) {
+                //Found block that contains target
+                Real target_rel = target - cum_before_block;
+
+                //Build prefix vector from tmp (inclusive prefixes)
+                //(we could construct from w0..w7, but tmp already holds the raw elems;
+                //we need the inclusive prefix vector in same lane order)
+                alignas(64) double prefix[VLEN] = { w0, w1, w2, w3, w4, w5, w6, w7 };
+                __m512d prefix_vec = _mm512_loadu_pd(prefix);
+                __m512d target_vec = _mm512_set1_pd(static_cast<double>(target_rel));
+
+                //mask lanes where prefix > target_rel (equiv. target < cum_before_block + prefix)
+                unsigned int mask = _mm512_cmp_pd_mask(prefix_vec, target_vec, _CMP_GT_OQ);
+
+                size_t chosen_child_offset = 0;
+
+                if (mask == 0) {
+                    //Non-AVX code just in case - doesn't fire in any of the tests i've run, but just for security
+                    if (target_rel < w0) { chosen_child_offset = 0; target -= cum_before_block; }
+                    else if (target_rel < w1) { chosen_child_offset = 1; target -= (cum_before_block + w0); }
+                    else if (target_rel < w2) { chosen_child_offset = 2; target -= (cum_before_block + w1); }
+                    else if (target_rel < w3) { chosen_child_offset = 3; target -= (cum_before_block + w2); }
+                    else if (target_rel < w4) { chosen_child_offset = 4; target -= (cum_before_block + w3); }
+                    else if (target_rel < w5) { chosen_child_offset = 5; target -= (cum_before_block + w4); }
+                    else if (target_rel < w6) { chosen_child_offset = 6; target -= (cum_before_block + w5); }
+                    else { chosen_child_offset = 7; target -= (cum_before_block + w6); }
+                } else {
+                  	//(Normal pathway)
+                    //pick first lane where prefix > target_rel: least-significant set bit
+                    unsigned int idx = __builtin_ctz(mask); //value in 0..7
+                    chosen_child_offset = static_cast<size_t>(idx);
+
+                    if (chosen_child_offset == 0) {
+                        target -= cum_before_block;
+                    } else {
+                        //subtract cum_before_block + prefix_of_previous_element (w_{i-1})
+                        double prev_prefix = prefix[chosen_child_offset - 1];
+                        target -= (cum_before_block + static_cast<Real>(prev_prefix));
+                    }
+                }
+
+                node = static_cast<PosType>(child_base + b * VLEN + chosen_child_offset);
                 found_block = b;
-                for (int i = 0; i < 4; ++i) found_block_tmp[i] = tmp[i];
                 break;
             }
-            cum_before_block += blocksum;
+
+            cum_before_block += static_cast<Real>(blocksum);
         }
 
-        if (found_block == block_count) {
-            //std::cerr << " No block found, breaking.\n";
+        if (found_block == SIZE_MAX) {
+            std::cout << "borked" << std::endl;
             break;
         }
-
-        // Inner scan
-        size_t base = child_base + found_block * 4;
-        size_t chosen_child = SIZE_MAX;
-        Real inner_cum = cum_before_block;
-        for (size_t i = 0; i < 4; ++i) {
-            size_t idx = base + i;
-			Real w = (i < avail) ? found_block_tmp[i] : 0.0;
-//            std::cerr << "  Inner idx=" << idx
-//                      << " InnerCum=" << inner_cum
-//                      << " W=" << w
-//                      << " Target=" << target << "\n";
-            if (target < inner_cum + w) {
-                chosen_child = idx - child_base;
-                target -= inner_cum;
-//                std::cerr << "   -> Chose child idx=" << idx
-//                          << " NewTarget=" << target << "\n";
-                break;
-            }
-            inner_cum += w;
-        }
-
-        if (chosen_child == SIZE_MAX) {
-//            std::cerr << " Inner scan failed, breaking.\n";
-            break;
-        }
-
-        node = static_cast<PosType>(child_base + chosen_child);
-//        std::cerr << " Descend to node=" << node << "\n";
-
-        PosType fc = BaseTree::first_child_of(node);
-        if (fc >= BaseTree::size()) break;
     }
 
-    if (node < leaf_start_) {
-//        std::cerr << "Stopped at internal node " << node << " => returning 0\n";
-        return static_cast<result_type>(0);
-    }
-//    std::cerr << "Final leaf node=" << node
-//              << " (leaf_start=" << leaf_start_
-//              << ") => result=" << (node - leaf_start_) << "\n";
     return static_cast<result_type>(node - leaf_start_);
 
 #else
-    // Fallback scalar version (your original structure, slightly tuned)
     PosType first_child = 0;
-
-    // Start at the top internal node (index 0)
 
     while (true) {  // while node is an internal
         Real cumulative = 0;

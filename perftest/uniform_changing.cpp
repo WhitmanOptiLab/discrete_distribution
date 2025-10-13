@@ -44,15 +44,16 @@ int main() {
   }
 
   //start time
-  auto start = std::chrono::steady_clock::now();
   WRSLIB selector(weights.begin(), weights.end());
+    auto start = std::chrono::steady_clock::now();
 
 
-  
+
+size_t sum = 0;
   for (int i = 0; i < 1000000; i++) {
-    size_t index = selector(generator);
-    selector.update_weight(index, std::max<double>(0.0, d(generator)));
-//    for(int i = 0;i<14;i++){
+    sum += selector(generator);
+    //selector.update_weight(index, std::max<double>(0.0, d(generator)));
+//    for(int i = 0;i<49;i++){
 //      selector.update_weight(randomIndex(generator),std::max<double>(0.0, d(generator)));
 //    }
   }
@@ -60,6 +61,9 @@ int main() {
   //std::cout << selector.size() << std::endl;
   
   // end time
+  if (sum == 0) {
+    std::cout << "NO! GOD PLEASE NO! NO!!!" << std::endl;
+  }
   auto end = std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed = end - start;
   std::cout << elapsed.count() << std::endl;
