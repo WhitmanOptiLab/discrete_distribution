@@ -35,7 +35,7 @@ public:
     while (true) {
         level = first_child_of(level);
         if (level >= max_leaf) break;
-        leaf_start += level - leaf_start;
+        leaf_start += level - leaf_start; //PERRIN TO DO -- WHY?? can't this just be leaf_start = level
     }
 
     int total_nodes = leaf_start+n;
@@ -69,13 +69,14 @@ public:
 
   using position_type = int_type;
 
+  //constructors
   complete_kary_complete_tree() : data_(1, Real(0)), leaf_start_(0), leaf_count_(0) {}
 
   explicit complete_kary_complete_tree(size_t leaf_count) {
       resize(leaf_count);
   }
 
-    // Resize to accommodate exactly n leaves
+  // Resize to accommodate exactly n leaves
     void resize(size_t n) {
         if (n == 0) {
             data_.assign(1, Real(0));
@@ -234,7 +235,7 @@ public:
         //std::cout << i << std::endl;
         ++it;
     }
-    //fill the rest of the unused leaves with 0
+    //fill the rest of the unused leaves with 0. they hold 0 by default on construction of BaseTree
     //for(size_t i = leaf_start_ + n; i < BaseTree::size() - 1; ++i) {
     //    weightsum_of(i) = Real(0);
     //}
@@ -302,7 +303,7 @@ result_type operator()(URNG& g) const {
         size_t chosen_child = fanout; // sentinel
         for (size_t c = 0; c < fanout; ++c) {
             PosType child = first_child + c;
-            if (child >= BaseTree::size()) break;
+            if (child >= BaseTree::size()) break; //PERRIN TO DO - Throw an error here? start the selection over? we should do something other than choose the fanout=th node
             //std::cout << "Cumulative: " << cumulative << std::endl;
             //std::cout << child << " value: " << weightsum_of(child) << std::endl;
             Real w = weightsum_of(child);
@@ -317,7 +318,7 @@ result_type operator()(URNG& g) const {
         }
 
 
-        if (chosen_child == fanout) {
+        if (chosen_child == fanout) { //PERRIN TO DO - Fig bug. chosen child can equal fanout naturally. 
             // all children zero or none fit, stop at current node
             break;
         }
@@ -359,7 +360,7 @@ result_type operator()(URNG& g) const {
     return Param(weights);
   }
 
-  void param(const Param& p) {
+  void param(const Param& p) { //PERRIN TO DO --destroy old tree and associated memory
     *this = complete_exponential_leaf_sum_tree(p.weights_);
   }
 
@@ -449,7 +450,7 @@ result_type operator()(URNG& g) const {
   }
 
 // Print tree for debugging (-1-indexed)
-  void print_tree(std::ostream& os = std::cout) const {
+  void printTree(std::ostream& os = std::cout) const {
     size_t total_nodes = BaseTree::size();
 
     if (total_nodes == 0) {
@@ -494,9 +495,9 @@ void expand(size_t new_leaf_count) {
     auto &data_ = BaseTree::data();
     size_t new_leaf_start = leaf_start_;
     if (new_leaf_count > max_leaf_) {
-      max_leaf_ *= fanout;
+      max_leaf_ *= fanout; //PERRIN TO DO -- Can this be <<log2fanout? 
     // old shape
-    auto [old_total_nodes, old_leaf_start] = BaseTree::minimal_tree_shape(leaf_end_);
+    auto [old_total_nodes, old_leaf_start] = BaseTree::minimal_tree_shape(leaf_end_); //PERRIN TO DO probably don't need to recalculate all this 
 
     // new shape
     auto [new_total_nodes, new_leaf_start] = BaseTree::minimal_tree_shape(new_leaf_count);
