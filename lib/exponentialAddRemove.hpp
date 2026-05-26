@@ -20,19 +20,18 @@ class complete_kary_complete_tree {
 public:
 
   // Compute minimal complete k-ary tree size to store exactly n leaves
-  // without needing bounds checks during selection.
+  // without needing bounds checks during selection. returns the index of the first leaf and the total number of leaves
+  // Returns {total_nodes_excluding_root, leaf_start_index}
   std::pair<size_t, size_t> minimal_tree_shape(size_t n) {
-    // Returns {total_nodes_excluding_root, leaf_start_index}
+
     if (n == 0) return {0, 0}; // no internal nodes, no leaves
 
-      size_t k = std::countr_zero(fanout);
-      size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
-      //std::cout << "Leaves: " << n << std::endl;
-      //std::cout << "max_leaf: " << max_leaf << std::endl;
+    size_t k = std::countr_zero(fanout);
+    size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
 
-    size_t leaf_start = 0;
-    size_t level = 0;
-    //size_t max_leaf = std::pow(fanout, std::ceil(std::log(n) / std::log(fanout))); //highest possible # of leaves in this tree structure;
+    size_t leaf_start = 0; //the index of the first node that can contain leaves
+    size_t level = 0; //the index of the first node in the bottom row
+
     while (true) {
         level = first_child_of(level);
         if (level >= max_leaf) break;
@@ -43,7 +42,7 @@ public:
     return {total_nodes, leaf_start};
   }
 
-      std::pair<size_t, size_t> minimal_tree_shape_expansion(size_t n) {
+  std::pair<size_t, size_t> minimal_tree_shape_expansion(size_t n) {
       // Returns {total_nodes_excluding_root, leaf_start_index}
       if (n == 0) return {0, 0}; // no internal nodes, no leaves
 
@@ -114,10 +113,8 @@ public:
         return data_[p];
     }
 
-    // Tree navigation (0-based indexing)
-    position_type root() const {
-        return 0;
-    }
+    // Tree navigation (-1 based indexing). root stored seperately
+ 
 
     position_type parent_of(position_type i) const {
         assert(i > 0);
@@ -152,7 +149,7 @@ private:
     size_t leaf_count_;
     size_t max_leaf_;
 
-    static constexpr size_t log2_fanout = [] {
+    static constexpr size_t log2_fanout = [] { //This is the lg(fanout) with a base of 2 
         size_t v = fanout;
         size_t r = 0;
         while (v > 1) {
