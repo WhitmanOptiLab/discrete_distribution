@@ -299,7 +299,7 @@ result_type operator()(URNG& g) const {
     PosType node = 0;
 
     const hn::ScalableTag<Real> realBlock; //this is a "tag" telling google highway how big the simd register is and what it is filled with
-    const numLanes = hn::Lanes(realBlock);
+    const int numLanes = hn::Lanes(realBlock);
     const Real* data_ptr = BaseTree::data().data();
 
     while (true){
@@ -308,7 +308,7 @@ result_type operator()(URNG& g) const {
         auto nextBlock = hn::Load(realBlock,data_ptr+first_child+i)
         accumulator = hn::Add(accumulator,nextBlock)
       }
-      slot = accumulator.size()-1;
+      int slot = accumulator.size()-1;
       for (i=0;i<accumulator.size()-1;i++){
         if target< accumulator[i]{
           slot = i;
@@ -333,7 +333,9 @@ result_type operator()(URNG& g) const {
               break;
           }
           cumulative += w;
-      }
+        }
+      first_child = BaseTree::first_child_of(node); // first child in array
+      if (first_child >= BaseTree::size()) break;
       
     }
     // node is now a leaf
