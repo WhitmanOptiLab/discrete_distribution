@@ -1,5 +1,5 @@
-#ifndef COMPLETE_EXPONENTIAL_LEAF_SUM_TREE
-#define COMPLETE_EXPONENTIAL_LEAF_SUM_TREE
+#ifndef SIMD_HIGHWAY_vertical
+#define SIMD_HIGHWAY_vertical
 #include <vector>
 #include <limits>
 #include <random>
@@ -12,12 +12,15 @@
 #include <bit>
 #include <algorithm>
 #include "kary_complete_tree_base.hpp"
+#include "../vcpkg/installed/x64-linux/include/hwy/highway.h"
 
+
+namespace hn = hwy::HWY_NAMESPACE;
 
 namespace dense {
 namespace stochastic {
 
-//   template <class int_type = size_t, class Real = double, size_t fanout = 16>
+// template <class int_type = size_t, class Real = double, size_t fanout = 16>
 // class complete_kary_complete_tree {
 // public:
 
@@ -174,8 +177,8 @@ template <
   size_t fanout = 16,
   size_t precision = std::numeric_limits<Real>::digits
 >
-class complete_exponential_leaf_sum_tree : protected complete_kary_complete_tree<int_type, Real, fanout> {
-  using This = complete_exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
+class simd_highway_vertical : protected complete_kary_complete_tree<int_type, Real, fanout> {
+  using This = simd_highway_vertical<int_type, Real, fanout, precision>;
   using BaseTree = complete_kary_complete_tree<int_type, Real, fanout>;
   using PosType = typename BaseTree::position_type;
 
@@ -194,23 +197,23 @@ public:
 
   private:
     std::vector<Real> weights_;
-    friend class complete_exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
+    friend class simd_highway_vertical<int_type, Real, fanout, precision>;
   };
 
   // Default constructor
-  complete_exponential_leaf_sum_tree() : BaseTree(1), leaf_end_(0), leaf_start_(0), max_leaf_(fanout) {}
+  simd_highway_vertical() : BaseTree(1), leaf_end_(0), leaf_start_(0), max_leaf_(fanout) {}
 
   // Construct from vector
-  explicit complete_exponential_leaf_sum_tree(const std::vector<Real>& weights)
-    : complete_exponential_leaf_sum_tree(weights.begin(), weights.end()) {}
+  explicit simd_highway_vertical(const std::vector<Real>& weights)
+    : simd_highway_vertical(weights.begin(), weights.end()) {}
 
   // Construct from initializer list
-  complete_exponential_leaf_sum_tree(const std::initializer_list<Real>& il)
-    : complete_exponential_leaf_sum_tree(il.begin(), il.end()) {}
+  simd_highway_vertical(const std::initializer_list<Real>& il)
+    : simd_highway_vertical(il.begin(), il.end()) {}
 
   // Construct from iterator pair
   template<class InputIt>
-  complete_exponential_leaf_sum_tree(InputIt first, InputIt last)
+  simd_highway_vertical(InputIt first, InputIt last)
     : BaseTree()
   {
     size_t n = std::distance(first, last);
@@ -298,38 +301,49 @@ result_type operator()(URNG& g) const {
     // Start at the top internal node (index 0)
     PosType node = 0;
 
-    while (true) {  // while node is an internal
-        Real cumulative = 0;
-        //std::cout << target << std::endl;
+    const hn::ScalableTag<Real> realBlock; //this is a "tag" telling google highway how big the simd register is and what it is filled with
+    const int numLanes = hn::Lanes(realBlock);
+    const Real* data_ptr __attribute((aligned(32))) = BaseTree::data().data();
 
-        size_t chosen_child = fanout; // sentinel
-        for (size_t c = 0; c < fanout; ++c) {
-            PosType child = first_child + c;
-            if (child >= BaseTree::size()) break; //PERRIN TO DO - Throw an error here? start the selection over? we should do something other than choose the fanout=th node
-            //std::cout << "Cumulative: " << cumulative << std::endl;
-            //std::cout << child << " value: " << weightsum_of(child) << std::endl;
-            Real w = weightsum_of(child);
-            if (target < cumulative + w) {
-              //std::cout << "Scueses!!" << std::endl;
-                target -= cumulative;
-                node = child;          // move to next node at end of loop
-                chosen_child = c;
-                break;
-            }
-            cumulative += w;
+    while (true){
+      int chosen_child = fanout; //Perrin To Do add some kind of error catching if, due to floating point errors, nothing is chosen
+      auto accumulator = hn::Load(realBlock,data_ptr+first_child); 
+      for (int i = numLanes; i<fanout; i+=numLanes){
+        auto nextBlock = hn::Load(realBlock,data_ptr+first_child+i);
+        accumulator = hn::Add(accumulator,nextBlock); 
+      }
+      HWY_ALIGN Real storedAccumulator[numLanes];  
+      hn::Store(accumulator,realBlock,storedAccumulator);
+      int slot = numLanes-1;
+      for (int i=0;i<numLanes-1;i++){
+        if (target< storedAccumulator[i]){
+          slot = i;
+          break;
         }
-
-
-        if (chosen_child == fanout) { //PERRIN TO DO - Fig bug. chosen child can equal fanout naturally. 
-            // all children zero or none fit, stop at current node
-            break;
+        else{
+          target -= storedAccumulator[i];
         }
-        first_child = BaseTree::first_child_of(node); // first child in array
-        if (first_child >= BaseTree::size()) break;
-
-        // otherwise, node has been updated to chosen_child
+      }
+      Real cummulative = 0;
+      for (int c=slot;c<fanout;c+=numLanes){
+         PosType child = first_child + c;
+          if (child >= BaseTree::size()) break; //PERRIN TO DO - Throw an error here? start the selection over? we should do something other than choose the fanout=th node
+          //std::cout << "Cumulative: " << cumulative << std::endl;
+          //std::cout << child << " value: " << weightsum_of(child) << std::endl;
+          Real w = weightsum_of(child);
+          if (target < cummulative + w) {
+            //std::cout << "Scueses!!" << std::endl;
+              target -= cummulative;
+              node = child;          // move to next node at end of loop
+              chosen_child = c;
+              break;
+          }
+          cummulative += w;
+        }
+      first_child = BaseTree::first_child_of(node); // first child in array
+      if (first_child >= BaseTree::size()) break;
+      
     }
-
     // node is now a leaf
     //std::cout << leaf_start_<< std::endl;
     return static_cast<result_type>(node - leaf_start_);
@@ -338,7 +352,7 @@ result_type operator()(URNG& g) const {
 
   template<class URNG>
   result_type operator()(URNG& g, const Param& param) const {
-    complete_exponential_leaf_sum_tree temp(param.weights_);
+    simd_highway_vertical temp(param.weights_);
     return temp(g);
   }
 
@@ -363,7 +377,7 @@ result_type operator()(URNG& g) const {
   }
 
   void param(const Param& p) { //PERRIN TO DO --destroy old tree and associated memory
-    *this = complete_exponential_leaf_sum_tree(p.weights_);
+    *this = simd_highway_vertical(p.weights_);
   }
 
   static constexpr result_type min() { return 0; }

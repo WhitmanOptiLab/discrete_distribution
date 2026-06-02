@@ -4,7 +4,10 @@
 //#include "../lib/bucket_alias.hpp"
 //#include "../lib/wrsLessStorage.hpp"
 //#include "../lib/old_sideways_fenwick_selector.hpp"
-#include "../lib/exponentialAddRemove.hpp"
+//#include "../lib/exponentialAddRemove.hpp"
+//#include "../lib/simdGoogleHighway_vertical.hpp"
+#include "../lib/simdGoogleHighway_horitzonal_ALLSIMD.hpp"
+//#include "../lib/simdGoogleHighway_horizontal.hpp"
 #include <iostream>
 #include <fstream>
 #include <random>
@@ -12,7 +15,7 @@
 //using namespace dense::stochastic;
 
 int main(){
-    int numWeights = 14;
+    int numWeights = 30;
     int numOperations=10;
     double percentWeightMin=.8;
     double percentWeightMax=1.2;
@@ -34,7 +37,7 @@ int main(){
     }
 
     std::cout<<"about to construct"<<std::endl;
-    dense::stochastic::complete_exponential_leaf_sum_tree<size_t,double,4> selector(weights.begin(), weights.end());
+    dense::stochastic::allsimd_highway_horizontal<size_t,double,8> selector(weights.begin(), weights.end());
     std::cout<<"constructed"<<std::endl;
 
     selector.printTree();
@@ -63,7 +66,7 @@ int main(){
 
 
 
-    for(int i=0;i<100000;i++){
+    for(int i=0;i<1000000;i++){
         outputFile<<selector(generator)<<std::endl;
     }
 

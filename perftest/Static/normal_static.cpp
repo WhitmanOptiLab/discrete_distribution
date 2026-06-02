@@ -15,6 +15,9 @@
 #include "exponential.hpp"
 #include "low_storage.hpp"
 #include "XoshiroCpp.hpp"
+#include "exponentialAddRemove.hpp"
+#include "simdGoogleHighway_horizontal.hpp"
+#include "simdGoogleHighway_vertical.hpp"
 
 
 

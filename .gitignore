@@ -54,3 +54,4 @@ perftest/C15/test6
 perftest/C15/test7
 perftest/C15/test8
 perftest/C15/test9
+vcpkg/*

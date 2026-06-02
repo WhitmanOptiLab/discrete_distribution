@@ -1,5 +1,5 @@
-#ifndef COMPLETE_EXPONENTIAL_LEAF_SUM_TREE
-#define COMPLETE_EXPONENTIAL_LEAF_SUM_TREE
+#ifndef SIMD_HIGHWAY_HORIZONTAL_ALLSIMD
+#define SIMD_HIGHWAY_HORIZONTAL_ALLSIMD
 #include <vector>
 #include <limits>
 #include <random>
@@ -11,157 +11,160 @@
 #include <string>
 #include <bit>
 #include <algorithm>
+#include "kary_complete_tree_base.hpp"
+#include "../vcpkg/installed/x64-linux/include/hwy/highway.h"
 
-namespace hn = hwy::HWY_NAMESPACE
+
+namespace hn = hwy::HWY_NAMESPACE;
 
 namespace dense {
 namespace stochastic {
 
-  template <class int_type = size_t, class Real = double, size_t fanout = 16>
-class complete_kary_complete_tree {
-public:
+// template <class int_type = size_t, class Real = double, size_t fanout = 16>
+// class complete_kary_complete_tree {
+// public:
 
-  // Compute minimal complete k-ary tree size to store exactly n leaves
-  // without needing bounds checks during selection. returns the index of the first leaf and the total number of leaves
-  // Returns {total_nodes_excluding_root, leaf_start_index}
-  std::pair<size_t, size_t> minimal_tree_shape(size_t n) {
+//   // Compute minimal complete k-ary tree size to store exactly n leaves
+//   // without needing bounds checks during selection. returns the index of the first leaf and the total number of leaves
+//   // Returns {total_nodes_excluding_root, leaf_start_index}
+//   std::pair<size_t, size_t> minimal_tree_shape(size_t n) {
 
-    if (n == 0) return {0, 0}; // no internal nodes, no leaves
+//     if (n == 0) return {0, 0}; // no internal nodes, no leaves
 
-    size_t k = std::countr_zero(fanout);
-    size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
+//     size_t k = std::countr_zero(fanout);
+//     size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
 
-    size_t leaf_start = 0; //the index of the first node that can contain leaves
-    size_t level = 0; //the index of the first node in the bottom row
+//     size_t leaf_start = 0; //the index of the first node that can contain leaves
+//     size_t level = 0; //the index of the first node in the bottom row
 
-    while (true) {
-        level = first_child_of(level);
-        if (level >= max_leaf) break;
-        leaf_start += level - leaf_start; //PERRIN TO DO -- WHY?? can't this just be leaf_start = level
-    }
+//     while (true) {
+//         level = first_child_of(level);
+//         if (level >= max_leaf) break;
+//         leaf_start += level - leaf_start; //PERRIN TO DO -- WHY?? can't this just be leaf_start = level
+//     }
 
-    int total_nodes = leaf_start+n;
-    return {total_nodes, leaf_start};
-  }
+//     int total_nodes = leaf_start+n;
+//     return {total_nodes, leaf_start};
+//   }
 
-  std::pair<size_t, size_t> minimal_tree_shape_expansion(size_t n) {
-      // Returns {total_nodes_excluding_root, leaf_start_index}
-      if (n == 0) return {0, 0}; // no internal nodes, no leaves
+//   std::pair<size_t, size_t> minimal_tree_shape_expansion(size_t n) {
+//       // Returns {total_nodes_excluding_root, leaf_start_index}
+//       if (n == 0) return {0, 0}; // no internal nodes, no leaves
 
-      size_t k = std::countr_zero(fanout);
-      size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k)+1;
-      //std::cout << "max_leaf: " << max_leaf << std::endl;
+//       size_t k = std::countr_zero(fanout);
+//       size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k)+1;
+//       //std::cout << "max_leaf: " << max_leaf << std::endl;
 
-      size_t leaf_start = 0;
-      size_t level = 0;
-      //size_t max_leaf = std::pow(fanout, std::ceil(std::log(n) / std::log(fanout))); //highest possible # of leaves in this tree structure;
-      while (true) {
-          level = first_child_of(level);
-          if (level >= max_leaf) break;
-          leaf_start += level - leaf_start;
-      }
+//       size_t leaf_start = 0;
+//       size_t level = 0;
+//       //size_t max_leaf = std::pow(fanout, std::ceil(std::log(n) / std::log(fanout))); //highest possible # of leaves in this tree structure;
+//       while (true) {
+//           level = first_child_of(level);
+//           if (level >= max_leaf) break;
+//           leaf_start += level - leaf_start;
+//       }
 
-      int total_nodes = (-1*(0-leaf_start)+n);
-      return {total_nodes, leaf_start};
-  }
-
-
-
-  static_assert((fanout & (fanout - 1)) == 0, "fanout must be power of two");
-
-  using position_type = int_type;
-
-  //constructors
-  complete_kary_complete_tree() : data_(1, Real(0)), leaf_start_(0), leaf_count_(0) {}
-
-  explicit complete_kary_complete_tree(size_t leaf_count) {
-      resize(leaf_count);
-  }
-
-  // Resize to accommodate exactly n leaves
-    void resize(size_t n) {
-        if (n == 0) {
-            data_.assign(1, Real(0));
-            leaf_start_ = 0;
-            leaf_count_ = 0;
-            return;
-        }
-
-
-        auto [total_nodes, leaf_start] = minimal_tree_shape(n);
-
-        // allocate all internal nodes + leaves (root is kept separately by the derived class)
-        data_.resize(total_nodes);
-        leaf_count_ = n;
-        leaf_start_ = leaf_start;
-        //std::cout << "base tree leafstart: " << leaf_start_ << std::endl;
-    }
+//       int total_nodes = (-1*(0-leaf_start)+n);
+//       return {total_nodes, leaf_start};
+//   }
 
 
 
-    size_t size() const {
-        return data_.size();
-    }
+//   static_assert((fanout & (fanout - 1)) == 0, "fanout must be power of two");
 
-    Real& value_of(position_type p) {
-        if(p >= data_.size()) {
-          throw std::runtime_error("trying to access position " + std::to_string(p) + " in tree of size " + std::to_string(data_.size()));
-        }
+//   using position_type = int_type;
 
-        return data_[p];
-    }
+//   //constructors
+//   complete_kary_complete_tree() : data_(1, Real(0)), leaf_start_(0), leaf_count_(0) {}
 
-    const Real& value_of(position_type p) const {
-        assert(p < data_.size());
-        return data_[p];
-    }
+//   explicit complete_kary_complete_tree(size_t leaf_count) {
+//       resize(leaf_count);
+//   }
 
-    // Tree navigation (-1 based indexing). root stored seperately
+//   // Resize to accommodate exactly n leaves
+//     void resize(size_t n) {
+//         if (n == 0) {
+//             data_.assign(1, Real(0));
+//             leaf_start_ = 0;
+//             leaf_count_ = 0;
+//             return;
+//         }
+
+
+//         auto [total_nodes, leaf_start] = minimal_tree_shape(n);
+
+//         // allocate all internal nodes + leaves (root is kept separately by the derived class)
+//         data_.resize(total_nodes);
+//         leaf_count_ = n;
+//         leaf_start_ = leaf_start;
+//         //std::cout << "base tree leafstart: " << leaf_start_ << std::endl;
+//     }
+
+
+
+//     size_t size() const {
+//         return data_.size();
+//     }
+
+//     Real& value_of(position_type p) {
+//         if(p >= data_.size()) {
+//           throw std::runtime_error("trying to access position " + std::to_string(p) + " in tree of size " + std::to_string(data_.size()));
+//         }
+
+//         return data_[p];
+//     }
+
+//     const Real& value_of(position_type p) const {
+//         assert(p < data_.size());
+//         return data_[p];
+//     }
+
+//     // Tree navigation (-1 based indexing). root stored seperately
  
 
-    position_type parent_of(position_type i) const {
-        assert(i > 0);
-        return (i >> log2_fanout) - 1;
-    }
+//     position_type parent_of(position_type i) const {
+//         assert(i > 0);
+//         return (i >> log2_fanout) - 1;
+//     }
 
-    position_type first_child_of(position_type i) const {
-        return (i + 1) << log2_fanout;
-    }
+//     position_type first_child_of(position_type i) const {
+//         return (i + 1) << log2_fanout;
+//     }
 
-    position_type child_index(position_type parent, size_t child_num) const {
-        return first_child_of(parent) + child_num;
-    }
+//     position_type child_index(position_type parent, size_t child_num) const {
+//         return first_child_of(parent) + child_num;
+//     }
 
-    bool is_leaf(position_type i) const {
-        return i >= leaf_start_;
-    }
+//     bool is_leaf(position_type i) const {
+//         return i >= leaf_start_;
+//     }
 
-    size_t leaf_start() const {
-        return leaf_start_;
-    }
+//     size_t leaf_start() const {
+//         return leaf_start_;
+//     }
 
-    size_t leaf_count() const {
-        return leaf_count_;
-    }
+//     size_t leaf_count() const {
+//         return leaf_count_;
+//     }
 
-    std::vector<Real> &data() {return data_;}
+//     std::vector<Real> &data() {return data_;}
 
-private:
-     std::vector<Real> data_;
-    size_t leaf_start_;
-    size_t leaf_count_;
-    size_t max_leaf_;
+// private:
+//      std::vector<Real> data_;
+//     size_t leaf_start_;
+//     size_t leaf_count_;
+//     size_t max_leaf_;
 
-    static constexpr size_t log2_fanout = [] { //This is the lg(fanout) with a base of 2 
-        size_t v = fanout;
-        size_t r = 0;
-        while (v > 1) {
-            v >>= 1;
-            ++r;
-        }
-        return r;
-    }();
-};
+//     static constexpr size_t log2_fanout = [] { //This is the lg(fanout) with a base of 2 
+//         size_t v = fanout;
+//         size_t r = 0;
+//         while (v > 1) {
+//             v >>= 1;
+//             ++r;
+//         }
+//         return r;
+//     }();
+// };
 
 
 //Class to randomly select an index where each index's probability of being
@@ -174,8 +177,8 @@ template <
   size_t fanout = 16,
   size_t precision = std::numeric_limits<Real>::digits
 >
-class complete_exponential_leaf_sum_tree : protected complete_kary_complete_tree<int_type, Real, fanout> {
-  using This = complete_exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
+class allsimd_highway_horizontal : protected complete_kary_complete_tree<int_type, Real, fanout> {
+  using This = allsimd_highway_horizontal<int_type, Real, fanout, precision>;
   using BaseTree = complete_kary_complete_tree<int_type, Real, fanout>;
   using PosType = typename BaseTree::position_type;
 
@@ -194,23 +197,23 @@ public:
 
   private:
     std::vector<Real> weights_;
-    friend class complete_exponential_leaf_sum_tree<int_type, Real, fanout, precision>;
+    friend class allsimd_highway_horizontal<int_type, Real, fanout, precision>;
   };
 
   // Default constructor
-  complete_exponential_leaf_sum_tree() : BaseTree(1), leaf_end_(0), leaf_start_(0), max_leaf_(fanout) {}
+  allsimd_highway_horizontal() : BaseTree(1), leaf_end_(0), leaf_start_(0), max_leaf_(fanout) {}
 
   // Construct from vector
-  explicit complete_exponential_leaf_sum_tree(const std::vector<Real>& weights)
-    : complete_exponential_leaf_sum_tree(weights.begin(), weights.end()) {}
+  explicit allsimd_highway_horizontal(const std::vector<Real>& weights)
+    : allsimd_highway_horizontal(weights.begin(), weights.end()) {}
 
   // Construct from initializer list
-  complete_exponential_leaf_sum_tree(const std::initializer_list<Real>& il)
-    : complete_exponential_leaf_sum_tree(il.begin(), il.end()) {}
+  allsimd_highway_horizontal(const std::initializer_list<Real>& il)
+    : allsimd_highway_horizontal(il.begin(), il.end()) {}
 
   // Construct from iterator pair
   template<class InputIt>
-  complete_exponential_leaf_sum_tree(InputIt first, InputIt last)
+  allsimd_highway_horizontal(InputIt first, InputIt last)
     : BaseTree()
   {
     size_t n = std::distance(first, last);
@@ -303,50 +306,64 @@ result_type operator()(URNG& g) const {
     const Real* data_ptr = BaseTree::data().data();
 
     while (true){
-      auto accumulator = hn::Load(realBlock,data_ptr+first_child); 
-      for (int i = numLanes; i<fanout; i+=numLanes){
-        auto nextBlock = hn::Load(realBlock,data_ptr+first_child+i)
-        accumulator = hn::Add(accumulator,nextBlock)
-      }
-      int slot = accumulator.size()-1;
-      for (i=0;i<accumulator.size()-1;i++){
-        if target< accumulator[i]{
-          slot = i;
+      //std::cout<<"node is "<<node<<std::endl;
+      double cummulative = 0; 
+      int blockStart = first_child+fanout - numLanes;
+      hn::Vec<hn::ScalableTag<Real>> nextBlock;
+      for (int i = 0; i<fanout-numLanes; i+=numLanes){
+        nextBlock = hn::Load(realBlock,data_ptr+first_child+i);
+        auto sum = SumOfLanes(realBlock,nextBlock);
+        if (target < cummulative + GetLane(sum)){
+          blockStart = first_child+i; 
+
           break;
         }
         else{
-          target -= accumulator[i]
+          cummulative+= GetLane(sum);
         }
+
       }
-      Real cummulative = 0
-      for (c=slot;c<fanout;c+=numLanes){
-         PosType child = first_child + c;
-          if (child >= BaseTree::size()) break; //PERRIN TO DO - Throw an error here? start the selection over? we should do something other than choose the fanout=th node
-          //std::cout << "Cumulative: " << cumulative << std::endl;
-          //std::cout << child << " value: " << weightsum_of(child) << std::endl;
-          Real w = weightsum_of(child);
-          if (target < cumulative + w) {
-            //std::cout << "Scueses!!" << std::endl;
-              target -= cumulative;
-              node = child;          // move to next node at end of loop
-              chosen_child = c;
-              break;
-          }
-          cumulative += w;
-        }
+      if (blockStart == first_child+fanout - numLanes){
+        nextBlock = hn::Load(realBlock,data_ptr+blockStart);
+      }
+
+      //make next block contain prefix sum
+      //PERRIN TO DO - make this portable
+      //source https://en.algorithmica.org/hpc/algorithms/prefix/ 
+      auto prefix  = hn::Add(nextBlock,hn::Slide1Up(realBlock,nextBlock));
+      prefix = hn::Add(prefix,hn::SlideUpLanes(realBlock,prefix,2));
+      // auto prefix = hn::Add(nextBlock,hn::ShiftLeftLanes<1>(nextBlock));
+      // auto newprefix = hn::Add(prefix,hn::ShiftLeftLanes<2>(prefix));
+
+
+      target-= cummulative;
+      auto targetBlock = hn::Set(realBlock,target);
+      int choiceIndex = hn::FindFirstTrue(realBlock,hn::Lt(targetBlock,prefix));
+      node = blockStart + choiceIndex;
+
+      HWY_ALIGN Real prefixArray[numLanes];
+      hn::Store(prefix,realBlock,prefixArray);
+      if (choiceIndex>0){
+        target -= prefixArray[choiceIndex-1];
+      }
+
       first_child = BaseTree::first_child_of(node); // first child in array
-      if (first_child >= BaseTree::size()) break;
-      
+      //std::cout<<"first child is "<<first_child<<"    tree size is "<<BaseTree::size()<<std::endl;
+      if (first_child >= BaseTree::size()){
+
+        
+        break;
+
+      } 
     }
-    // node is now a leaf
-    //std::cout << leaf_start_<< std::endl;
+    //std::cout<<node<<std::endl;
     return static_cast<result_type>(node - leaf_start_);
 }
 
 
   template<class URNG>
   result_type operator()(URNG& g, const Param& param) const {
-    complete_exponential_leaf_sum_tree temp(param.weights_);
+    allsimd_highway_horizontal temp(param.weights_);
     return temp(g);
   }
 
@@ -371,7 +388,7 @@ result_type operator()(URNG& g) const {
   }
 
   void param(const Param& p) { //PERRIN TO DO --destroy old tree and associated memory
-    *this = complete_exponential_leaf_sum_tree(p.weights_);
+    *this = allsimd_highway_horizontal(p.weights_);
   }
 
   static constexpr result_type min() { return 0; }
@@ -496,6 +513,23 @@ result_type operator()(URNG& g) const {
         os << "\n";
         ++level;
     }
+  }
+
+  void printTreeFromNode (int node) const{
+    int first = node;
+    int last = node;
+
+    while (last<BaseTree::size()){
+      for (int i=first; i<=last;i++){
+        std::cout<< weightsum_of(i)<<", ";
+      }
+      std::cout<<std::endl;
+      first = BaseTree::first_child_of(first);
+      last = BaseTree::first_child_of(last)+fanout-1;
+      
+
+    }
+    std::cout<<std::endl;
   }
 
       // Expand from current leaf_count_ to new_leaf_count (must be larger), structurally, without recomputing

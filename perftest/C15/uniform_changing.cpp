@@ -15,6 +15,10 @@
 #include "XoshiroCpp.hpp"
 #include "incremental_exponential.hpp"
 #include "exponentialAddRemove.hpp"
+#include "simdGoogleHighway_horizontal.hpp"
+#include "simdGoogleHighway_vertical.hpp"
+#include "simdGoogleHighway_horitzonal_ALLSIMD.hpp"
+
 
 
 #include <sys/time.h>
