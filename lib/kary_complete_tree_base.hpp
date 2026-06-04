@@ -18,22 +18,22 @@
 
 namespace dense {
 namespace stochastic {
-template <class int_type = size_t, class Real = double, size_t fanout = 16>
+template <class int_type = size_t, class Real = double, int_type fanout = 16>
 class complete_kary_complete_tree {
 public:
 
   // Compute minimal complete k-ary tree size to store exactly n leaves
   // without needing bounds checks during selection. returns the index of the first leaf and the total number of leaves
   // Returns {total_nodes_excluding_root, leaf_start_index}
-  std::pair<size_t, size_t> minimal_tree_shape(size_t n) {
+  std::pair<int_type, int_type> minimal_tree_shape(int_type n) {
 
     if (n == 0) return {0, 0}; // no internal nodes, no leaves
 
-    size_t k = std::countr_zero(fanout);
-    size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
+    int_type k = std::countr_zero(fanout);
+    int_type max_leaf = int_type(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
 
-    size_t leaf_start = 0; //the index of the first node that can contain leaves
-    size_t level = 0; //the index of the first node in the bottom row
+    int_type leaf_start = 0; //the index of the first node that can contain leaves
+    int_type level = 0; //the index of the first node in the bottom row
 
     while (true) {
         level = first_child_of(level);
@@ -41,28 +41,28 @@ public:
         leaf_start += level - leaf_start; //PERRIN TO DO -- WHY?? can't this just be leaf_start = level
     }
 
-    int total_nodes = leaf_start+n;
+    int_type total_nodes = leaf_start+n;
     return {total_nodes, leaf_start};
   }
 
-  std::pair<size_t, size_t> minimal_tree_shape_expansion(size_t n) {
+  std::pair<int_type, int_type> minimal_tree_shape_expansion(int_type n) {
       // Returns {total_nodes_excluding_root, leaf_start_index}
       if (n == 0) return {0, 0}; // no internal nodes, no leaves
 
-      size_t k = std::countr_zero(fanout);
-      size_t max_leaf = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k)+1;
+      int_type k = std::countr_zero(fanout);
+      int_type max_leaf = int_type(1) << (((std::bit_width(n - 1) + k - 1) / k) * k)+1;
       //std::cout << "max_leaf: " << max_leaf << std::endl;
 
-      size_t leaf_start = 0;
-      size_t level = 0;
-      //size_t max_leaf = std::pow(fanout, std::ceil(std::log(n) / std::log(fanout))); //highest possible # of leaves in this tree structure;
+      int_type leaf_start = 0;
+      int_type level = 0;
+      //int_type max_leaf = std::pow(fanout, std::ceil(std::log(n) / std::log(fanout))); //highest possible # of leaves in this tree structure;
       while (true) {
           level = first_child_of(level);
           if (level >= max_leaf) break;
           leaf_start += level - leaf_start;
       }
 
-      int total_nodes = (-1*(0-leaf_start)+n);
+      int_type total_nodes = (-1*(0-leaf_start)+n);
       return {total_nodes, leaf_start};
   }
 
@@ -75,12 +75,12 @@ public:
   //constructors
   complete_kary_complete_tree() : data_(1, Real(0)), leaf_start_(0), leaf_count_(0) {}
 
-  explicit complete_kary_complete_tree(size_t leaf_count) {
+  explicit complete_kary_complete_tree(int_type leaf_count) {
       resize(leaf_count);
   }
 
   // Resize to accommodate exactly n leaves
-    void resize(size_t n) {
+    void resize(int_type n) {
         if (n == 0) {
             data_.assign(1, Real(0));
             leaf_start_ = 0;
@@ -100,7 +100,7 @@ public:
 
 
 
-    size_t size() const {
+    int_type size() const {
         return data_.size();
     }
 
@@ -129,7 +129,7 @@ public:
         return (i + 1) << log2_fanout;
     }
 
-    position_type child_index(position_type parent, size_t child_num) const {
+    position_type child_index(position_type parent, int_type child_num) const {
         return first_child_of(parent) + child_num;
     }
 
@@ -137,11 +137,11 @@ public:
         return i >= leaf_start_;
     }
 
-    size_t leaf_start() const {
+    int_type leaf_start() const {
         return leaf_start_;
     }
 
-    size_t leaf_count() const {
+    int_type leaf_count() const {
         return leaf_count_;
     }
 
@@ -153,13 +153,13 @@ private:
 
 
     std::vector<Real,boost::alignment::aligned_allocator<Real, 128> > data_;
-    size_t leaf_start_;
-    size_t leaf_count_;
-    size_t max_leaf_;
+    int_type leaf_start_;
+    int_type leaf_count_;
+    int_type max_leaf_;
 
-    static constexpr size_t log2_fanout = [] { //This is the lg(fanout) with a base of 2 
-        size_t v = fanout;
-        size_t r = 0;
+    static constexpr int_type log2_fanout = [] { //This is the lg(fanout) with a base of 2 
+        int_type v = fanout;
+        int_type r = 0;
         while (v > 1) {
             v >>= 1;
             ++r;

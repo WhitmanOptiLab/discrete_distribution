@@ -174,8 +174,8 @@ namespace stochastic {
 template <
   class int_type = size_t,
   class Real = double,
-  size_t fanout = 16,
-  size_t precision = std::numeric_limits<Real>::digits
+  int_type fanout = 16,
+  int_type precision = std::numeric_limits<Real>::digits
 >
 class allsimd_highway_horizontal : protected complete_kary_complete_tree<int_type, Real, fanout> {
   using This = allsimd_highway_horizontal<int_type, Real, fanout, precision>;
@@ -216,7 +216,7 @@ public:
   allsimd_highway_horizontal(InputIt first, InputIt last)
     : BaseTree()
   {
-    size_t n = std::distance(first, last);
+    int_type n = std::distance(first, last);
     //n = 2;
 
     // Round up leaves to nearest full complete k-ary tree level (power of fanout)
@@ -224,8 +224,8 @@ public:
       max_leaf_ = fanout;
     }
     else{
-          size_t k = std::countr_zero(fanout);
-    max_leaf_ = size_t(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
+          int_type k = std::countr_zero(fanout);
+    max_leaf_ = int_type(1) << (((std::bit_width(n - 1) + k - 1) / k) * k);
     }
 
     leaf_start_ = BaseTree::minimal_tree_shape(n).second;
@@ -235,13 +235,13 @@ public:
 
     // Copy weights to leaves, pad with zeros
     InputIt it = first;
-    for (size_t i = leaf_start_; i < leaf_start_ + n; ++i) {
+    for (int_type i = leaf_start_; i < leaf_start_ + n; ++i) {
         weightsum_of(i) = std::max(Real(*it), Real(0));
         //std::cout << i << std::endl;
         ++it;
     }
     //fill the rest of the unused leaves with 0. they hold 0 by default on construction of BaseTree
-    //for(size_t i = leaf_start_ + n; i < BaseTree::size() - 1; ++i) {
+    //for(int_type i = leaf_start_ + n; i < BaseTree::size() - 1; ++i) {
     //    weightsum_of(i) = Real(0);
     //}
 
@@ -250,7 +250,7 @@ public:
     for (ptrdiff_t i = leaf_start_ - 1; i >= 0; --i) {
         Real sum = 0;
         PosType first_child = (i + 1) * fanout; // -1-index adjustment
-        for (size_t c = 0; c < fanout; ++c) {
+        for (int_type c = 0; c < fanout; ++c) {
             PosType child = first_child + c;
             if (child >= leaf_start_+n) break;
             sum += weightsum_of(child);
@@ -262,14 +262,14 @@ public:
     Real sum = 0;
     PosType first_child = 0 * fanout; // root's first child in array
     if (leaf_start_ == 0){
-      for (size_t c = 0; c < leaf_end_; ++c) {
+      for (int_type c = 0; c < leaf_end_; ++c) {
         PosType child = first_child + c;
         if (child >= max_leaf_) break;
         sum += weightsum_of(child);
     }
     }
     else{
-    for (size_t c = 0; c < fanout; ++c) {
+    for (int_type c = 0; c < fanout; ++c) {
         PosType child = first_child + c;
         if (child >= max_leaf_) break;
         sum += weightsum_of(child);
@@ -302,15 +302,15 @@ result_type operator()(URNG& g) const {
     PosType node = 0;
 
     const hn::ScalableTag<Real> realBlock; //this is a "tag" telling google highway how big the simd register is and what it is filled with
-    const int numLanes = hn::Lanes(realBlock);
+    const int_type numLanes = hn::Lanes(realBlock);
     const Real* data_ptr = BaseTree::data().data();
 
     while (true){
       //std::cout<<"node is "<<node<<std::endl;
-      double cummulative = 0; 
-      int blockStart = first_child+fanout - numLanes;
+      Real cummulative = 0; 
+      int_type blockStart = first_child+fanout - numLanes;
       hn::Vec<hn::ScalableTag<Real>> nextBlock;
-      for (int i = 0; i<fanout-numLanes; i+=numLanes){
+      for (int_type i = 0; i<fanout-numLanes; i+=numLanes){
         nextBlock = hn::Load(realBlock,data_ptr+first_child+i);
         auto sum = SumOfLanes(realBlock,nextBlock);
         if (target < cummulative + GetLane(sum)){
@@ -331,20 +331,29 @@ result_type operator()(URNG& g) const {
       //PERRIN TO DO - make this portable
       //source https://en.algorithmica.org/hpc/algorithms/prefix/ 
       auto prefix  = hn::Add(nextBlock,hn::Slide1Up(realBlock,nextBlock));
-      prefix = hn::Add(prefix,hn::SlideUpLanes(realBlock,prefix,2));
+      for (int_type i=2; i<numLanes;i=i<<1){
+        prefix = hn::Add(prefix,hn::SlideUpLanes(realBlock,prefix,i));
+      }
+      
       // auto prefix = hn::Add(nextBlock,hn::ShiftLeftLanes<1>(nextBlock));
       // auto newprefix = hn::Add(prefix,hn::ShiftLeftLanes<2>(prefix));
 
 
       target-= cummulative;
       auto targetBlock = hn::Set(realBlock,target);
-      int choiceIndex = hn::FindFirstTrue(realBlock,hn::Lt(targetBlock,prefix));
+      int_type choiceIndex = hn::FindFirstTrue(realBlock,hn::Lt(targetBlock,prefix));
       node = blockStart + choiceIndex;
+      
 
       HWY_ALIGN Real prefixArray[numLanes];
       hn::Store(prefix,realBlock,prefixArray);
       if (choiceIndex>0){
         target -= prefixArray[choiceIndex-1];
+      }
+      if (choiceIndex == -1){
+        node = first_child;
+        target -= prefixArray[numLanes -1];
+        target += weightsum_of(first_child);
       }
 
       first_child = BaseTree::first_child_of(node); // first child in array
@@ -373,7 +382,7 @@ result_type operator()(URNG& g) const {
     Real total = total_weight();
     if (total <= Real(0)) return probs;
 
-    for (size_t i = 0; i < leaf_end_; ++i) {
+    for (int_type i = 0; i < leaf_end_; ++i) {
       probs[i] = weightsum_of(leaf_start_ + i) / total;
     }
     return probs;
@@ -381,7 +390,7 @@ result_type operator()(URNG& g) const {
 
   Param param() const {
     std::vector<Real> weights(leaf_end_);
-    for (size_t i = 0; i < leaf_end_; ++i) {           // <-- NOTE: loop from 0..leaf_end_-1
+    for (int_type i = 0; i < leaf_end_; ++i) {           // <-- NOTE: loop from 0..leaf_end_-1
       weights[i] = get_weight(i);
     }
     return Param(weights);
@@ -405,14 +414,14 @@ result_type operator()(URNG& g) const {
     weightsum_of(i) = new_weight;
     total_weight_ += diff;
 
-    while (i >=fanout) {                 // <-- FIX: propagate to the very top internal node
+    while (i >=fanout) {                 // <-- FIX: propagate to the very top int_typeernal node
       i = BaseTree::parent_of(i);
       //std::cout << i << std::endl;
       weightsum_of(i) += diff;
     }
   }
 
-  size_t get_max() const {
+  int_type get_max() const {
     return max_leaf_;
   }
 
@@ -422,7 +431,7 @@ result_type operator()(URNG& g) const {
     return weightsum_of(leaf_start_ + i);
   }
 
-  size_t size() const { return leaf_end_; }
+  int_type size() const { return leaf_end_; }
 
   Real total_weight() const noexcept {
     if (BaseTree::size() == 0) return Real(0);
@@ -463,8 +472,8 @@ result_type operator()(URNG& g) const {
     leaf_end_++;
   }
 
-  void pop_back(size_t count) {
-    for(size_t i = 0; i < count; ++i) {
+  void pop_back(int_type count) {
+    for(int_type i = 0; i < count; ++i) {
       pop_back();
     }
   }
@@ -478,7 +487,7 @@ result_type operator()(URNG& g) const {
 
 // Print tree for debugging (-1-indexed)
   void printTree(std::ostream& os = std::cout) const {
-    size_t total_nodes = BaseTree::size();
+    int_type total_nodes = BaseTree::size();
 
     if (total_nodes == 0) {
         os << "(empty tree)\n";
@@ -488,13 +497,13 @@ result_type operator()(URNG& g) const {
     std::queue<ptrdiff_t> q; // use signed for -1 root
     q.push(-1); // -1 represents the root stored separately
 
-    size_t level = 0;
+    int_type level = 0;
 
     while (!q.empty()) {
-        size_t level_size = q.size();
+        int_type level_size = q.size();
         os << "Level " << level << ": ";
 
-        for (size_t i = 0; i < level_size; ++i) {
+        for (int_type i = 0; i < level_size; ++i) {
             ptrdiff_t node = q.front();
             q.pop();
 
@@ -503,7 +512,7 @@ result_type operator()(URNG& g) const {
 
             // enqueue children
             PosType first_child = (node + 1) * fanout; // -1-index adjustment
-            for (size_t c = 0; c < fanout; ++c) {
+            for (int_type c = 0; c < fanout; ++c) {
                 PosType child = first_child + c;
                 if (child >= total_nodes) break;
                 q.push(child);
@@ -515,12 +524,12 @@ result_type operator()(URNG& g) const {
     }
   }
 
-  void printTreeFromNode (int node) const{
-    int first = node;
-    int last = node;
+  void printTreeFromNode (int_type node) const{
+    int_type first = node;
+    int_type last = node;
 
     while (last<BaseTree::size()){
-      for (int i=first; i<=last;i++){
+      for (int_type i=first; i<=last;i++){
         std::cout<< weightsum_of(i)<<", ";
       }
       std::cout<<std::endl;
@@ -534,10 +543,10 @@ result_type operator()(URNG& g) const {
 
       // Expand from current leaf_count_ to new_leaf_count (must be larger), structurally, without recomputing
     // new expand: argument is NEW_LEAF_COUNT (number of leaves you want after expansion)
-void expand(size_t new_leaf_count) {
+void expand(int_type new_leaf_count) {
     if (new_leaf_count <= leaf_end_) return; // nothing to do
     auto &data_ = BaseTree::data();
-    size_t new_leaf_start = leaf_start_;
+    int_type new_leaf_start = leaf_start_;
     if (new_leaf_count > max_leaf_) {
       max_leaf_ *= fanout; //PERRIN TO DO -- Can this be <<log2fanout? 
     // old shape
@@ -547,21 +556,21 @@ void expand(size_t new_leaf_count) {
     auto [new_total_nodes, new_leaf_start] = BaseTree::minimal_tree_shape(new_leaf_count);
     leaf_start_ = new_leaf_start;
 
-        std::vector<size_t> old_starts;
-        std::vector<size_t> old_levels;
+        std::vector<int_type> old_starts;
+        std::vector<int_type> old_levels;
 
-        std::vector<size_t> new_starts;
-        std::vector<size_t> new_levels;
+        std::vector<int_type> new_starts;
+        std::vector<int_type> new_levels;
 
-        size_t position = 0;
-        size_t sum = 0;
+        int_type position = 0;
+        int_type sum = 0;
 
 
         // Creating the level lengths and level starts for the old size
         while (true) {
             position = BaseTree::first_child_of(position);
             old_starts.push_back(sum);
-            size_t level = position - sum;
+            int_type level = position - sum;
             sum += level;
             old_levels.push_back(level);
             if (position >= old_total_nodes) break;
@@ -590,7 +599,7 @@ void expand(size_t new_leaf_count) {
         while (true) {
             position = BaseTree::first_child_of(position);
             new_starts.push_back(sum);
-            size_t level = position - sum;
+            int_type level = position - sum;
             sum += level;
             new_levels.push_back(level);
 			if (position >= new_total_nodes) break;
@@ -615,11 +624,11 @@ void expand(size_t new_leaf_count) {
     // copy each old level block into the next-deeper level of the new layout.
     // old level i -> new level (i+1). That packs the old block contiguously at the start
     // of the larger new level (the remainder stays zero).
-    for (size_t i = 0; i < old_levels.size(); ++i) {
-        size_t old_start = old_starts[i];
-        size_t old_sz    = old_levels[i];
-        size_t new_level_index = i + 1; // destination level index
-        size_t new_start = new_starts[new_level_index];
+    for (int_type i = 0; i < old_levels.size(); ++i) {
+        int_type old_start = old_starts[i];
+        int_type old_sz    = old_levels[i];
+        int_type new_level_index = i + 1; // destination level index
+        int_type new_start = new_starts[new_level_index];
         // bounds check (should not happen for reasonable expansions)
         if (old_start + old_sz > data_.size()) {
             std::cout << "Reading from: " << old_start + old_sz << ", total size: " << data_.size() << std::endl;
@@ -638,15 +647,15 @@ void expand(size_t new_leaf_count) {
     // recompute only the new top internal layer (level 0) from its children (level 1)
     // top-level nodes occupy global indices new_starts[0] .. new_starts[0]+new_levels[0]-1
     // their first child indices can be computed with first_child_of(parent_index)
-    size_t top_count = new_levels[0];
-    size_t top_start = new_starts[0];   // usually 0
-    for (size_t j = 0; j < top_count; ++j) {
-        size_t parent_idx = top_start + j;
+    int_type top_count = new_levels[0];
+    int_type top_start = new_starts[0];   // usually 0
+    for (int_type j = 0; j < top_count; ++j) {
+        int_type parent_idx = top_start + j;
         // first child in global indexing:
-        size_t first_child = BaseTree::first_child_of(parent_idx);
+        int_type first_child = BaseTree::first_child_of(parent_idx);
         Real sum = Real(0);
-        for (size_t c = 0; c < fanout; ++c) {
-            size_t child = first_child + c;
+        for (int_type c = 0; c < fanout; ++c) {
+            int_type child = first_child + c;
             if (child >= new_total_nodes) break;
             sum += new_data[child];
         }
@@ -671,10 +680,10 @@ void expand(size_t new_leaf_count) {
 private:
   Real& weightsum_of(PosType p) { return BaseTree::value_of(p); }
   const Real& weightsum_of(PosType p) const { return BaseTree::value_of(p); }
-  size_t max_leaf_;
-  size_t leaf_end_;   // number of leaves requested by user
-  size_t leaf_start_; // index of first leaf in data_
-  double total_weight_ = 0;
+  int_type max_leaf_;
+  int_type leaf_end_;   // number of leaves requested by user
+  int_type leaf_start_; // index of first leaf in data_
+  Real total_weight_ = 0;
 };
 }
 }
