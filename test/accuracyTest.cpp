@@ -7,6 +7,7 @@
 #include "../lib/exponentialAddRemove.hpp"
 //#include "../lib/simdGoogleHighway_vertical.hpp"
 #include "../lib/simdGoogleHighway_horitzonal_ALLSIMD.hpp"
+#include "../lib/simdGoogleHighway_horitzonal_mixedSIMD.hpp"
 #include "../lib/simdGoogleHighway_horizontal.hpp"
 #include <iostream>
 #include <fstream>
@@ -37,7 +38,7 @@ int main(){
     }
 
     std::cout<<"about to construct"<<std::endl;
-    dense::stochastic::complete_exponential_leaf_sum_tree<size_t,float,16> selector(weights.begin(), weights.end());
+    dense::stochastic:: mixedsimd_highway_horizontal<size_t,float,16> selector(weights.begin(), weights.end());
     std::cout<<"constructed"<<std::endl;
 
     selector.printTree();

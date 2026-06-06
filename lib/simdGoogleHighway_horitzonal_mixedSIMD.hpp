@@ -1,5 +1,5 @@
-#ifndef SIMD_HIGHWAY_HORIZONTAL
-#define SIMD_HIGHWAY_HORIZONTAL
+#ifndef SIMD_HIGHWAY_HORIZONTAL_MIXEDSIMD
+#define SIMD_HIGHWAY_HORIZONTAL_MIXEDSIMD
 #include <vector>
 #include <limits>
 #include <random>
@@ -177,8 +177,8 @@ template <
   int_type fanout = 16,
   int_type precision = std::numeric_limits<Real>::digits
 >
-class simd_highway_horizontal : protected complete_kary_complete_tree<int_type, Real, fanout> {
-  using This = simd_highway_horizontal<int_type, Real, fanout, precision>;
+class mixedsimd_highway_horizontal : protected complete_kary_complete_tree<int_type, Real, fanout> {
+  using This = mixedsimd_highway_horizontal<int_type, Real, fanout, precision>;
   using BaseTree = complete_kary_complete_tree<int_type, Real, fanout>;
   using PosType = typename BaseTree::position_type;
 
@@ -197,23 +197,23 @@ public:
 
   private:
     std::vector<Real> weights_;
-    friend class simd_highway_horizontal<int_type, Real, fanout, precision>;
+    friend class mixedsimd_highway_horizontal<int_type, Real, fanout, precision>;
   };
 
   // Default constructor
-  simd_highway_horizontal() : BaseTree(1), leaf_end_(0), leaf_start_(0), max_leaf_(fanout) {}
+  mixedsimd_highway_horizontal() : BaseTree(1), leaf_end_(0), leaf_start_(0), max_leaf_(fanout) {}
 
   // Construct from vector
-  explicit simd_highway_horizontal(const std::vector<Real>& weights)
-    : simd_highway_horizontal(weights.begin(), weights.end()) {}
+  explicit mixedsimd_highway_horizontal(const std::vector<Real>& weights)
+    : mixedsimd_highway_horizontal(weights.begin(), weights.end()) {}
 
   // Construct from initializer list
-  simd_highway_horizontal(const std::initializer_list<Real>& il)
-    : simd_highway_horizontal(il.begin(), il.end()) {}
+  mixedsimd_highway_horizontal(const std::initializer_list<Real>& il)
+    : mixedsimd_highway_horizontal(il.begin(), il.end()) {}
 
   // Construct from iterator pair
   template<class InputIt>
-  simd_highway_horizontal(InputIt first, InputIt last)
+  mixedsimd_highway_horizontal(InputIt first, InputIt last)
     : BaseTree()
   {
     int_type n = std::distance(first, last);
@@ -305,12 +305,13 @@ result_type operator()(URNG& g) const {
     const int_type numLanes = hn::Lanes(realBlock);
     const Real* data_ptr = BaseTree::data().data();
 
-    while (true){
-      Real cummulative = 0; 
+    
+
+    Real cummulative = 0; 
       int_type blockStart = first_child+fanout - numLanes;
       bool chosen = false;
       for (int_type i = 0; i<fanout-numLanes; i+=numLanes){
-        auto nextBlock = hn::Load(realBlock,data_ptr+first_child+i);
+        auto nextBlock = hn::Load(realBlock,data_ptr+i);
         nextBlock = SumOfLanes(realBlock,nextBlock);
         if (target < cummulative + GetLane(nextBlock)){
           blockStart = first_child+i;
@@ -344,17 +345,78 @@ result_type operator()(URNG& g) const {
           target +=weightsum_of(first_child);
       }
       first_child = BaseTree::first_child_of(node); // first child in array
-      if (first_child >= BaseTree::size()) break;
+      if (first_child >= BaseTree::size()){
+        return  static_cast<result_type>(node - leaf_start_);
+    } 
+    
+    while (true){
+      //std::cout<<"node is "<<node<<std::endl;
+      Real cummulative = 0; 
+      int_type blockStart = first_child+fanout - numLanes;
+      hn::Vec<hn::ScalableTag<Real>> nextBlock;
+      for (int_type i = 0; i<fanout-numLanes; i+=numLanes){
+        nextBlock = hn::Load(realBlock,data_ptr+first_child+i);
+        auto sum = SumOfLanes(realBlock,nextBlock);
+        if (target < cummulative + GetLane(sum)){
+          blockStart = first_child+i; 
+
+          break;
+        }
+        else{
+          cummulative+= GetLane(sum);
+        }
+
+      }
+      if (blockStart == first_child+fanout - numLanes){
+        nextBlock = hn::Load(realBlock,data_ptr+blockStart);
+      }
+
+      //make next block contain prefix sum
+      //PERRIN TO DO - make this portable
+      //source https://en.algorithmica.org/hpc/algorithms/prefix/ 
+      auto prefix  = hn::Add(nextBlock,hn::Slide1Up(realBlock,nextBlock));
+      for (int_type i=2; i<numLanes;i=i<<1){
+        prefix = hn::Add(prefix,hn::SlideUpLanes(realBlock,prefix,i));
+      }
+      
+      // auto prefix = hn::Add(nextBlock,hn::ShiftLeftLanes<1>(nextBlock));
+      // auto newprefix = hn::Add(prefix,hn::ShiftLeftLanes<2>(prefix));
+
+
+      target-= cummulative;
+      auto targetBlock = hn::Set(realBlock,target);
+      int_type choiceIndex = hn::FindFirstTrue(realBlock,hn::Lt(targetBlock,prefix));
+      node = blockStart + choiceIndex;
+      
+
+      HWY_ALIGN Real prefixArray[numLanes];
+      hn::Store(prefix,realBlock,prefixArray);
+      if (choiceIndex>0){
+        target -= prefixArray[choiceIndex-1];
+      }
+      if (choiceIndex == -1){
+        node = first_child;
+        target -= prefixArray[numLanes -1];
+        target += weightsum_of(first_child);
+      }
+
+      first_child = BaseTree::first_child_of(node); // first child in array
+      //std::cout<<"first child is "<<first_child<<"    tree size is "<<BaseTree::size()<<std::endl;
+      if (first_child >= BaseTree::size()){
+
+        
+        break;
+
+      } 
     }
-    // node is now a leaf
-    //std::cout << leaf_start_<< std::endl;
+    //std::cout<<node<<std::endl;
     return static_cast<result_type>(node - leaf_start_);
 }
 
 
   template<class URNG>
   result_type operator()(URNG& g, const Param& param) const {
-    simd_highway_horizontal temp(param.weights_);
+    mixedsimd_highway_horizontal temp(param.weights_);
     return temp(g);
   }
 
@@ -379,7 +441,7 @@ result_type operator()(URNG& g) const {
   }
 
   void param(const Param& p) { //PERRIN TO DO --destroy old tree and associated memory
-    *this = simd_highway_horizontal(p.weights_);
+    *this = mixedsimd_highway_horizontal(p.weights_);
   }
 
   static constexpr result_type min() { return 0; }
@@ -396,7 +458,7 @@ result_type operator()(URNG& g) const {
     weightsum_of(i) = new_weight;
     total_weight_ += diff;
 
-    while (i >=fanout) {                 // <-- FIX: propagate to the very top internal node
+    while (i >=fanout) {                 // <-- FIX: propagate to the very top int_typeernal node
       i = BaseTree::parent_of(i);
       //std::cout << i << std::endl;
       weightsum_of(i) += diff;

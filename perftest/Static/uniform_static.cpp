@@ -22,6 +22,7 @@
 #include "simdGoogleHighway_horizontal.hpp"
 #include "simdGoogleHighway_vertical.hpp"
 #include "simdGoogleHighway_horitzonal_ALLSIMD.hpp"
+#include "simdGoogleHighway_horitzonal_mixedSIMD.hpp"
 
 
 

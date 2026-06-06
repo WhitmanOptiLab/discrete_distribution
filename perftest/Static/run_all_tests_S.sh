@@ -18,6 +18,10 @@ compile=(
  'g++ -std=c++20 -I../../lib -I../../vcpkg/installed/x64-linux/include/boost/align -O3 -march=native "-DWRSLIB=simd_highway_horizontal<size_t,float,64>" "-DWEIGHTNUM=${weightNums[$i]}" -o test$i uniform_static.cpp'
  'g++ -std=c++20 -I../../lib -I../../vcpkg/installed/x64-linux/include/boost/align -O3 -march=native "-DWRSLIB=simd_highway_horizontal<size_t,float,128>" "-DWEIGHTNUM=${weightNums[$i]}" -o test$i uniform_static.cpp'
 
+ 'g++ -std=c++20 -I../../lib -I../../vcpkg/installed/x64-linux/include/boost/align -O3 -march=native "-DWRSLIB=mixedsimd_highway_horizontal<size_t,float,16>" "-DWEIGHTNUM=${weightNums[$i]}" -o test$i uniform_static.cpp'
+ 'g++ -std=c++20 -I../../lib -I../../vcpkg/installed/x64-linux/include/boost/align -O3 -march=native "-DWRSLIB=mixedsimd_highway_horizontal<size_t,float,32>" "-DWEIGHTNUM=${weightNums[$i]}" -o test$i uniform_static.cpp'
+ 'g++ -std=c++20 -I../../lib -I../../vcpkg/installed/x64-linux/include/boost/align -O3 -march=native "-DWRSLIB=mixedsimd_highway_horizontal<size_t,float,64>" "-DWEIGHTNUM=${weightNums[$i]}" -o test$i uniform_static.cpp'
+ 'g++ -std=c++20 -I../../lib -I../../vcpkg/installed/x64-linux/include/boost/align -O3 -march=native "-DWRSLIB=mixedsimd_highway_horizontal<size_t,float,128>" "-DWEIGHTNUM=${weightNums[$i]}" -o test$i uniform_static.cpp'
 #  'g++ -std=c++20 -I../../lib -I../../vcpkg/installed/x64-linux/include/boost/align -O3 -march=native "-DWRSLIB=simd_highway_vertical<size_t,float,16>" "-DWEIGHTNUM=${weightNums[$i]}" -o test$i uniform_static.cpp'
 #  'g++ -std=c++20 -I../../lib -I../../vcpkg/installed/x64-linux/include/boost/align -O3 -march=native "-DWRSLIB=simd_highway_vertical<size_t,float,32>" "-DWEIGHTNUM=${weightNums[$i]}" -o test$i uniform_static.cpp'
 #  'g++ -std=c++20 -I../../lib -I../../vcpkg/installed/x64-linux/include/boost/align -O3 -march=native "-DWRSLIB=simd_highway_vertical<size_t,float,64>" "-DWEIGHTNUM=${weightNums[$i]}" -o test$i uniform_static.cpp'
@@ -47,6 +51,11 @@ names=(
   '32-aryTree_horizontal_SIMD'
   '64-aryTree_horizontal_SIMD'
   '128-aryTree_horizontal_SIMD'
+
+  '16-aryTree_horizontal_mixed_SIMD'
+  '32-aryTree_horizontal_mixed_SIMD'
+  '64-aryTree_horizontal_mixed_SIMD'
+  '128-aryTree_horizontal_mixed_SIMD'
 
   # '16-aryTree_vertical_SIMD'
   # '32-aryTree_vertical_SIMD'
